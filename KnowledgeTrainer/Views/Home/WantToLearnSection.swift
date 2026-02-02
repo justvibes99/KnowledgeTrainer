@@ -9,7 +9,7 @@ struct WantToLearnSection: View {
         if !items.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Want to Learn")
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 ForEach(items) { item in
@@ -18,13 +18,13 @@ struct WantToLearnSection: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(item.topicName)
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
 
                                     if let source = item.sourceSubtopic {
                                         Text("from \(source)")
-                                            .font(.system(.caption2, design: .default))
+                                            .font(.system(.caption2, design: .monospaced))
                                             .foregroundColor(.flatSecondaryText)
                                             .lineLimit(1)
                                     }

@@ -17,7 +17,7 @@ struct TopicDetailView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header
                     Text(topic.name)
-                        .font(.system(size: 28, weight: .semibold, design: .default))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
@@ -35,14 +35,14 @@ struct TopicDetailView: View {
                     .padding(.horizontal, 24)
 
                     Text("Last practiced: \(topic.lastPracticed.relativeDisplay)")
-                        .font(.system(.caption, design: .default))
+                        .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.flatSecondaryText)
                         .padding(.horizontal, 24)
 
                     // Subtopic Breakdown
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Subtopics")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
 
@@ -57,10 +57,10 @@ struct TopicDetailView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(subtopic)
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                     Text("\(subCount) questions")
-                                        .font(.system(.caption2, design: .default))
+                                        .font(.system(.caption2, design: .monospaced))
                                         .foregroundColor(.flatSecondaryText)
                                 }
                                 Spacer()
@@ -80,7 +80,7 @@ struct TopicDetailView: View {
                     // Delete
                     Button(action: { showDeleteConfirmation = true }) {
                         Text("Delete Topic")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalCoral)
                             .frame(maxWidth: .infinity)
                             .padding(12)
@@ -112,7 +112,7 @@ struct TopicDetailView: View {
                 .font(.system(.title3, design: .monospaced, weight: .semibold))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
         .frame(maxWidth: .infinity)

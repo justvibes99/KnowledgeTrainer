@@ -13,7 +13,7 @@ struct BrutalButton: View {
             action()
         }) {
             Text(title)
-                .font(.system(.body, design: .default, weight: .medium))
+                .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
@@ -44,7 +44,7 @@ struct BrutalButtonAsync: View {
             Task { await action() }
         }) {
             Text(title)
-                .font(.system(.body, design: .default, weight: .medium))
+                .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)

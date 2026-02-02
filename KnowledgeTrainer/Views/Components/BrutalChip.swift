@@ -12,7 +12,7 @@ struct BrutalChip: View {
             action()
         }) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(isSelected ? .white : .brutalBlack)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)

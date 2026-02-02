@@ -20,7 +20,7 @@ struct QuestionCardView: View {
             // Subtopic label
             HStack(spacing: 6) {
                 Text(question.subtopic)
-                    .font(.system(.caption2, design: .default, weight: .medium))
+                    .font(.system(.caption2, design: .monospaced, weight: .medium))
                     .foregroundColor(.white)
 
                 if let num = subtopicQuestionNumber, num > 0 {
@@ -168,14 +168,14 @@ struct QuestionCardView: View {
                     .foregroundColor(isCorrect ? .brutalTeal : .brutalCoral)
 
                 Text(isCorrect ? "Correct" : "Incorrect")
-                    .font(.system(.body, design: .default, weight: .medium))
+                    .font(.system(.body, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
             }
 
             if !isCorrect && !question.isMultipleChoice {
                 VStack(spacing: 4) {
                     Text("Correct Answer")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(.flatSecondaryText)
                     Text(question.correctAnswer)
                         .font(.system(.body, design: .default, weight: .medium))

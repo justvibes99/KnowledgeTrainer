@@ -12,11 +12,11 @@ struct SavedLibraryView: View {
         if !deepDives.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Saved Library")
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 TextField("Filter...", text: $filterText)
-                    .font(.system(.caption, design: .default))
+                    .font(.system(.caption, design: .monospaced))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(Color.flatSurface)
@@ -32,11 +32,11 @@ struct SavedLibraryView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(deepDive.topic)
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
                                     Text(deepDive.dateCreated.relativeDisplay)
-                                        .font(.system(.caption2, design: .default))
+                                        .font(.system(.caption2, design: .monospaced))
                                         .foregroundColor(.flatSecondaryText)
                                 }
                                 Spacer()

@@ -16,7 +16,7 @@ struct ExploreHomeView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         Text("Explore")
-                            .font(.system(size: 36, weight: .semibold, design: .default))
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -35,7 +35,7 @@ struct ExploreHomeView: View {
                                     ProgressView()
                                         .tint(.brutalBlack)
                                     Text("Generating deep dive...")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)

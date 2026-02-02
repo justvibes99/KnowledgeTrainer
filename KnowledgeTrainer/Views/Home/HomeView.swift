@@ -30,7 +30,7 @@ struct HomeView: View {
                         // Header row
                         HStack {
                             Text("SnapStudy")
-                                .font(.system(size: 32, weight: .semibold, design: .default))
+                                .font(.system(size: 32, weight: .semibold, design: .monospaced))
                                 .foregroundColor(.brutalBlack)
 
                             if let profile {
@@ -42,7 +42,7 @@ struct HomeView: View {
                                             .font(.system(size: 14, weight: .medium))
                                             .foregroundColor(.brutalBlack)
                                         Text(profile.rank.title)
-                                            .font(.system(.caption2, design: .default, weight: .semibold))
+                                            .font(.system(.caption2, design: .monospaced, weight: .semibold))
                                             .foregroundColor(.brutalBlack)
                                     }
                                     .padding(.horizontal, 10)
@@ -97,10 +97,10 @@ struct HomeView: View {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text("Review Due")
-                                                .font(.system(.caption, design: .default, weight: .medium))
+                                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                                 .foregroundColor(.brutalBlack)
                                             Text("\(dueCount) items to review")
-                                                .font(.system(.body, design: .default))
+                                                .font(.system(.body, design: .monospaced))
                                                 .foregroundColor(.brutalBlack)
                                         }
                                         Spacer()
@@ -127,7 +127,7 @@ struct HomeView: View {
                                     ProgressView()
                                         .tint(.brutalBlack)
                                     Text("Generating...")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)
@@ -155,7 +155,7 @@ struct HomeView: View {
                         if !topics.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Your Topics")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                     .padding(.horizontal, 24)
 
@@ -274,17 +274,17 @@ struct HomeView: View {
                     .foregroundColor(category.color)
 
                 Text(category.rawValue)
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
                     .lineLimit(1)
 
                 Text("\(categoryTopics.count) topic\(categoryTopics.count == 1 ? "" : "s")")
-                    .font(.system(.caption2, design: .default))
+                    .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.flatSecondaryText)
 
                 if totalSubtopics > 0 {
                     Text("\(totalMastered)/\(totalSubtopics) mastered")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(totalMastered == totalSubtopics ? .brutalTeal : .flatSecondaryText)
                 }
             }

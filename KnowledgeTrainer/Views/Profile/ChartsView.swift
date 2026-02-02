@@ -13,7 +13,7 @@ struct ChartsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Charts")
-                        .font(.system(size: 28, weight: .semibold, design: .default))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
@@ -109,7 +109,7 @@ struct ChartsView: View {
     private func chartSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             content()
@@ -127,7 +127,7 @@ struct ChartsView: View {
 
     private var emptyState: some View {
         Text("Not enough data yet")
-            .font(.system(.caption, design: .default))
+            .font(.system(.caption, design: .monospaced))
             .foregroundColor(.flatSecondaryText)
             .frame(maxWidth: .infinity, minHeight: 100)
     }

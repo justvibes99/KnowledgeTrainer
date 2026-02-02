@@ -67,7 +67,7 @@ struct ModuleFlowView: View {
                         .scaleEffect(1.5)
                         .tint(.brutalBlack)
                     Text("Preparing lesson...")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             case .lesson:
@@ -83,7 +83,7 @@ struct ModuleFlowView: View {
                 VStack {
                     Spacer()
                     Text("Added to Queue")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
@@ -125,7 +125,7 @@ struct ModuleFlowView: View {
 
                 VStack(spacing: 16) {
                     Text("Question Format")
-                        .font(.system(.body, design: .default, weight: .semibold))
+                        .font(.system(.body, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
 
                     ForEach(["Multiple Choice", "Short Answer", "Mixed"], id: \.self) { format in
@@ -136,7 +136,7 @@ struct ModuleFlowView: View {
                             startQuizPhase()
                         }) {
                             Text(format)
-                                .font(.system(.body, design: .default, weight: .medium))
+                                .font(.system(.body, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalBlack)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
@@ -164,7 +164,7 @@ struct ModuleFlowView: View {
 
                 VStack(spacing: 16) {
                     Text(tappedRelatedTopic ?? "")
-                        .font(.system(.body, design: .default, weight: .semibold))
+                        .font(.system(.body, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                         .multilineTextAlignment(.center)
 
@@ -175,7 +175,7 @@ struct ModuleFlowView: View {
                         }
                     }) {
                         Text("Go Now")
-                            .font(.system(.body, design: .default, weight: .medium))
+                            .font(.system(.body, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -192,7 +192,7 @@ struct ModuleFlowView: View {
                         }
                     }) {
                         Text("Add to List")
-                            .font(.system(.body, design: .default, weight: .medium))
+                            .font(.system(.body, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -279,7 +279,7 @@ struct ModuleFlowView: View {
                         // Header
                         VStack(spacing: 8) {
                             Text(subtopicName)
-                                .font(.system(size: 22, weight: .semibold, design: .default))
+                                .font(.system(size: 22, weight: .semibold, design: .monospaced))
                                 .foregroundColor(.brutalBlack)
                                 .multilineTextAlignment(.center)
                         }
@@ -289,7 +289,7 @@ struct ModuleFlowView: View {
                         // Overview
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Overview")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.flatSecondaryText)
 
                             Text(progress.lessonOverview)
@@ -307,7 +307,7 @@ struct ModuleFlowView: View {
                         // Key Facts
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Key Facts")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalBlack)
 
                             ForEach(Array(progress.lessonKeyFacts.enumerated()), id: \.offset) { index, fact in
@@ -367,7 +367,7 @@ struct ModuleFlowView: View {
                     .scaleEffect(1.5)
                     .tint(.brutalBlack)
                 Text("Loading questions...")
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
             }
         } else if let question = viewModel.currentQuestion {
@@ -415,7 +415,7 @@ struct ModuleFlowView: View {
                                     .padding(.top, 8)
                             } label: {
                                 Text("Review")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
 
@@ -441,7 +441,7 @@ struct ModuleFlowView: View {
                                     .foregroundColor(.brutalBlack)
                             }
                             Text("Streak")
-                                .font(.system(.caption2, design: .default, weight: .medium))
+                                .font(.system(.caption2, design: .monospaced, weight: .medium))
                                 .foregroundColor(Color.flatSecondaryText)
                         }
                         statItem(label: "Accuracy", value: "\(Int(viewModel.sessionAccuracy))%")
@@ -487,11 +487,11 @@ struct ModuleFlowView: View {
 
             VStack(spacing: 24) {
                 Text("Mastered")
-                    .font(.system(size: 20, weight: .semibold, design: .default))
+                    .font(.system(size: 20, weight: .semibold, design: .monospaced))
                     .foregroundColor(.brutalBlack)
 
                 Text(viewModel.masteredSubtopicName)
-                    .font(.system(size: 28, weight: .semibold, design: .default))
+                    .font(.system(size: 28, weight: .semibold, design: .monospaced))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.center)
 
@@ -501,7 +501,7 @@ struct ModuleFlowView: View {
 
                 if let next = viewModel.nextSubtopicName {
                     Text("Next up: \(next)")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(Color.flatSecondaryText)
                 }
 
@@ -532,12 +532,12 @@ struct ModuleFlowView: View {
     private func relatedChipsSection(connections: [String]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Related Topics")
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             ForEach(connections, id: \.self) { connection in
                 Text(connection)
-                    .font(.system(.caption2, design: .default, weight: .medium))
+                    .font(.system(.caption2, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
                     .lineLimit(2)
                     .padding(.horizontal, 10)
@@ -561,7 +561,7 @@ struct ModuleFlowView: View {
                     ProgressView()
                         .tint(.brutalBlack)
                     Text("Creating path...")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             }
@@ -578,7 +578,7 @@ struct ModuleFlowView: View {
                 .font(.system(.body, design: .monospaced, weight: .semibold))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(Color.flatSecondaryText)
         }
     }
