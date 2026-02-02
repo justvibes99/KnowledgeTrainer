@@ -1,0 +1,85 @@
+{
+  "specPath": "~/.claude/DESIGN_FLAT_PURPLE.md",
+  "branch": "redesign/DESIGN_FLAT_PURPLE",
+  "themeFiles": ["KnowledgeTrainer/Utilities/Extensions.swift"],
+  "componentFiles": [
+    "KnowledgeTrainer/Views/Components/BrutalButton.swift",
+    "KnowledgeTrainer/Views/Components/BrutalCard.swift",
+    "KnowledgeTrainer/Views/Components/BrutalChip.swift",
+    "KnowledgeTrainer/Views/Components/BrutalTextField.swift",
+    "KnowledgeTrainer/Views/Components/BrutalAlert.swift",
+    "KnowledgeTrainer/Views/Components/AchievementToast.swift",
+    "KnowledgeTrainer/Views/Components/DailyGoalBanner.swift",
+    "KnowledgeTrainer/Views/Components/TimerBar.swift",
+    "KnowledgeTrainer/Views/Components/AccuracyRing.swift",
+    "KnowledgeTrainer/Views/Components/XPProgressBar.swift",
+    "KnowledgeTrainer/Views/Components/StreakCalendarView.swift",
+    "KnowledgeTrainer/Views/Components/LevelUpOverlay.swift",
+    "KnowledgeTrainer/Views/Components/ShareableCardView.swift",
+    "KnowledgeTrainer/Views/Components/RankCardView.swift"
+  ],
+  "appEntryFile": "KnowledgeTrainer/KnowledgeTrainerApp.swift",
+  "xcassetsPaths": [],
+  "uikitAppearanceFiles": [],
+  "tokenMapping": {
+    "brutalBackground": { "newValue": "Color(hex: \"F7F5F0\")", "rationale": "Warm cream bg maps to spec bg #F7F5F0", "status": "mapped" },
+    "brutalBlack": { "newValue": "Color(hex: \"1A1A1A\")", "rationale": "Pure black maps to spec near-black #1A1A1A", "status": "mapped" },
+    "brutalCoral": { "newValue": "Color(hex: \"C25B4E\")", "rationale": "Coral accent maps to spec danger #C25B4E", "status": "mapped" },
+    "brutalTeal": { "newValue": "Color(hex: \"5BA8A0\")", "rationale": "Teal accent maps to spec secondary #5BA8A0", "status": "mapped" },
+    "brutalYellow": { "newValue": "Color(hex: \"6C5CE7\")", "rationale": "Yellow was primary action color, maps to spec primary #6C5CE7", "status": "mapped" },
+    "brutalLavender": { "newValue": "Color(hex: \"5B7FA5\")", "rationale": "Lavender accent maps to spec info #5B7FA5", "status": "mapped" },
+    "brutalMint": { "newValue": "Color(hex: \"5A8A6C\")", "rationale": "Mint maps to spec success #5A8A6C", "status": "mapped" },
+    "brutalSalmon": { "newValue": "Color(hex: \"C9963A\")", "rationale": "Salmon maps to spec warning #C9963A", "status": "mapped" }
+  },
+  "newTokens": {
+    "flatSurface": { "value": "Color(hex: \"FDFCF9\")", "usage": "Card/elevated element backgrounds" },
+    "flatSurfaceSubtle": { "value": "Color(hex: \"F0EDE6\")", "usage": "Secondary area backgrounds" },
+    "flatSecondaryText": { "value": "Color(hex: \"6B6560\")", "usage": "Secondary text color" },
+    "flatTertiaryText": { "value": "Color(hex: \"9C9690\")", "usage": "Captions, placeholders" },
+    "flatBorder": { "value": "Color(hex: \"E8E4DE\")", "usage": "Default border color" },
+    "flatBorderStrong": { "value": "Color(hex: \"D1CCC4\")", "usage": "Focused/active border color" },
+    "flatPrimaryHover": { "value": "Color(hex: \"5A4BD4\")", "usage": "Primary hover state" },
+    "flatPrimaryActive": { "value": "Color(hex: \"4A3DC0\")", "usage": "Primary active state" }
+  },
+  "preserveTokens": [],
+  "preserveReasoning": {},
+  "cssTranslations": {
+    "border-radius: 8px": ".clipShape(RoundedRectangle(cornerRadius: 8))",
+    "box-shadow: 0 2px 8px rgba(0,0,0,0.06)": ".shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)",
+    "border: 1px solid #E8E4DE": ".overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))",
+    "transition: 0.15s ease": ".animation(.easeInOut(duration: 0.15), value:)"
+  },
+  "viewBatches": {
+    "home": { "files": ["KnowledgeTrainer/Views/Home/HomeView.swift", "KnowledgeTrainer/Views/Home/StatsStripView.swift", "KnowledgeTrainer/Views/Home/StatsSheetView.swift", "KnowledgeTrainer/Views/Home/WantToLearnSection.swift", "KnowledgeTrainer/Views/Home/CategoryDetailView.swift"], "totalLines": 596, "specialCases": [] },
+    "train": { "files": ["KnowledgeTrainer/Views/Train/TrainHomeView.swift", "KnowledgeTrainer/Views/Train/SessionXPSummaryView.swift", "KnowledgeTrainer/Views/Train/SessionSummaryView.swift", "KnowledgeTrainer/Views/Train/ReviewSessionView.swift", "KnowledgeTrainer/Views/Train/QuestionCardView.swift", "KnowledgeTrainer/Views/Train/LessonCardView.swift", "KnowledgeTrainer/Views/Train/DrillSessionView.swift"], "totalLines": 932, "specialCases": [] },
+    "train-large": { "files": ["KnowledgeTrainer/Views/Train/SubtopicPickerView.swift", "KnowledgeTrainer/Views/Train/ModuleFlowView.swift"], "totalLines": 1265, "specialCases": ["largeFiles"] },
+    "profile": { "files": ["KnowledgeTrainer/Views/Profile/ProfileDashboardView.swift", "KnowledgeTrainer/Views/Profile/ChartsView.swift", "KnowledgeTrainer/Views/Profile/AchievementsListView.swift", "KnowledgeTrainer/Views/Profile/TopicDetailView.swift", "KnowledgeTrainer/Views/Profile/TopicMapView.swift", "KnowledgeTrainer/Views/Profile/SettingsView.swift"], "totalLines": 871, "specialCases": ["charts"] },
+    "explore": { "files": ["KnowledgeTrainer/Views/Explore/ExploreHomeView.swift", "KnowledgeTrainer/Views/Explore/SavedLibraryView.swift", "KnowledgeTrainer/Views/Explore/DeepDiveView.swift"], "totalLines": 249, "specialCases": [] },
+    "onboarding": { "files": ["KnowledgeTrainer/Views/Onboarding/OnboardingView.swift"], "totalLines": 119, "specialCases": [] }
+  },
+  "specialCases": {
+    "canvasBlocks": [],
+    "inlineColors": [],
+    "gradientHeavy": [],
+    "largeFiles": ["KnowledgeTrainer/Views/Train/SubtopicPickerView.swift", "KnowledgeTrainer/Views/Train/ModuleFlowView.swift"],
+    "privateColorDefs": ["KnowledgeTrainer/Models/ScholarRank.swift", "KnowledgeTrainer/Models/TopicCategory.swift", "KnowledgeTrainer/ViewModels/DrillSessionViewModel.swift"]
+  },
+  "fontChanges": {
+    "monospacedToProportional": false,
+    "proportionalToMonospaced": false,
+    "affectsAnimatedNumbers": false
+  },
+  "phases": {
+    "theme": "pending",
+    "components": "pending",
+    "views": {
+      "home": "pending",
+      "train": "pending",
+      "train-large": "pending",
+      "profile": "pending",
+      "explore": "pending",
+      "onboarding": "pending"
+    },
+    "cleanup": "pending"
+  }
+}
