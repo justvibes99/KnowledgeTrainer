@@ -34,7 +34,7 @@ actor APIClient {
 
     // MARK: - Generate Topic and First Batch
 
-    func generateTopicAndFirstBatch(topic: String) async throws -> (TopicStructure, [GeneratedQuestion], LessonPayload?, [String], String) {
+    func generateTopicAndFirstBatch(topic: String, depth: LearningDepth = .standard) async throws -> (TopicStructure, [GeneratedQuestion], LessonPayload?, [String], String) {
         let prompt = """
         The user wants to learn about: "\(topic)"
 
@@ -46,7 +46,7 @@ actor APIClient {
           "relatedTopics": ["related topic 1", "related topic 2", "related topic 3"],
           "initialLesson": {
             "subtopic": "the first subtopic name",
-            "overview": "3-5 sentence overview rich with specific names, dates, and examples. Not vague — include the who, what, when, and why.",
+            "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples. Not vague — include the who, what, when, and why.",
             "keyFacts": ["Detailed fact with specific names, dates, numbers", "Another specific fact", ...],
             "connections": ["Short Topic Name 1", "Short Topic Name 2"]
           },
@@ -58,7 +58,7 @@ actor APIClient {
               "choices": ["the correct option text", "plausible wrong 1", "plausible wrong 2", "plausible wrong 3"],
               "explanation": "2-4 sentence teaching explanation",
               "subtopic": "which subtopic",
-              "difficulty": 1
+              "difficulty": \(depth.difficultyInt)
             },
             {
               "questionText": "Free response question?",
@@ -67,7 +67,7 @@ actor APIClient {
               "choices": null,
               "explanation": "2-4 sentence teaching explanation",
               "subtopic": "which subtopic",
-              "difficulty": 1
+              "difficulty": \(depth.difficultyInt)
             }
           ]
         }
@@ -100,14 +100,15 @@ actor APIClient {
 
         Requirements:
         - Generate exactly 10 questions ALL about the FIRST subtopic only. Do NOT include questions about any other subtopic.
-        - All questions should be at difficulty level 1 (beginner), progressing from simple recall to slightly harder application
+        - All questions should be at difficulty level \(depth.difficultyInt): \(depth.difficultyDescription)
         - Each question should have 3-5 acceptable answer variations (synonyms, different phrasings, abbreviations)
         - Explanations should be educational, 2-4 sentences with memory hooks
         - Question types: mix of multiple choice and free-response. About 6 should be multiple choice and 4 should be free-response (type-in).
         - For multiple choice questions: include a "choices" array with exactly 4 options (one correct, three plausible wrong answers). Shuffle the correct answer position randomly. The correctAnswer must exactly match one of the choices.
         - For free-response questions: set "choices" to null. These work best for short factual answers (names, dates, numbers).
-        - The initialLesson overview should be 3-5 sentences packed with specific details: names, dates, places, numbers, and concrete examples. Never write vague summaries.
-        - The initialLesson keyFacts should contain 6-8 detailed facts. Each fact MUST include specific names, dates, numbers, or concrete examples. For example, instead of "Early bombers were converted aircraft", write "The Italian Caproni Ca.1 (1914) was among the first purpose-designed bombers, carrying up to 450kg of bombs". No vague generalizations.
+        - The initialLesson overview should be \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers, and concrete examples. Never write vague summaries.
+        - The initialLesson keyFacts should contain \(depth.keyFactsCount) detailed facts. Each fact MUST include specific names, dates, numbers, or concrete examples. For example, instead of "Early bombers were converted aircraft", write "The Italian Caproni Ca.1 (1914) was among the first purpose-designed bombers, carrying up to 450kg of bombs". No vague generalizations.
+        - IMPORTANT: If the topic contains enumerable items (e.g., the Great Lakes, planets in the solar system, US states in a region), ALL items must be included in the lesson regardless of depth level. Depth controls verbosity and question complexity, never completeness of coverage.
         - The initialLesson connections should be 2-3 short topic names (2-4 words each) like "Engine Development" or "Navigation Systems", NOT full sentences
         - relatedTopics: 3-5 broader topic names the user might want to explore next (different from subtopics)
         - Return ONLY the JSON object, no other text
@@ -128,7 +129,8 @@ actor APIClient {
         difficulty: Int,
         previousQuestions: [String],
         focusSubtopic: String? = nil,
-        nextSubtopic: String? = nil
+        nextSubtopic: String? = nil,
+        depth: LearningDepth = .standard
     ) async throws -> ([GeneratedQuestion], LessonPayload?) {
         let subtopicList = subtopics.joined(separator: ", ")
         let previousList = previousQuestions.map { "- \($0)" }.joined(separator: "\n")
@@ -146,12 +148,13 @@ actor APIClient {
             Also include a "nextLesson" field to teach the upcoming subtopic "\(next)":
             "nextLesson": {
               "subtopic": "\(next)",
-              "overview": "3-5 sentence overview rich with specific names, dates, and examples. Not vague — include the who, what, when, and why.",
+              "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples. Not vague — include the who, what, when, and why.",
               "keyFacts": ["Detailed fact with specific names, dates, numbers", ...],
               "connections": ["Short Topic Name 1", "Short Topic Name 2"]
             }
-            The overview must be 3-5 sentences packed with specific details: names, dates, places, numbers, concrete examples. Never vague.
-            Each keyFact (6-8 total) MUST include specific names, dates, numbers, or concrete examples. No vague generalizations like "early versions were simple". Instead: "The Wright Model B (1910) was the first aircraft purchased by the US military, costing $25,000".
+            The overview must be \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers, concrete examples. Never vague.
+            Each keyFact (\(depth.keyFactsCount) total) MUST include specific names, dates, numbers, or concrete examples. No vague generalizations like "early versions were simple". Instead: "The Wright Model B (1910) was the first aircraft purchased by the US military, costing $25,000".
+            IMPORTANT: If the subtopic contains enumerable items (e.g., specific lakes, planets, states), ALL items must be listed. Depth controls verbosity, never completeness.
             If the subtopic is a specific item (a mountain, a president, a country, etc.), the lesson should comprehensively cover that item: key stats, history, notable facts, and what makes it significant.
             connections: 2-3 short topic names (2-4 words each) like "Radar Technology" or "Aerial Tactics", NOT full sentences
             """
@@ -200,7 +203,7 @@ actor APIClient {
 
         Requirements:
         - Exactly 10 questions
-        - Difficulty \(difficulty): \(difficultyDescription(difficulty))
+        - Difficulty \(difficulty): \(depth.difficultyDescription)
         - Questions should progress from easier recall to harder application within the batch
         - 3-5 acceptable answer variations per question
         - Do not repeat any previously asked question
@@ -354,14 +357,4 @@ actor APIClient {
         }
     }
 
-    private func difficultyDescription(_ level: Int) -> String {
-        switch level {
-        case 1: return "Basic recall, definitions, simple facts"
-        case 2: return "Understanding concepts, simple applications"
-        case 3: return "Analysis, comparing concepts, moderate complexity"
-        case 4: return "Synthesis, complex applications, nuanced understanding"
-        case 5: return "Expert-level, edge cases, deep critical thinking"
-        default: return "Moderate difficulty"
-        }
-    }
 }

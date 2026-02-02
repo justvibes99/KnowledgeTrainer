@@ -102,6 +102,28 @@ struct SettingsView: View {
                             }
                         }
 
+                        // Learning Depth Section
+                        settingsSection(title: "Learning Depth") {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Controls lesson detail and question complexity")
+                                    .font(.system(.caption2, design: .monospaced))
+                                    .foregroundColor(.flatSecondaryText)
+
+                                HStack(spacing: 8) {
+                                    ForEach(LearningDepth.allCases, id: \.self) { depth in
+                                        BrutalChip(
+                                            title: depth.displayName,
+                                            isSelected: viewModel.learningDepth == depth,
+                                            color: .brutalTeal
+                                        ) {
+                                            viewModel.learningDepth = depth
+                                            viewModel.saveLearningDepth()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         // Reminders Section
                         settingsSection(title: "Daily Reminder") {
                             VStack(alignment: .leading, spacing: 12) {

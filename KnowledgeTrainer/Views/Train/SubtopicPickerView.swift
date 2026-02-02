@@ -398,7 +398,7 @@ struct LearningPathView: View {
         isCreatingBranch = true
         Task {
             do {
-                let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: name)
+                let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: name, depth: LearningDepth.current)
 
                 let newTopic = Topic(
                     name: structure.name,

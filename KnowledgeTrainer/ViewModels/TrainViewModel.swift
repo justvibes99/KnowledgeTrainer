@@ -25,7 +25,7 @@ final class TrainViewModel {
         errorMessage = nil
 
         do {
-            let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: input)
+            let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: input, depth: LearningDepth.current)
 
             let topic = Topic(
                 name: structure.name,

@@ -17,7 +17,7 @@ struct ReviewSessionView: View {
                     questionsAnswered: viewModel.questionsAnswered,
                     correctAnswers: viewModel.correctAnswers,
                     accuracy: viewModel.sessionAccuracy,
-                    difficultyReached: 0,
+                    depthLabel: LearningDepth.current.displayName,
                     wrongAnswers: viewModel.wrongAnswers,
                     onDone: { dismiss() }
                 )

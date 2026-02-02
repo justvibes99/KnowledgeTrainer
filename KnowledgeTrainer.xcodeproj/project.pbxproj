@@ -45,6 +45,7 @@
 		AA1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift */; };
 		AA1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift */; };
 		AA1B2C3D4E5F6A7B00000004 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000004 /* Achievement.swift */; };
+		CC2A3B4C5D6E7F8900000002 /* LearningDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */; };
 		AA1B2C3D4E5F6A7B00000005 /* GamificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000005 /* GamificationService.swift */; };
 		AA1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift */; };
 		AA1B2C3D4E5F6A7B00000007 /* RankCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000007 /* RankCardView.swift */; };
@@ -121,6 +122,7 @@
 		BB1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementDefinition.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarProfile.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000004 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningDepth.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000005 /* GamificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationService.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPProgressBar.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000007 /* RankCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCardView.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				BB1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift */,
 				BB1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift */,
 				BB1B2C3D4E5F6A7B00000004 /* Achievement.swift */,
+				CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -463,6 +466,7 @@
 				AA1B2C3D4E5F6A7B0000000B /* ShareableCardView.swift in Sources */,
 				AA1B2C3D4E5F6A7B0000000C /* SessionXPSummaryView.swift in Sources */,
 				AA1B2C3D4E5F6A7B0000000D /* AchievementsListView.swift in Sources */,
+				CC2A3B4C5D6E7F8900000002 /* LearningDepth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

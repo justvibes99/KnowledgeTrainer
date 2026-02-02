@@ -8,6 +8,7 @@ final class ProfileViewModel {
     var showResetConfirmation: Bool = false
 
     // Settings
+    var learningDepth: LearningDepth = LearningDepth.current
     var timerEnabled: Bool = UserDefaults.standard.bool(forKey: "timerEnabled")
     var timerDuration: Int = UserDefaults.standard.integer(forKey: "timerDuration") == 0 ? 15 : UserDefaults.standard.integer(forKey: "timerDuration")
     var reminderEnabled: Bool = UserDefaults.standard.bool(forKey: "reminderEnabled")
@@ -20,6 +21,10 @@ final class ProfileViewModel {
         components.minute = 0
         return Calendar.current.date(from: components) ?? Date()
     }()
+
+    func saveLearningDepth() {
+        UserDefaults.standard.set(learningDepth.rawValue, forKey: "learningDepth")
+    }
 
     func saveTimerSettings() {
         UserDefaults.standard.set(timerEnabled, forKey: "timerEnabled")
@@ -73,6 +78,7 @@ final class ProfileViewModel {
             try? KeychainManager.delete()
             UserDefaults.standard.removeObject(forKey: "timerEnabled")
             UserDefaults.standard.removeObject(forKey: "timerDuration")
+            UserDefaults.standard.removeObject(forKey: "learningDepth")
             UserDefaults.standard.removeObject(forKey: "reminderEnabled")
             UserDefaults.standard.removeObject(forKey: "reminderTime")
             NotificationManager.cancelDailyReminder()

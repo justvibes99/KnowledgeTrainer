@@ -36,9 +36,7 @@ final class DrillSessionViewModel {
     var questionsAnswered: Int = 0
     var correctAnswers: Int = 0
     var currentStreak: Int = 0
-    var consecutiveCorrect: Int = 0
-    var consecutiveWrong: Int = 0
-    var currentDifficulty: Int = 1
+    var learningDepth: LearningDepth = .standard
 
     // Per-Subtopic Session Stats
     var subtopicSessionStats: [String: (answered: Int, correct: Int)] = [:]
@@ -131,6 +129,7 @@ final class DrillSessionViewModel {
         self.topic = topic
         self.selectedSubtopics = subtopics
         self.questionFormat = questionFormat
+        self.learningDepth = LearningDepth.current
         self.questionQueue = filterQuestions(initialQuestions)
         self.timerEnabled = timerEnabled
         self.timerDuration = timerDuration
@@ -331,23 +330,14 @@ final class DrillSessionViewModel {
         if isCorrect {
             correctAnswers += 1
             currentStreak += 1
-            consecutiveCorrect += 1
-            consecutiveWrong = 0
             stats.correct += 1
             HapticManager.success()
 
             if isServingReview, let reviewItem = currentReviewItem {
                 SpacedRepetitionEngine.processCorrectReview(item: reviewItem)
             }
-
-            if consecutiveCorrect >= 3 && currentDifficulty < 5 {
-                currentDifficulty += 1
-                consecutiveCorrect = 0
-            }
         } else {
             currentStreak = 0
-            consecutiveCorrect = 0
-            consecutiveWrong += 1
             HapticManager.error()
 
             wrongQuestions.append((question: question, userAnswer: answer))
@@ -364,11 +354,6 @@ final class DrillSessionViewModel {
                     subtopic: question.subtopic
                 )
                 modelContext.insert(reviewItem)
-            }
-
-            if consecutiveWrong >= 2 && currentDifficulty > 1 {
-                currentDifficulty -= 1
-                consecutiveWrong = 0
             }
         }
 
@@ -478,7 +463,7 @@ final class DrillSessionViewModel {
         gamificationService?.onSessionEnd(
             questionsAnswered: questionsAnswered,
             correctAnswers: correctAnswers,
-            maxDifficulty: currentDifficulty
+            maxDifficulty: learningDepth.difficultyInt
         )
         sessionEnded = true
     }
@@ -528,10 +513,11 @@ final class DrillSessionViewModel {
             let (newQuestions, nextLesson) = try await APIClient.shared.generateQuestionBatch(
                 topic: topic.name,
                 subtopics: subtopicsToSend,
-                difficulty: currentDifficulty,
+                difficulty: learningDepth.difficultyInt,
                 previousQuestions: askedQuestions,
                 focusSubtopic: focusSubtopic,
-                nextSubtopic: nextSub
+                nextSubtopic: nextSub,
+                depth: learningDepth
             )
             questionQueue.append(contentsOf: filterQuestions(newQuestions))
 

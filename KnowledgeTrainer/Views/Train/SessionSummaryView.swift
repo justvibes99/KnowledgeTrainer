@@ -4,7 +4,7 @@ struct SessionSummaryView: View {
     let questionsAnswered: Int
     let correctAnswers: Int
     let accuracy: Double
-    let difficultyReached: Int
+    let depthLabel: String
     let wrongAnswers: [(question: GeneratedQuestion, userAnswer: String)]
     var subtopicStats: [String: (answered: Int, correct: Int)] = [:]
     var masteredThisSession: [String] = []
@@ -32,7 +32,7 @@ struct SessionSummaryView: View {
 
                 HStack(spacing: 12) {
                     statCard(label: "Correct", value: "\(correctAnswers)", color: .brutalMint)
-                    statCard(label: "Difficulty", value: "\(difficultyReached)", color: .brutalLavender)
+                    statCard(label: "Depth", value: depthLabel, color: .brutalLavender)
                 }
                 .padding(.horizontal, 24)
 
