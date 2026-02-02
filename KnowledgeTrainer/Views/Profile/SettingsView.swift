@@ -17,15 +17,14 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                        Text("SETTINGS")
-                            .font(.system(size: 28, weight: .bold, design: .default))
-                            .tracking(1.5)
+                        Text("Settings")
+                            .font(.system(size: 28, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
                             .padding(.top, 16)
 
                         // API Key Section
-                        settingsSection(title: "API KEY") {
+                        settingsSection(title: "API Key") {
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
                                     if showAPIKey {
@@ -34,24 +33,25 @@ struct SettingsView: View {
                                     } else {
                                         Text(KeychainManager.hasKey() ? "sk-ant-****" : "No key set")
                                             .font(.system(.caption, design: .monospaced))
-                                            .foregroundColor(.brutalBlack.opacity(0.6))
+                                            .foregroundColor(.flatSecondaryText)
                                     }
                                     Spacer()
                                     Button(action: { showAPIKey.toggle() }) {
                                         Image(systemName: showAPIKey ? "eye.slash" : "eye")
-                                            .foregroundColor(.brutalBlack)
+                                            .foregroundColor(.accentColor)
                                     }
                                 }
                                 .padding(12)
-                                .background(Color.white)
+                                .background(Color.flatSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
-                                    Rectangle()
-                                        .stroke(Color.brutalBlack, lineWidth: 2)
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.flatBorder, lineWidth: 1)
                                 )
 
                                 if !apiKeyStatus.isEmpty {
                                     Text(apiKeyStatus)
-                                        .font(.system(.caption, design: .default, weight: .bold))
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -67,24 +67,22 @@ struct SettingsView: View {
                         }
 
                         // Timer Section
-                        settingsSection(title: "TIMER") {
+                        settingsSection(title: "Timer") {
                             VStack(alignment: .leading, spacing: 12) {
                                 Toggle(isOn: Binding(
                                     get: { viewModel.timerEnabled },
                                     set: { viewModel.timerEnabled = $0; viewModel.saveTimerSettings() }
                                 )) {
-                                    Text("ENABLE TIMER")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Enable Timer")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .tint(.brutalTeal)
 
                                 if viewModel.timerEnabled {
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text("DURATION")
-                                            .font(.system(.caption2, design: .default, weight: .bold))
-                                            .tracking(1)
+                                        Text("Duration")
+                                            .font(.system(.caption2, design: .default, weight: .medium))
                                             .foregroundColor(.brutalBlack)
 
                                         HStack(spacing: 8) {
@@ -105,7 +103,7 @@ struct SettingsView: View {
                         }
 
                         // Reminders Section
-                        settingsSection(title: "DAILY REMINDER") {
+                        settingsSection(title: "Daily Reminder") {
                             VStack(alignment: .leading, spacing: 12) {
                                 Toggle(isOn: Binding(
                                     get: { viewModel.reminderEnabled },
@@ -119,30 +117,29 @@ struct SettingsView: View {
                                         viewModel.saveReminderSettings()
                                     }
                                 )) {
-                                    Text("ENABLE REMINDER")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Enable Reminder")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .tint(.brutalTeal)
 
                                 if viewModel.reminderEnabled {
                                     DatePicker(
-                                        "TIME",
+                                        "Time",
                                         selection: Binding(
                                             get: { viewModel.reminderTime },
                                             set: { viewModel.reminderTime = $0; viewModel.saveReminderSettings() }
                                         ),
                                         displayedComponents: .hourAndMinute
                                     )
-                                    .font(.system(.caption, design: .default, weight: .bold))
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                 }
                             }
                         }
 
                         // Reset Section
-                        settingsSection(title: "DANGER ZONE") {
+                        settingsSection(title: "Danger Zone") {
                             BrutalButton(title: "Reset All Data", color: .brutalCoral, fullWidth: true) {
                                 showResetAlert = true
                             }
@@ -154,14 +151,8 @@ struct SettingsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { dismiss() }) {
-                        Text("DONE")
-                            .font(.system(.body, design: .default, weight: .bold))
-                            .foregroundColor(.brutalBlack)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+                    Button("Done") { dismiss() }
+                }            }
             .brutalAlert(
                 isPresented: $showResetAlert,
                 title: "Reset All Data?",
@@ -184,22 +175,18 @@ struct SettingsView: View {
     private func settingsSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(1.5)
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             content()
                 .padding(16)
-                .background(Color.white)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
         }
         .padding(.horizontal, 24)
     }

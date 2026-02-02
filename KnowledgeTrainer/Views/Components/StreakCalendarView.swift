@@ -20,29 +20,17 @@ struct StreakCalendarView: View {
         }
     }
 
-    private func questionsCount(on date: Date) -> Int {
-        let calendar = Calendar.current
-        return dailyStreaks
-            .first { calendar.isDate($0.date, inSameDayAs: date) }?
-            .questionsCompleted ?? 0
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("LAST 28 DAYS")
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(1.2)
-                .foregroundColor(.brutalBlack)
+            Text("Last 28 Days")
+                .font(.system(.caption, design: .default, weight: .medium))
+                .foregroundColor(.flatSecondaryText)
 
             LazyVGrid(columns: columns, spacing: 4) {
                 ForEach(last28Days, id: \.self) { date in
                     let active = hasActivity(on: date)
-                    Rectangle()
-                        .fill(active ? Color.brutalTeal : Color.white)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 1)
-                        )
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(active ? Color.brutalTeal : Color.flatSurfaceSubtle)
                         .frame(height: 24)
                 }
             }

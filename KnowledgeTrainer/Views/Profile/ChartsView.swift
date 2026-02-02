@@ -12,15 +12,14 @@ struct ChartsView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    Text("CHARTS")
-                        .font(.system(size: 28, weight: .bold, design: .default))
-                        .tracking(1.5)
+                    Text("Charts")
+                        .font(.system(size: 28, weight: .semibold, design: .default))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
 
                     // Accuracy Over Time
-                    chartSection(title: "ACCURACY OVER TIME") {
+                    chartSection(title: "Accuracy Over Time") {
                         let data = StatsCalculator.accuracyOverTime(records: records)
                         if data.isEmpty {
                             emptyState
@@ -50,7 +49,7 @@ struct ChartsView: View {
                     }
 
                     // Topic Strength by Category
-                    chartSection(title: "TOPIC STRENGTH") {
+                    chartSection(title: "Topic Strength") {
                         let categoryData = categoryStrengthData()
 
                         if categoryData.isEmpty {
@@ -65,7 +64,7 @@ struct ChartsView: View {
                                     .foregroundStyle(barColor(for: entry.accuracy))
                                     .annotation(position: .trailing, spacing: 4) {
                                         Text("\(Int(entry.accuracy))%")
-                                            .font(.system(.caption2, design: .monospaced, weight: .bold))
+                                            .font(.system(.caption2, design: .monospaced, weight: .semibold))
                                             .foregroundColor(.brutalBlack)
                                     }
                                 }
@@ -79,7 +78,7 @@ struct ChartsView: View {
                     }
 
                     // Daily Activity
-                    chartSection(title: "DAILY ACTIVITY") {
+                    chartSection(title: "Daily Activity") {
                         let activityData = StatsCalculator.dailyActivity(records: records)
                         let hasActivity = activityData.contains { $0.1 > 0 }
 
@@ -110,22 +109,18 @@ struct ChartsView: View {
     private func chartSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(1.5)
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             content()
                 .padding(16)
-                .background(Color.white)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.brutalBlack, lineWidth: 1)
                 )
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
         }
         .padding(.horizontal, 24)
     }
@@ -133,7 +128,7 @@ struct ChartsView: View {
     private var emptyState: some View {
         Text("Not enough data yet")
             .font(.system(.caption, design: .default))
-            .foregroundColor(.brutalBlack.opacity(0.6))
+            .foregroundColor(.flatSecondaryText)
             .frame(maxWidth: .infinity, minHeight: 100)
     }
 

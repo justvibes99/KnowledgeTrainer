@@ -12,7 +12,7 @@ struct BrutalAlert: ViewModifier {
             content
 
             if isPresented {
-                Color.brutalBlack.opacity(0.4)
+                Color.brutalBlack.opacity(0.3)
                     .ignoresSafeArea()
                     .onTapGesture {
                         if secondaryButton != nil {
@@ -21,15 +21,14 @@ struct BrutalAlert: ViewModifier {
                     }
 
                 VStack(spacing: 20) {
-                    Text(title.uppercased())
-                        .font(.system(.body, design: .default, weight: .bold))
-                        .tracking(1.5)
+                    Text(title)
+                        .font(.system(.body, design: .default, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                         .multilineTextAlignment(.center)
 
                     Text(message)
                         .font(.system(.subheadline, design: .default))
-                        .foregroundColor(.brutalBlack)
+                        .foregroundColor(.flatSecondaryText)
                         .multilineTextAlignment(.center)
 
                     VStack(spacing: 10) {
@@ -45,7 +44,7 @@ struct BrutalAlert: ViewModifier {
                         if let secondary = secondaryButton {
                             BrutalButton(
                                 title: secondary.title,
-                                color: .white,
+                                color: .flatSurfaceSubtle,
                                 fullWidth: true
                             ) {
                                 secondary.action()
@@ -55,18 +54,15 @@ struct BrutalAlert: ViewModifier {
                     }
                 }
                 .padding(24)
-                .background(Color.brutalBackground)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 8, y: 8)
-                )
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 8)
                 .padding(.horizontal, 32)
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .transition(.scale(scale: 0.95).combined(with: .opacity))
             }
         }
         .animation(.easeInOut(duration: 0.15), value: isPresented)

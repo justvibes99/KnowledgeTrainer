@@ -11,17 +11,16 @@ struct SessionXPSummaryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("XP EARNED")
+                Text("XP Earned")
                     .font(.headline)
-                    .fontWeight(.black)
-                    .tracking(2)
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.brutalBlack)
 
                 Spacer()
 
                 Text("+\(totalXP) XP")
                     .font(.title3)
-                    .fontWeight(.black)
+                    .fontWeight(.semibold)
                     .monospacedDigit()
                     .foregroundStyle(Color.brutalTeal)
             }
@@ -29,20 +28,20 @@ struct SessionXPSummaryView: View {
             if isPerfectSession {
                 HStack(spacing: 8) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 16, weight: .bold))
-                    Text("PERFECT SESSION")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Perfect Session")
                         .font(.caption)
-                        .fontWeight(.black)
-                        .tracking(1.5)
+                        .fontWeight(.semibold)
                 }
                 .foregroundStyle(Color.brutalBlack)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity)
                 .background(Color.brutalYellow)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
             }
 
@@ -50,7 +49,7 @@ struct SessionXPSummaryView: View {
                 HStack {
                     Text("+\(event.amount) XP")
                         .font(.subheadline)
-                        .fontWeight(.bold)
+                        .fontWeight(.medium)
                         .monospacedDigit()
                         .foregroundStyle(Color.brutalTeal)
                         .frame(width: 70, alignment: .leading)

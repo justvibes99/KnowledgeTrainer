@@ -18,49 +18,47 @@ struct SessionSummaryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                Text("SESSION COMPLETE")
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .tracking(2)
+                Text("Session Complete")
+                    .font(.system(size: 28, weight: .semibold, design: .default))
                     .foregroundColor(.brutalBlack)
                     .padding(.top, 24)
 
                 // Stats Cards
                 HStack(spacing: 12) {
-                    statCard(label: "ANSWERED", value: "\(questionsAnswered)", color: .brutalTeal)
-                    statCard(label: "ACCURACY", value: "\(Int(accuracy))%", color: .brutalYellow)
+                    statCard(label: "Answered", value: "\(questionsAnswered)", color: .brutalTeal)
+                    statCard(label: "Accuracy", value: "\(Int(accuracy))%", color: .brutalYellow)
                 }
                 .padding(.horizontal, 24)
 
                 HStack(spacing: 12) {
-                    statCard(label: "CORRECT", value: "\(correctAnswers)", color: .brutalMint)
-                    statCard(label: "DIFFICULTY", value: "\(difficultyReached)", color: .brutalLavender)
+                    statCard(label: "Correct", value: "\(correctAnswers)", color: .brutalMint)
+                    statCard(label: "Difficulty", value: "\(difficultyReached)", color: .brutalLavender)
                 }
                 .padding(.horizontal, 24)
 
                 // Mastered This Session
                 if !masteredThisSession.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("MASTERED THIS SESSION")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Mastered This Session")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(masteredThisSession, id: \.self) { subtopic in
                             HStack(spacing: 8) {
                                 Image(systemName: "checkmark.seal.fill")
                                     .foregroundColor(.brutalTeal)
-                                Text(subtopic.uppercased())
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(0.8)
+                                Text(subtopic)
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.brutalTeal.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalTeal, lineWidth: 2)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.brutalTeal, lineWidth: 1)
                             )
                         }
                     }
@@ -79,18 +77,16 @@ struct SessionSummaryView: View {
                 // Subtopic Breakdown
                 if !subtopicStats.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("SUBTOPICS PRACTICED")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Subtopics Practiced")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(Array(subtopicStats.keys.sorted()), id: \.self) { subtopic in
                             if let stats = subtopicStats[subtopic] {
                                 let acc = stats.answered > 0 ? Int(Double(stats.correct) / Double(stats.answered) * 100) : 0
                                 HStack {
-                                    Text(subtopic.uppercased())
-                                        .font(.system(.caption2, design: .default, weight: .bold))
-                                        .tracking(0.8)
+                                    Text(subtopic)
+                                        .font(.system(.caption2, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
 
@@ -107,10 +103,11 @@ struct SessionSummaryView: View {
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .background(Color.white)
+                                .background(Color.flatSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
-                                    Rectangle()
-                                        .stroke(Color.brutalBlack, lineWidth: 2)
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.flatBorder, lineWidth: 1)
                                 )
                             }
                         }
@@ -121,33 +118,32 @@ struct SessionSummaryView: View {
                 // Wrong Answers
                 if !wrongAnswers.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("REVIEW THESE")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Review These")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(Array(wrongAnswers.enumerated()), id: \.offset) { _, item in
                             BrutalCard(backgroundColor: .white) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(item.question.questionText)
-                                        .font(.system(.body, design: .default, weight: .bold))
+                                        .font(.system(.body, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
 
                                     HStack(spacing: 4) {
                                         Text("Your answer:")
                                             .font(.system(.caption, design: .default))
-                                            .foregroundColor(.brutalBlack.opacity(0.6))
+                                            .foregroundColor(.flatSecondaryText)
                                         Text(item.userAnswer.isEmpty ? "(no answer)" : item.userAnswer)
-                                            .font(.system(.caption, design: .default, weight: .bold))
+                                            .font(.system(.caption, design: .default, weight: .medium))
                                             .foregroundColor(.brutalCoral)
                                     }
 
                                     HStack(spacing: 4) {
                                         Text("Correct:")
                                             .font(.system(.caption, design: .default))
-                                            .foregroundColor(.brutalBlack.opacity(0.6))
+                                            .foregroundColor(.flatSecondaryText)
                                         Text(item.question.correctAnswer)
-                                            .font(.system(.caption, design: .default, weight: .bold))
+                                            .font(.system(.caption, design: .default, weight: .medium))
                                             .foregroundColor(.brutalTeal)
                                     }
 
@@ -175,24 +171,20 @@ struct SessionSummaryView: View {
     private func statCard(label: String, value: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 32, weight: .bold, design: .monospaced))
+                .font(.system(size: 32, weight: .semibold, design: .monospaced))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(1)
+                .font(.system(.caption2, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
         .background(color)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.flatBorder, lineWidth: 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 }

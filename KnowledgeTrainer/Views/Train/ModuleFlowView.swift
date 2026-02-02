@@ -35,6 +35,8 @@ struct ModuleFlowView: View {
     @State private var showQueueToast = false
     @State private var questionFormat: QuestionFormat = .mixed
     @State private var showFormatPicker = false
+    @State private var tappedRelatedTopic: String?
+    @State private var showRelatedTopicAction = false
 
     private var subtopicProgressItem: SubtopicProgress? {
         allProgress.first { $0.topicID == topic.id && $0.subtopicName == subtopicName }
@@ -64,9 +66,8 @@ struct ModuleFlowView: View {
                     ProgressView()
                         .scaleEffect(1.5)
                         .tint(.brutalBlack)
-                    Text("PREPARING LESSON...")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
+                    Text("Preparing lesson...")
+                        .font(.system(.caption, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             case .lesson:
@@ -81,9 +82,8 @@ struct ModuleFlowView: View {
             if showQueueToast {
                 VStack {
                     Spacer()
-                    Text("ADDED TO QUEUE")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
+                    Text("Added to Queue")
+                        .font(.system(.caption, design: .default, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
@@ -124,65 +124,108 @@ struct ModuleFlowView: View {
                     .onTapGesture { showFormatPicker = false }
 
                 VStack(spacing: 16) {
-                    Text("QUESTION FORMAT")
-                        .font(.system(.body, design: .default, weight: .bold))
-                        .tracking(1.5)
+                    Text("Question Format")
+                        .font(.system(.body, design: .default, weight: .semibold))
                         .foregroundColor(.brutalBlack)
 
-                    BrutalButton(title: "Multiple Choice", color: .brutalYellow, fullWidth: true) {
-                        showFormatPicker = false
-                        questionFormat = .multipleChoice
-                        markLessonViewed()
-                        startQuizPhase()
-                    }
-
-                    BrutalButton(title: "Short Answer", color: .brutalTeal, fullWidth: true) {
-                        showFormatPicker = false
-                        questionFormat = .shortAnswer
-                        markLessonViewed()
-                        startQuizPhase()
-                    }
-
-                    BrutalButton(title: "Mixed", color: .white, fullWidth: true) {
-                        showFormatPicker = false
-                        questionFormat = .mixed
-                        markLessonViewed()
-                        startQuizPhase()
+                    ForEach(["Multiple Choice", "Short Answer", "Mixed"], id: \.self) { format in
+                        Button(action: {
+                            showFormatPicker = false
+                            questionFormat = format == "Multiple Choice" ? .multipleChoice : format == "Short Answer" ? .shortAnswer : .mixed
+                            markLessonViewed()
+                            startQuizPhase()
+                        }) {
+                            Text(format)
+                                .font(.system(.body, design: .default, weight: .medium))
+                                .foregroundColor(.brutalBlack)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color.flatSurfaceSubtle)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
+                        }
+                        .buttonStyle(PressableButtonStyle())
                     }
                 }
                 .padding(24)
-                .background(Color.brutalBackground)
-                .overlay(Rectangle().stroke(Color.brutalBlack, lineWidth: 3))
-                .background(Rectangle().fill(Color.brutalBlack).offset(x: 8, y: 8))
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.flatBorder, lineWidth: 1))
+                .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
                 .padding(.horizontal, 32)
                 .transition(.scale(scale: 0.9).combined(with: .opacity))
             }
+
+            // Related topic action popup
+            if showRelatedTopicAction {
+                Color.brutalBlack.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { showRelatedTopicAction = false }
+
+                VStack(spacing: 16) {
+                    Text(tappedRelatedTopic ?? "")
+                        .font(.system(.body, design: .default, weight: .semibold))
+                        .foregroundColor(.brutalBlack)
+                        .multilineTextAlignment(.center)
+
+                    Button(action: {
+                        showRelatedTopicAction = false
+                        if let name = tappedRelatedTopic {
+                            createBranchTopic(name: name)
+                        }
+                    }) {
+                        Text("Go Now")
+                            .font(.system(.body, design: .default, weight: .medium))
+                            .foregroundColor(.brutalBlack)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.flatSurfaceSubtle)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
+                    }
+                    .buttonStyle(PressableButtonStyle())
+
+                    Button(action: {
+                        showRelatedTopicAction = false
+                        if let name = tappedRelatedTopic {
+                            queueRelatedTopic(name: name)
+                        }
+                    }) {
+                        Text("Add to List")
+                            .font(.system(.body, design: .default, weight: .medium))
+                            .foregroundColor(.brutalBlack)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.flatSurfaceSubtle)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
+                    }
+                    .buttonStyle(PressableButtonStyle())
+                }
+                .padding(24)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.flatBorder, lineWidth: 1))
+                .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+                .padding(.horizontal, 32)
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .zIndex(40)
+            }
         }
         .animation(.easeInOut(duration: 0.15), value: showFormatPicker)
+        .animation(.easeInOut(duration: 0.15), value: showRelatedTopicAction)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.body.bold())
-                        .foregroundColor(.brutalBlack)
-                }
-                .buttonStyle(.plain)
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
+            ToolbarItem(placement: .cancellationAction) {
+                Button {
                     if phase == .quiz && viewModel.questionsAnswered > 0 {
                         showEndConfirmation = true
                     } else {
                         dismiss()
                     }
-                }) {
+                } label: {
                     Image(systemName: "xmark")
-                        .font(.body.bold())
-                        .foregroundColor(.brutalBlack)
                 }
-                .buttonStyle(.plain)
             }
         }
         .brutalAlert(
@@ -235,17 +278,8 @@ struct ModuleFlowView: View {
                     VStack(spacing: 20) {
                         // Header
                         VStack(spacing: 8) {
-                            Text("LESSON")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(2)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 6)
-                                .background(Color.brutalBlack)
-
-                            Text(subtopicName.uppercased())
-                                .font(.system(size: 22, weight: .bold, design: .default))
-                                .tracking(1)
+                            Text(subtopicName)
+                                .font(.system(size: 22, weight: .semibold, design: .default))
                                 .foregroundColor(.brutalBlack)
                                 .multilineTextAlignment(.center)
                         }
@@ -254,10 +288,9 @@ struct ModuleFlowView: View {
 
                         // Overview
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("OVERVIEW")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.5)
-                                .foregroundColor(.brutalBlack)
+                            Text("Overview")
+                                .font(.system(.caption, design: .default, weight: .medium))
+                                .foregroundColor(.flatSecondaryText)
 
                             Text(progress.lessonOverview)
                                 .font(.system(.body, design: .default))
@@ -266,24 +299,25 @@ struct ModuleFlowView: View {
                         }
                         .padding(16)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.brutalMint)
-                        .overlay(Rectangle().stroke(Color.brutalBlack, lineWidth: 3))
+                        .background(Color.flatSurfaceSubtle)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
                         .padding(.horizontal, 20)
 
                         // Key Facts
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("KEY FACTS")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.5)
+                            Text("Key Facts")
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalBlack)
 
                             ForEach(Array(progress.lessonKeyFacts.enumerated()), id: \.offset) { index, fact in
                                 HStack(alignment: .top, spacing: 10) {
                                     Text("\(index + 1)")
-                                        .font(.system(.caption, design: .monospaced, weight: .bold))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.white)
                                         .frame(width: 24, height: 24)
-                                        .background(Color.brutalBlack)
+                                        .background(Color.flatSecondaryText)
+                                        .clipShape(RoundedRectangle(cornerRadius: 4))
 
                                     Text(fact)
                                         .font(.system(.subheadline, design: .default))
@@ -300,7 +334,7 @@ struct ModuleFlowView: View {
                         }
 
                         // Start Quiz Button
-                        BrutalButton(title: "Start Quiz", color: .brutalYellow, fullWidth: true) {
+                        BrutalButton(title: "Start Quiz", gradient: LinearGradient(colors: [.brutalYellow, .brutalTeal], startPoint: .leading, endPoint: .trailing), fullWidth: true) {
                             showFormatPicker = true
                         }
                         .padding(.horizontal, 20)
@@ -332,9 +366,8 @@ struct ModuleFlowView: View {
                 ProgressView()
                     .scaleEffect(1.5)
                     .tint(.brutalBlack)
-                Text("LOADING QUESTIONS...")
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(1.2)
+                Text("Loading questions...")
+                    .font(.system(.caption, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
             }
         } else if let question = viewModel.currentQuestion {
@@ -381,9 +414,8 @@ struct ModuleFlowView: View {
                                     .foregroundColor(.brutalBlack)
                                     .padding(.top, 8)
                             } label: {
-                                Text("REVIEW")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(1.2)
+                                Text("Review")
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
 
@@ -399,23 +431,21 @@ struct ModuleFlowView: View {
                         VStack(spacing: 2) {
                             if viewModel.comboTier != .none {
                                 Text(viewModel.comboTier.label)
-                                    .font(.system(.caption, design: .monospaced, weight: .black))
-                                    .tracking(1)
+                                    .font(.system(.caption, design: .monospaced, weight: .semibold))
                                     .foregroundColor(viewModel.comboTier.color)
                                     .scaleEffect(viewModel.comboTier == .five ? 1.1 : viewModel.comboTier == .ten ? 1.2 : 1.0)
                                     .animation(.spring(response: 0.2, dampingFraction: 0.5), value: viewModel.comboTier)
                             } else {
                                 Text("\(viewModel.currentStreak)")
-                                    .font(.system(.body, design: .monospaced, weight: .bold))
+                                    .font(.system(.body, design: .monospaced, weight: .semibold))
                                     .foregroundColor(.brutalBlack)
                             }
-                            Text("STREAK")
-                                .font(.system(.caption2, design: .default, weight: .bold))
-                                .tracking(0.8)
-                                .foregroundColor(.brutalBlack.opacity(0.6))
+                            Text("Streak")
+                                .font(.system(.caption2, design: .default, weight: .medium))
+                                .foregroundColor(Color.flatSecondaryText)
                         }
-                        statItem(label: "ACCURACY", value: "\(Int(viewModel.sessionAccuracy))%")
-                        statItem(label: "PROGRESS", value: "\(viewModel.questionsAnswered)/\(viewModel.maxQuestions)")
+                        statItem(label: "Accuracy", value: "\(Int(viewModel.sessionAccuracy))%")
+                        statItem(label: "Progress", value: "\(viewModel.questionsAnswered)/\(viewModel.maxQuestions)")
                     }
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -456,14 +486,12 @@ struct ModuleFlowView: View {
             Color.brutalBlack.opacity(0.6).ignoresSafeArea()
 
             VStack(spacing: 24) {
-                Text("MASTERED")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .tracking(3)
+                Text("Mastered")
+                    .font(.system(size: 20, weight: .semibold, design: .default))
                     .foregroundColor(.brutalBlack)
 
-                Text(viewModel.masteredSubtopicName.uppercased())
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .tracking(1.5)
+                Text(viewModel.masteredSubtopicName)
+                    .font(.system(size: 28, weight: .semibold, design: .default))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.center)
 
@@ -472,10 +500,9 @@ struct ModuleFlowView: View {
                     .foregroundColor(.brutalTeal)
 
                 if let next = viewModel.nextSubtopicName {
-                    Text("NEXT UP: \(next.uppercased())")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
-                        .foregroundColor(.brutalBlack.opacity(0.7))
+                    Text("Next up: \(next)")
+                        .font(.system(.caption, design: .default, weight: .medium))
+                        .foregroundColor(Color.flatSecondaryText)
                 }
 
                 BrutalButton(
@@ -488,16 +515,13 @@ struct ModuleFlowView: View {
                 }
             }
             .padding(32)
-            .background(Color.brutalYellow)
+            .background(Color.flatSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
-                Rectangle()
-                    .stroke(Color.brutalBlack, lineWidth: 4)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.flatBorder, lineWidth: 1)
             )
-            .background(
-                Rectangle()
-                    .fill(Color.brutalBlack)
-                    .offset(x: 8, y: 8)
-            )
+            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
             .padding(.horizontal, 32)
         }
     }
@@ -507,31 +531,28 @@ struct ModuleFlowView: View {
     @ViewBuilder
     private func relatedChipsSection(connections: [String]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("RELATED TOPICS")
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(1.5)
+            Text("Related Topics")
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             ForEach(connections, id: \.self) { connection in
-                Text(connection.uppercased())
-                    .font(.system(.caption2, design: .default, weight: .bold))
-                    .tracking(0.5)
+                Text(connection)
+                    .font(.system(.caption2, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
                     .lineLimit(2)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.brutalMint)
+                    .background(Color.brutalTeal.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.brutalTeal.opacity(0.3), lineWidth: 1)
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        createBranchTopic(name: connection)
-                    }
-                    .onLongPressGesture {
-                        queueRelatedTopic(name: connection)
+                        tappedRelatedTopic = connection
+                        showRelatedTopicAction = true
                     }
             }
 
@@ -539,9 +560,8 @@ struct ModuleFlowView: View {
                 HStack(spacing: 8) {
                     ProgressView()
                         .tint(.brutalBlack)
-                    Text("CREATING PATH...")
-                        .font(.system(.caption2, design: .default, weight: .bold))
-                        .tracking(1)
+                    Text("Creating path...")
+                        .font(.system(.caption2, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             }
@@ -555,12 +575,11 @@ struct ModuleFlowView: View {
     private func statItem(label: String, value: String) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(.body, design: .monospaced, weight: .bold))
+                .font(.system(.body, design: .monospaced, weight: .semibold))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(0.8)
-                .foregroundColor(.brutalBlack.opacity(0.6))
+                .font(.system(.caption2, design: .default, weight: .medium))
+                .foregroundColor(Color.flatSecondaryText)
         }
     }
 

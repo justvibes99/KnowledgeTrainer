@@ -29,9 +29,8 @@ struct HomeView: View {
                     VStack(spacing: 24) {
                         // Header row
                         HStack {
-                            Text("SNAPSTUDY")
-                                .font(.system(size: 32, weight: .bold, design: .default))
-                                .tracking(2)
+                            Text("SnapStudy")
+                                .font(.system(size: 32, weight: .semibold, design: .default))
                                 .foregroundColor(.brutalBlack)
 
                             if let profile {
@@ -40,19 +39,19 @@ struct HomeView: View {
                                 } label: {
                                     HStack(spacing: 6) {
                                         Image(systemName: profile.rank.iconName)
-                                            .font(.system(size: 14, weight: .bold))
+                                            .font(.system(size: 14, weight: .medium))
                                             .foregroundColor(.brutalBlack)
-                                        Text(profile.rank.title.uppercased())
-                                            .font(.system(.caption2, design: .default, weight: .black))
-                                            .tracking(1)
+                                        Text(profile.rank.title)
+                                            .font(.system(.caption2, design: .default, weight: .semibold))
                                             .foregroundColor(.brutalBlack)
                                     }
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 6)
-                                    .background(profile.rank.color)
+                                    .background(Color.brutalTeal.opacity(0.15))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .overlay(
-                                        Rectangle()
-                                            .stroke(Color.brutalBlack, lineWidth: 2)
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.brutalTeal, lineWidth: 1)
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -61,7 +60,7 @@ struct HomeView: View {
                             Spacer()
 
                             Button(action: { showSettings = true }) {
-                                Image(systemName: "gearshape.fill")
+                                Image(systemName: "gearshape")
                                     .font(.title3)
                                     .foregroundColor(.brutalBlack)
                             }
@@ -97,9 +96,8 @@ struct HomeView: View {
                                 BrutalCard(backgroundColor: .brutalLavender) {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 4) {
-                                            Text("REVIEW DUE")
-                                                .font(.system(.caption, design: .default, weight: .bold))
-                                                .tracking(1.2)
+                                            Text("Review Due")
+                                                .font(.system(.caption, design: .default, weight: .medium))
                                                 .foregroundColor(.brutalBlack)
                                             Text("\(dueCount) items to review")
                                                 .font(.system(.body, design: .default))
@@ -128,14 +126,13 @@ struct HomeView: View {
                                 HStack(spacing: 8) {
                                     ProgressView()
                                         .tint(.brutalBlack)
-                                    Text("GENERATING...")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Generating...")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)
                             } else {
-                                BrutalButton(title: "Start Learning", color: .brutalCoral, fullWidth: true) {
+                                BrutalButton(title: "Start Learning", gradient: LinearGradient(colors: [.brutalYellow, .brutalTeal], startPoint: .leading, endPoint: .trailing), fullWidth: true) {
                                     Task { await viewModel.startNewTopic(modelContext: modelContext) }
                                 }
                             }
@@ -157,9 +154,8 @@ struct HomeView: View {
                         // Category Grid
                         if !topics.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("YOUR TOPICS")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(1.5)
+                                Text("Your Topics")
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                     .padding(.horizontal, 24)
 
@@ -271,27 +267,25 @@ struct HomeView: View {
             sum + viewModel.totalSubtopicCount(progressItems: subtopicProgress, topicID: topic.id)
         }
 
-        BrutalCard(backgroundColor: category.color, shadowSize: 4) {
+        BrutalCard(backgroundColor: .flatSurface, borderColor: category.color, shadowSize: 4) {
             VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: category.icon)
                     .font(.title2)
-                    .foregroundColor(.brutalBlack)
+                    .foregroundColor(category.color)
 
-                Text(category.rawValue.uppercased())
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(1.2)
+                Text(category.rawValue)
+                    .font(.system(.caption, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
                     .lineLimit(1)
 
                 Text("\(categoryTopics.count) topic\(categoryTopics.count == 1 ? "" : "s")")
                     .font(.system(.caption2, design: .default))
-                    .foregroundColor(.brutalBlack)
+                    .foregroundColor(.flatSecondaryText)
 
                 if totalSubtopics > 0 {
-                    Text("\(totalMastered)/\(totalSubtopics) MASTERED")
-                        .font(.system(.caption2, design: .default, weight: .bold))
-                        .tracking(0.5)
-                        .foregroundColor(totalMastered == totalSubtopics ? .brutalTeal : .brutalBlack.opacity(0.6))
+                    Text("\(totalMastered)/\(totalSubtopics) mastered")
+                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .foregroundColor(totalMastered == totalSubtopics ? .brutalTeal : .flatSecondaryText)
                 }
             }
         }

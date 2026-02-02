@@ -47,7 +47,7 @@ enum ScholarRank: Int, CaseIterable {
 
     var color: Color {
         switch self {
-        case .novice: .brutalMint
+        case .novice: .brutalTeal
         case .apprentice: .brutalTeal
         case .scholar: .brutalYellow
         case .adept: .brutalLavender

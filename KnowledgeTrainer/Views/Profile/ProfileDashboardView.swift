@@ -34,9 +34,8 @@ struct ProfileDashboardView: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-                        Text("PROFILE")
-                            .font(.system(size: 36, weight: .bold, design: .default))
-                            .tracking(2)
+                        Text("Profile")
+                            .font(.system(size: 36, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -56,12 +55,12 @@ struct ProfileDashboardView: View {
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {
                                 dashboardCard(
-                                    label: "QUESTIONS",
+                                    label: "Questions",
                                     value: "\(viewModel.totalQuestions(records: records))",
                                     color: .brutalTeal
                                 )
                                 dashboardCard(
-                                    label: "ACCURACY",
+                                    label: "Accuracy",
                                     value: "\(Int(viewModel.overallAccuracy(records: records)))%",
                                     color: .brutalYellow
                                 )
@@ -69,12 +68,12 @@ struct ProfileDashboardView: View {
 
                             HStack(spacing: 12) {
                                 dashboardCard(
-                                    label: "STREAK",
+                                    label: "Streak",
                                     value: "\(viewModel.currentStreak(streaks: dailyStreaks))d",
                                     color: .brutalMint
                                 )
                                 dashboardCard(
-                                    label: "TOPICS",
+                                    label: "Topics",
                                     value: "\(topics.count)",
                                     color: .brutalLavender
                                 )
@@ -83,17 +82,17 @@ struct ProfileDashboardView: View {
                             let dueCount = viewModel.dueReviewCount(items: reviewItems)
                             if dueCount > 0 {
                                 HStack {
-                                    Text("REVIEW DUE: \(dueCount) items")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Review due: \(dueCount) items")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(12)
-                                .background(Color.brutalCoral.opacity(0.2))
+                                .background(Color.brutalCoral.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
-                                    Rectangle()
-                                        .stroke(Color.brutalCoral, lineWidth: 2)
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.brutalCoral, lineWidth: 1)
                                 )
                             }
                         }
@@ -112,29 +111,24 @@ struct ProfileDashboardView: View {
                             AchievementsListView()
                         } label: {
                             HStack {
-                                Text("ACHIEVEMENTS")
-                                    .font(.system(.body, design: .default, weight: .bold))
-                                    .tracking(1.2)
-                                    .foregroundColor(.brutalBlack)
+                                Text("Achievements")
+                                    .font(.system(.body, design: .default, weight: .semibold))
+                                    .foregroundColor(.white)
                                 Spacer()
-                                Text("\(achievements.count)/\(AchievementDefinition.all.count) UNLOCKED")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(0.8)
-                                    .foregroundColor(.brutalBlack.opacity(0.6))
+                                Text("\(achievements.count)/\(AchievementDefinition.all.count) unlocked")
+                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.8))
                                 Image(systemName: "arrow.right")
-                                    .foregroundColor(.brutalBlack)
+                                    .foregroundColor(.white)
                             }
                             .padding(16)
-                            .background(Color.brutalYellow)
+                            .background(LinearGradient(colors: [Color.brutalYellow, Color.brutalTeal], startPoint: .leading, endPoint: .trailing))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalBlack, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.clear, lineWidth: 0)
                             )
-                            .background(
-                                Rectangle()
-                                    .fill(Color.brutalBlack)
-                                    .offset(x: 4, y: 4)
-                            )
+                            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 24)
@@ -146,13 +140,12 @@ struct ProfileDashboardView: View {
                                     Image(systemName: "snowflake")
                                         .font(.title3)
                                         .foregroundColor(.brutalBlack)
-                                    Text("STREAK FREEZES")
-                                        .font(.system(.body, design: .default, weight: .bold))
-                                        .tracking(1.2)
+                                    Text("Streak Freezes")
+                                        .font(.system(.body, design: .default, weight: .semibold))
                                         .foregroundColor(.brutalBlack)
                                     Spacer()
                                     Text("\(profile.streakFreezes)/3")
-                                        .font(.system(.title3, design: .monospaced, weight: .bold))
+                                        .font(.system(.title3, design: .monospaced, weight: .semibold))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -160,47 +153,38 @@ struct ProfileDashboardView: View {
                                     Button {
                                         showFreezePurchaseConfirm = true
                                     } label: {
-                                        Text("BUY FREEZE — 200 XP")
-                                            .font(.system(.caption, design: .default, weight: .black))
-                                            .tracking(1.5)
+                                        Text("Buy Freeze — 200 XP")
+                                            .font(.system(.caption, design: .default, weight: .semibold))
                                             .foregroundColor(.brutalBlack)
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 12)
                                             .background(Color.brutalMint)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
                                             .overlay(
-                                                Rectangle()
-                                                    .stroke(Color.brutalBlack, lineWidth: 3)
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(Color.flatBorder, lineWidth: 1)
                                             )
-                                            .background(
-                                                Rectangle()
-                                                    .fill(Color.brutalBlack)
-                                                    .offset(x: 4, y: 4)
-                                            )
+                                            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
                                     }
                                     .buttonStyle(.plain)
                                 } else if profile.streakFreezes >= 3 {
-                                    Text("MAX FREEZES HELD")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
-                                        .foregroundColor(.brutalBlack.opacity(0.5))
+                                    Text("Max freezes held")
+                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .foregroundColor(.flatSecondaryText)
                                 } else {
-                                    Text("NEED 200 XP TO PURCHASE")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
-                                        .foregroundColor(.brutalBlack.opacity(0.5))
+                                    Text("Need 200 XP to purchase")
+                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .foregroundColor(.flatSecondaryText)
                                 }
                             }
                             .padding(16)
-                            .background(Color.white)
+                            .background(Color.flatSurface)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalBlack, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.flatBorder, lineWidth: 1)
                             )
-                            .background(
-                                Rectangle()
-                                    .fill(Color.brutalBlack)
-                                    .offset(x: 4, y: 4)
-                            )
+                            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
                             .padding(.horizontal, 24)
                         }
 
@@ -211,8 +195,7 @@ struct ProfileDashboardView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showSettings = true }) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.brutalBlack)
+                        Image(systemName: "gearshape")
                     }
                 }
             }
@@ -240,9 +223,8 @@ struct ProfileDashboardView: View {
 
         if !data.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("TOPIC STRENGTH")
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(1.5)
+                Text("Topic Strength")
+                    .font(.system(.caption, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 Chart {
@@ -254,7 +236,7 @@ struct ProfileDashboardView: View {
                         .foregroundStyle(strengthBarColor(for: entry.accuracy))
                         .annotation(position: .trailing, spacing: 4) {
                             Text("\(Int(entry.accuracy))%")
-                                .font(.system(.caption2, design: .monospaced, weight: .bold))
+                                .font(.system(.caption2, design: .monospaced, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
                         }
                     }
@@ -265,16 +247,13 @@ struct ProfileDashboardView: View {
                 }
                 .frame(height: CGFloat(data.count * 44 + 20))
                 .padding(16)
-                .background(Color.white)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
             }
         }
     }
@@ -307,24 +286,16 @@ struct ProfileDashboardView: View {
     private func dashboardCard(label: String, value: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 28, weight: .bold, design: .monospaced))
-                .foregroundColor(.brutalBlack)
+                .font(.system(size: 22, weight: .medium, design: .monospaced))
+                .foregroundColor(.flatSecondaryText)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(1)
-                .foregroundColor(.brutalBlack)
+                .font(.system(.caption2, design: .default, weight: .medium))
+                .foregroundColor(.flatTertiaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(color)
-        .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
-        )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .background(Color(hex: "EAE7E1"))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
     }
 }

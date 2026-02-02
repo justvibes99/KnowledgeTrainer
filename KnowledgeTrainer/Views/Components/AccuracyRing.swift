@@ -7,24 +7,24 @@ struct AccuracyRing: View {
 
     var ringColor: Color {
         if accuracy < 40 { return .brutalCoral }
-        if accuracy < 70 { return .brutalYellow }
+        if accuracy < 70 { return .brutalSalmon }
         return .brutalTeal
     }
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.brutalBlack.opacity(0.1), lineWidth: lineWidth)
+                .stroke(Color.flatSurfaceSubtle, lineWidth: lineWidth)
                 .frame(width: size, height: size)
 
             Circle()
                 .trim(from: 0, to: accuracy / 100)
-                .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
 
             Text("\(Int(accuracy))%")
-                .font(.system(.caption, design: .default, weight: .bold))
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
     }
@@ -44,23 +44,23 @@ struct CompletionRing: View {
     private var ringColor: Color {
         if fraction >= 1.0 { return .brutalTeal }
         if fraction > 0 { return .brutalYellow }
-        return .brutalBlack.opacity(0.3)
+        return .flatSurfaceSubtle
     }
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.brutalBlack.opacity(0.1), lineWidth: lineWidth)
+                .stroke(Color.flatSurfaceSubtle, lineWidth: lineWidth)
                 .frame(width: size, height: size)
 
             Circle()
                 .trim(from: 0, to: fraction)
-                .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
 
             Text("\(completed)/\(total)")
-                .font(.system(.caption2, design: .monospaced, weight: .bold))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
     }

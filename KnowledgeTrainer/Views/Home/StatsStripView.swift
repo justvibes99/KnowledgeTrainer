@@ -8,49 +8,45 @@ struct StatsStripView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            stripItem(value: "\(totalQuestions)", label: "QS")
+            stripItem(value: "\(totalQuestions)", label: "Qs")
             stripDivider
-            stripItem(value: "\(Int(accuracy))%", label: "ACC")
+            stripItem(value: "\(Int(accuracy))%", label: "Acc")
             stripDivider
-            stripItem(value: "\(streak)d", label: "STREAK")
+            stripItem(value: "\(streak)d", label: "Streak")
             stripDivider
             stripItem(
                 value: "\(dueReviews)",
-                label: "REVIEW",
+                label: "Review",
                 highlight: dueReviews > 0
             )
         }
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(Color.flatSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.flatBorder, lineWidth: 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 
     @ViewBuilder
     private func stripItem(value: String, label: String, highlight: Bool = false) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(.body, design: .monospaced, weight: .bold))
+                .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(highlight ? .brutalCoral : .brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(0.8)
-                .foregroundColor(.brutalBlack.opacity(0.5))
+                .font(.system(.caption2, design: .default, weight: .medium))
+                .foregroundColor(.flatSecondaryText)
         }
         .frame(maxWidth: .infinity)
     }
 
     private var stripDivider: some View {
         Rectangle()
-            .fill(Color.brutalBlack.opacity(0.15))
-            .frame(width: 2, height: 28)
+            .fill(Color.flatBorder)
+            .frame(width: 1, height: 28)
     }
 }

@@ -12,16 +12,15 @@ struct BrutalChip: View {
             action()
         }) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(0.8)
-                .textCase(.uppercase)
-                .foregroundColor(.brutalBlack)
+                .font(.system(.caption, design: .default, weight: .medium))
+                .foregroundColor(isSelected ? .white : .brutalBlack)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(isSelected ? color : Color.white)
+                .background(isSelected ? color : Color.flatSurfaceSubtle)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(isSelected ? color : Color.flatBorder, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)

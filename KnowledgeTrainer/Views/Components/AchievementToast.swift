@@ -11,47 +11,39 @@ struct AchievementToast: View {
             if isVisible {
                 HStack(spacing: 12) {
                     Image(systemName: achievement.iconName)
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(Color.brutalBlack)
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(Color.white)
                         .frame(width: 48, height: 48)
                         .background(Color.brutalYellow)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 3)
-                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("ACHIEVEMENT UNLOCKED")
+                        Text("Achievement Unlocked")
                             .font(.caption2)
-                            .fontWeight(.bold)
-                            .tracking(1.5)
-                            .foregroundStyle(Color.brutalBlack.opacity(0.6))
+                            .fontWeight(.medium)
+                            .foregroundStyle(Color.flatSecondaryText)
 
-                        Text(achievement.name.uppercased())
+                        Text(achievement.name)
                             .font(.subheadline)
-                            .fontWeight(.black)
-                            .tracking(1)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.brutalBlack)
 
                         Text("+\(achievement.xpReward) XP")
                             .font(.caption)
-                            .fontWeight(.bold)
+                            .fontWeight(.medium)
                             .foregroundStyle(Color.brutalTeal)
                     }
 
                     Spacer()
                 }
                 .padding(16)
-                .background(Color.white)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
                 .padding(.horizontal, 16)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }

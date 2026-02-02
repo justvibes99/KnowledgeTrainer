@@ -16,19 +16,18 @@ struct OnboardingView: View {
                     Spacer().frame(height: 40)
 
                     VStack(spacing: 8) {
-                        Text("SNAP")
-                            .font(.system(size: 42, weight: .bold, design: .default))
+                        Text("Snap")
+                            .font(.system(size: 42, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
-                        Text("STUDY")
-                            .font(.system(size: 42, weight: .bold, design: .default))
-                            .foregroundColor(.brutalCoral)
+                        Text("Study")
+                            .font(.system(size: 42, weight: .semibold, design: .default))
+                            .foregroundColor(.brutalYellow)
                     }
 
                     BrutalCard {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("SETUP")
-                                .font(.system(.title3, design: .default, weight: .bold))
-                                .tracking(1.5)
+                            Text("Setup")
+                                .font(.system(.title3, design: .default, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
 
                             Text("Enter your Anthropic API key to get started. This is stored securely in your device's Keychain.")
@@ -46,7 +45,7 @@ struct OnboardingView: View {
                                     Image(systemName: testSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
                                         .foregroundColor(testSuccess ? .brutalTeal : .brutalCoral)
                                     Text(result)
-                                        .font(.system(.caption, design: .default, weight: .bold))
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                             }

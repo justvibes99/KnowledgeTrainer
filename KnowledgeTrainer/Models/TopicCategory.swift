@@ -10,6 +10,7 @@ enum TopicCategory: String, CaseIterable {
     case technology = "Technology"
     case nature = "Nature"
     case language = "Language"
+    case people = "People"
     case other = "Other"
 
     var icon: String {
@@ -23,22 +24,24 @@ enum TopicCategory: String, CaseIterable {
         case .technology: return "cpu"
         case .nature: return "leaf"
         case .language: return "character.book.closed"
+        case .people: return "person.2"
         case .other: return "square.grid.2x2"
         }
     }
 
     var color: Color {
         switch self {
-        case .history: return .brutalYellow
-        case .science: return .brutalTeal
-        case .geography: return .brutalMint
-        case .artsCulture: return .brutalLavender
-        case .sports: return .brutalCoral
-        case .entertainment: return .brutalYellow
-        case .technology: return .brutalTeal
-        case .nature: return .brutalMint
-        case .language: return .brutalLavender
-        case .other: return .brutalCoral
+        case .history: return .brutalAmber        // warm amber
+        case .science: return .brutalTeal         // teal
+        case .geography: return .brutalMint       // green
+        case .artsCulture: return .brutalYellow   // purple
+        case .sports: return .brutalIndigo        // indigo
+        case .entertainment: return .brutalSalmon // gold
+        case .technology: return .brutalLavender  // slate blue
+        case .nature: return .brutalMint          // green
+        case .language: return .brutalYellow      // purple
+        case .people: return .brutalCoral         // coral
+        case .other: return .brutalTeal           // teal
         }
     }
 
