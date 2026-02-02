@@ -10,18 +10,15 @@ struct BrutalTextField: View {
     var body: some View {
         TextField(placeholder, text: $text)
             .font(.system(.body, design: .default))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
             .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
-                Rectangle()
-                    .stroke(Color.brutalBlack, lineWidth: 3)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isFocused ? Color.flatBorderStrong : Color.flatBorder, lineWidth: 1)
             )
-            .background(
-                Rectangle()
-                    .fill(Color.brutalBlack)
-                    .offset(x: isFocused ? 4 : 0, y: isFocused ? 4 : 0)
-            )
+            .shadow(color: isFocused ? Color.brutalYellow.opacity(0.1) : .clear, radius: 3, x: 0, y: 0)
             .focused($isFocused)
             .onSubmit {
                 onSubmit?()

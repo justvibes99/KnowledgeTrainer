@@ -12,27 +12,22 @@ struct RankCardView: View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
                 Image(systemName: rank.iconName)
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(Color.brutalBlack)
+                    .font(.system(size: 32, weight: .medium))
+                    .foregroundStyle(Color.white)
                     .frame(width: 56, height: 56)
                     .background(rank.color)
-                    .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 3)
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(rank.title.uppercased())
+                    Text(rank.title)
                         .font(.title2)
-                        .fontWeight(.black)
-                        .tracking(2)
+                        .fontWeight(.semibold)
                         .foregroundStyle(Color.brutalBlack)
 
-                    Text("RANK \(rank.rawValue)")
+                    Text("Rank \(rank.rawValue)")
                         .font(.caption)
-                        .fontWeight(.bold)
-                        .tracking(1.5)
-                        .foregroundStyle(Color.brutalBlack.opacity(0.6))
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.flatSecondaryText)
                 }
 
                 Spacer()
@@ -40,18 +35,14 @@ struct RankCardView: View {
                 if showShareButton {
                     ShareLink(item: shareText) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundStyle(Color.brutalBlack)
                             .frame(width: 44, height: 44)
-                            .background(Color.brutalYellow)
+                            .background(Color.flatSurfaceSubtle)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalBlack, lineWidth: 3)
-                            )
-                            .background(
-                                Rectangle()
-                                    .fill(Color.brutalBlack)
-                                    .offset(x: 3, y: 3)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.flatBorder, lineWidth: 1)
                             )
                     }
                 }
@@ -60,33 +51,32 @@ struct RankCardView: View {
             XPProgressBar(currentXP: profile.totalXP, rank: rank)
 
             HStack(spacing: 0) {
-                statItem(value: "\(profile.totalXP)", label: "TOTAL XP")
+                statItem(value: "\(profile.totalXP)", label: "Total XP")
                 Divider()
-                    .frame(width: 3, height: 32)
-                    .background(Color.brutalBlack)
-                statItem(value: "\(streak)", label: "STREAK")
+                    .frame(width: 1, height: 32)
+                    .background(Color.flatBorder)
+                statItem(value: "\(streak)", label: "Streak")
                 Divider()
-                    .frame(width: 3, height: 32)
-                    .background(Color.brutalBlack)
-                statItem(value: "\(topicsMastered)", label: "TOPICS")
+                    .frame(width: 1, height: 32)
+                    .background(Color.flatBorder)
+                statItem(value: "\(topicsMastered)", label: "Topics")
             }
         }
         .padding(24)
-        .brutalCard(backgroundColor: .white)
+        .brutalCard(backgroundColor: .flatSurface)
     }
 
     private func statItem(value: String, label: String) -> some View {
         VStack(spacing: 4) {
             Text(value)
                 .font(.title3)
-                .fontWeight(.black)
+                .fontWeight(.semibold)
                 .monospacedDigit()
                 .foregroundStyle(Color.brutalBlack)
             Text(label)
                 .font(.caption2)
-                .fontWeight(.bold)
-                .tracking(1.2)
-                .foregroundStyle(Color.brutalBlack.opacity(0.6))
+                .fontWeight(.medium)
+                .foregroundStyle(Color.flatSecondaryText)
         }
         .frame(maxWidth: .infinity)
     }

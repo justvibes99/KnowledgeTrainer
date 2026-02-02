@@ -10,7 +10,7 @@ struct LevelUpOverlay: View {
 
     var body: some View {
         ZStack {
-            rank.color.opacity(0.95)
+            Color.brutalBlack.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture { dismiss() }
 
@@ -19,61 +19,41 @@ struct LevelUpOverlay: View {
 
                 if showContent {
                     Image(systemName: rank.iconName)
-                        .font(.system(size: 72, weight: .bold))
-                        .foregroundStyle(Color.brutalBlack)
+                        .font(.system(size: 72, weight: .medium))
+                        .foregroundStyle(Color.white)
                         .frame(width: 120, height: 120)
-                        .background(Color.white)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 4)
-                        )
-                        .background(
-                            Rectangle()
-                                .fill(Color.brutalBlack)
-                                .offset(x: 8, y: 8)
-                        )
+                        .background(rank.color)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                         .scaleEffect(iconScale)
 
-                    Text("RANK UP!")
-                        .font(.system(size: 36, weight: .black))
-                        .tracking(4)
+                    Text("Rank Up!")
+                        .font(.system(size: 36, weight: .bold))
                         .foregroundStyle(Color.brutalBlack)
 
-                    Text(rank.title.uppercased())
-                        .font(.system(size: 28, weight: .black))
-                        .tracking(3)
+                    Text(rank.title)
+                        .font(.system(size: 24, weight: .semibold))
                         .foregroundStyle(Color.white)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(Color.brutalBlack)
+                        .background(Color.brutalYellow)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     XPProgressBar(currentXP: totalXP, rank: rank)
                         .padding(.horizontal, 40)
 
-                    Button(action: dismiss) {
-                        Text("CONTINUE")
-                            .font(.headline)
-                            .fontWeight(.black)
-                            .tracking(2)
-                            .foregroundStyle(Color.brutalBlack)
-                            .padding(.horizontal, 32)
-                            .padding(.vertical, 14)
-                            .background(Color.white)
-                            .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalBlack, lineWidth: 3)
-                            )
-                            .background(
-                                Rectangle()
-                                    .fill(Color.brutalBlack)
-                                    .offset(x: 4, y: 4)
-                            )
+                    BrutalButton(title: "Continue", color: .brutalYellow) {
+                        dismiss()
                     }
                     .padding(.top, 8)
                 }
 
                 Spacer()
             }
+            .padding(32)
+            .background(Color.flatSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.08), radius: 24, x: 0, y: 8)
+            .padding(.horizontal, 32)
         }
         .onAppear {
             HapticManager.impact(style: .heavy)

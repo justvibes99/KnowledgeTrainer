@@ -6,49 +6,40 @@ struct DailyGoalBanner: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: isCompleted ? "checkmark.seal.fill" : "target")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(Color.brutalBlack)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundStyle(isCompleted ? Color.white : Color.brutalBlack)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("DAILY GOAL")
+                Text("Daily Goal")
                     .font(.caption)
-                    .fontWeight(.bold)
-                    .tracking(1.5)
-                    .foregroundStyle(Color.brutalBlack)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isCompleted ? Color.white.opacity(0.8) : Color.flatSecondaryText)
 
                 Text(isCompleted ? "Subtopic mastered today!" : "Master 1 subtopic today")
                     .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.brutalBlack)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isCompleted ? Color.white : Color.brutalBlack)
             }
 
             Spacer()
 
             if isCompleted {
-                Text("DONE")
+                Text("Done")
                     .font(.caption)
-                    .fontWeight(.black)
-                    .tracking(1.5)
-                    .foregroundStyle(Color.brutalBlack)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.4))
-                    .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 2)
-                    )
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
             }
         }
         .padding(16)
-        .background(isCompleted ? Color.brutalTeal : Color.brutalCoral)
+        .background(isCompleted ? Color.brutalTeal : Color.flatSurfaceSubtle)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
-        )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isCompleted ? Color.brutalTeal : Color.flatBorder, lineWidth: 1)
         )
     }
 }

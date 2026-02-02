@@ -12,41 +12,27 @@ struct XPProgressBar: View {
         if let next = rank.xpToNextRank {
             return "\(currentXP) / \(next) XP"
         }
-        return "\(currentXP) XP — MAX RANK"
+        return "\(currentXP) XP — Max Rank"
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.brutalBackground)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 3)
-                        )
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.flatSurfaceSubtle)
 
-                    Rectangle()
+                    RoundedRectangle(cornerRadius: 4)
                         .fill(rank.color)
                         .frame(width: geo.size.width * progress)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 3)
-                        )
                 }
             }
-            .frame(height: 24)
-            .background(
-                Rectangle()
-                    .fill(Color.brutalBlack)
-                    .offset(x: 4, y: 4)
-            )
+            .frame(height: 8)
 
             Text(label)
                 .font(.caption)
-                .fontWeight(.bold)
-                .tracking(1)
-                .foregroundStyle(Color.brutalBlack)
+                .fontWeight(.medium)
+                .foregroundStyle(Color.flatSecondaryText)
         }
     }
 }

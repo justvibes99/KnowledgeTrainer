@@ -13,25 +13,21 @@ struct ShareableCardView<Content: View>: View {
 
             HStack {
                 Spacer()
-                Text("SNAPSTUDY")
+                Text("SnapStudy")
                     .font(.caption2)
-                    .fontWeight(.black)
-                    .tracking(2)
-                    .foregroundStyle(Color.brutalBlack.opacity(0.4))
+                    .fontWeight(.medium)
+                    .foregroundStyle(Color.flatTertiaryText)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 12)
             .padding(.top, 8)
         }
-        .background(Color.brutalBackground)
+        .background(Color.flatSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.flatBorder, lineWidth: 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 6, y: 6)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 }

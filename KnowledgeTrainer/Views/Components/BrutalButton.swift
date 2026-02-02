@@ -14,24 +14,14 @@ struct BrutalButton: View {
             action()
         }) {
             Text(title)
-                .font(.system(.body, design: .default, weight: .bold))
-                .tracking(1.2)
-                .textCase(.uppercase)
-                .foregroundColor(.brutalBlack)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
+                .font(.system(.body, design: .default, weight: .medium))
+                .foregroundColor(color == .brutalYellow ? .white : .brutalBlack)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)
                 .background(color)
-                .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
-                )
-                .offset(x: isPressed ? 4 : 0, y: isPressed ? 4 : 0)
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .opacity(isPressed ? 0.8 : 1.0)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
@@ -56,24 +46,14 @@ struct BrutalButtonAsync: View {
             Task { await action() }
         }) {
             Text(title)
-                .font(.system(.body, design: .default, weight: .bold))
-                .tracking(1.2)
-                .textCase(.uppercase)
-                .foregroundColor(.brutalBlack)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
+                .font(.system(.body, design: .default, weight: .medium))
+                .foregroundColor(color == .brutalYellow ? .white : .brutalBlack)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)
                 .background(color)
-                .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
-                )
-                .offset(x: isPressed ? 4 : 0, y: isPressed ? 4 : 0)
-                .background(
-                    Rectangle()
-                        .fill(Color.brutalBlack)
-                        .offset(x: 4, y: 4)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .opacity(isPressed ? 0.8 : 1.0)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
