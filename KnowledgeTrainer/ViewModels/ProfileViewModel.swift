@@ -75,7 +75,6 @@ final class ProfileViewModel {
             try modelContext.delete(model: DailyStreak.self)
             try modelContext.delete(model: SubtopicProgress.self)
             try modelContext.delete(model: WantToLearnItem.self)
-            try? KeychainManager.delete()
             UserDefaults.standard.removeObject(forKey: "timerEnabled")
             UserDefaults.standard.removeObject(forKey: "timerDuration")
             UserDefaults.standard.removeObject(forKey: "learningDepth")

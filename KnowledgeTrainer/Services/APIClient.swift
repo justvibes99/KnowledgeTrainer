@@ -1,7 +1,6 @@
 import Foundation
 
 enum APIError: Error, LocalizedError {
-    case noAPIKey
     case invalidResponse
     case httpError(Int, String)
     case decodingError(String)
@@ -9,7 +8,6 @@ enum APIError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noAPIKey: return "No API key found. Please add your Anthropic API key in Settings."
         case .invalidResponse: return "Invalid response from API."
         case .httpError(let code, let message): return "API error (\(code)): \(message)"
         case .decodingError(let message): return "Failed to parse response: \(message)"
@@ -21,7 +19,7 @@ enum APIError: Error, LocalizedError {
 actor APIClient {
     static let shared = APIClient()
 
-    private let baseURL = "https://api.anthropic.com/v1/messages"
+    private let baseURL = "https://kt-proxy.vercel.app/api/claude"
     private let model = "claude-haiku-4-5-20251001"
     private let systemPrompt = """
     You are a knowledgeable tutor. Generate factually accurate questions and educational content. \
@@ -271,21 +269,9 @@ actor APIClient {
         return try decodeJSON(DeepDiveContent.self, from: response)
     }
 
-    // MARK: - Test Connection
-
-    func testConnection() async throws -> Bool {
-        let prompt = "Return exactly: {\"status\": \"ok\"}"
-        let _ = try await makeRequest(prompt: prompt, maxTokens: 50)
-        return true
-    }
-
     // MARK: - Private Helpers
 
     private func makeRequest(prompt: String, maxTokens: Int = 4096, retryCount: Int = 1) async throws -> String {
-        guard let apiKey = KeychainManager.retrieve() else {
-            throw APIError.noAPIKey
-        }
-
         guard let url = URL(string: baseURL) else {
             throw APIError.invalidResponse
         }
@@ -293,8 +279,6 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
 
         let body = ClaudeAPIRequest(
             model: model,

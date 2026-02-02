@@ -1,0 +1,8 @@
+{
+  "name": "kt-proxy",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

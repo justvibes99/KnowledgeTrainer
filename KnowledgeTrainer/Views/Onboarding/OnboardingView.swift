@@ -2,10 +2,6 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Binding var isOnboarded: Bool
-    @State private var apiKey: String = ""
-    @State private var isTesting: Bool = false
-    @State private var testResult: String?
-    @State private var testSuccess: Bool = false
 
     var body: some View {
         ZStack {
@@ -26,43 +22,16 @@ struct OnboardingView: View {
 
                     BrutalCard {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Setup")
+                            Text("Welcome")
                                 .font(.system(.title3, design: .monospaced, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
 
-                            Text("Enter your Anthropic API key to get started. This is stored securely in your device's Keychain.")
+                            Text("Learn any topic through AI-generated quizzes and spaced repetition. Pick a subject and start studying.")
                                 .font(.system(.body, design: .monospaced))
                                 .foregroundColor(.brutalBlack)
 
-                            BrutalTextField(
-                                placeholder: "sk-ant-...",
-                                text: $apiKey,
-                                onSubmit: nil
-                            )
-
-                            if let result = testResult {
-                                HStack(spacing: 8) {
-                                    Image(systemName: testSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                        .foregroundColor(testSuccess ? .brutalTeal : .brutalCoral)
-                                    Text(result)
-                                        .font(.system(.caption, design: .monospaced, weight: .medium))
-                                        .foregroundColor(.brutalBlack)
-                                }
-                            }
-
-                            if testSuccess {
-                                BrutalButton(title: "Continue", color: .brutalYellow, fullWidth: true) {
-                                    saveAndContinue()
-                                }
-                            } else {
-                                BrutalButton(title: "Test Connection", color: .brutalTeal, fullWidth: true) {
-                                    testConnection()
-                                }
-                            }
-
-                            if isTesting {
-                                ProgressView()
-                                    .tint(.brutalBlack)
+                            BrutalButton(title: "Get Started", color: .brutalYellow, fullWidth: true) {
+                                isOnboarded = true
                             }
                         }
                     }
@@ -71,48 +40,6 @@ struct OnboardingView: View {
                     Spacer()
                 }
             }
-        }
-    }
-
-    private func testConnection() {
-        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty else {
-            testResult = "Please enter an API key"
-            testSuccess = false
-            return
-        }
-
-        isTesting = true
-        testResult = nil
-
-        Task {
-            do {
-                try KeychainManager.save(apiKey: key)
-                let success = try await APIClient.shared.testConnection()
-                await MainActor.run {
-                    testSuccess = success
-                    testResult = success ? "Connection successful!" : "Connection failed"
-                    isTesting = false
-                }
-            } catch {
-                await MainActor.run {
-                    testSuccess = false
-                    testResult = error.localizedDescription
-                    isTesting = false
-                    try? KeychainManager.delete()
-                }
-            }
-        }
-    }
-
-    private func saveAndContinue() {
-        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        do {
-            try KeychainManager.save(apiKey: key)
-            isOnboarded = true
-        } catch {
-            testResult = "Failed to save key: \(error.localizedDescription)"
-            testSuccess = false
         }
     }
 }

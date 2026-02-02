@@ -27,7 +27,7 @@ struct KnowledgeTrainerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding && KeychainManager.hasKey() {
+            if hasCompletedOnboarding {
                 HomeView()
                     .onAppear { ensureScholarProfile() }
             } else {

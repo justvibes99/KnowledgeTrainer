@@ -29,7 +29,6 @@
 		7348904C116122B4FAF048AA /* QuestionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE7285FD65BD19E9923D912 /* QuestionRecord.swift */; };
 		7F153807EC77F6C50E2CACDA /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57039DDF2199ADAD3DDCB905 /* APIClient.swift */; };
 		8285D602226C4EFAE91CAD53 /* WantToLearnSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735D7FC4531051F409B0D5DF /* WantToLearnSection.swift */; };
-		862487F3088E64637A4B20BD /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48E9E9F61212384ECA6C552 /* KeychainManager.swift */; };
 		89D1884DEDBE2EC3B4527F14 /* BrutalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DC4919D3343F92F0E3D463 /* BrutalCard.swift */; };
 		8AF4B1285D3BB47C35956C25 /* BrutalAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08BB96AED84DB2388F9A841 /* BrutalAlert.swift */; };
 		8DFA408BD882272D35BE4599 /* TopicMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1088C9A728F6CC0D57F43DE4 /* TopicMapView.swift */; };
@@ -45,7 +44,6 @@
 		AA1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift */; };
 		AA1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift */; };
 		AA1B2C3D4E5F6A7B00000004 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000004 /* Achievement.swift */; };
-		CC2A3B4C5D6E7F8900000002 /* LearningDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */; };
 		AA1B2C3D4E5F6A7B00000005 /* GamificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000005 /* GamificationService.swift */; };
 		AA1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift */; };
 		AA1B2C3D4E5F6A7B00000007 /* RankCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1B2C3D4E5F6A7B00000007 /* RankCardView.swift */; };
@@ -60,6 +58,7 @@
 		BBDAB5D9A0E635C9E1FFAED6 /* SubtopicPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D2CBD90116B9ECA0F295F6 /* SubtopicPickerView.swift */; };
 		C0205C3A146C0E221A3534AD /* ModuleFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B25FBFBD2754965258FEB1E /* ModuleFlowView.swift */; };
 		C72EB59BA1195FB031B5B24F /* WantToLearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86194E480778BAA300501F7E /* WantToLearnItem.swift */; };
+		CC2A3B4C5D6E7F8900000002 /* LearningDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */; };
 		CC9AB4B10C2FFCC2EA4AC1E8 /* ReviewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6041580F226E4AA50CD2946 /* ReviewItem.swift */; };
 		CE1DAA897056E32EC005399B /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276D14E1658797EAFB14248B /* HomeViewModel.swift */; };
 		D1A2B3C4E5F6071829304150 /* TopicCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B3C4D5F6071829304A5160 /* TopicCategory.swift */; };
@@ -117,12 +116,10 @@
 		A67449CFA1D074D39650F909 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A942A88058462E9938E04411 /* TrainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainViewModel.swift; sourceTree = "<group>"; };
 		B0EB6098C6D614B990E2DF5D /* DailyStreak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyStreak.swift; sourceTree = "<group>"; };
-		B48E9E9F61212384ECA6C552 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000001 /* ScholarRank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarRank.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000002 /* AchievementDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementDefinition.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000003 /* ScholarProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarProfile.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000004 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
-		CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningDepth.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000005 /* GamificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationService.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000006 /* XPProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPProgressBar.swift; sourceTree = "<group>"; };
 		BB1B2C3D4E5F6A7B00000007 /* RankCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCardView.swift; sourceTree = "<group>"; };
@@ -137,6 +134,7 @@
 		C4A73B57C822943B8C60A290 /* KnowledgeTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeTrainerApp.swift; sourceTree = "<group>"; };
 		CA62DA239DA18539DFF31CEE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		CBD11BAAA59D76E3D5609188 /* BrutalButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrutalButton.swift; sourceTree = "<group>"; };
+		CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningDepth.swift; sourceTree = "<group>"; };
 		CF710AE19A85BBF9A3298564 /* ChartsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsView.swift; sourceTree = "<group>"; };
 		D4C7C19ECF80E2C87A9E1684 /* SpacedRepetitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionEngine.swift; sourceTree = "<group>"; };
 		D6041580F226E4AA50CD2946 /* ReviewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewItem.swift; sourceTree = "<group>"; };
@@ -315,7 +313,6 @@
 			children = (
 				57039DDF2199ADAD3DDCB905 /* APIClient.swift */,
 				91D7947CAF850EF8D851664D /* HapticManager.swift */,
-				B48E9E9F61212384ECA6C552 /* KeychainManager.swift */,
 				C100B88CAFEB312CC72DBD3F /* NotificationManager.swift */,
 				BDE693C17C2902F2D9B1C5E9 /* ResponseMatcher.swift */,
 				D4C7C19ECF80E2C87A9E1684 /* SpacedRepetitionEngine.swift */,
@@ -435,7 +432,6 @@
 				A3ED400B3172C2DE10B359F4 /* AccuracyRing.swift in Sources */,
 				8FC5E2D85D10A96014FAE747 /* StreakCalendarView.swift in Sources */,
 				7F153807EC77F6C50E2CACDA /* APIClient.swift in Sources */,
-				862487F3088E64637A4B20BD /* KeychainManager.swift in Sources */,
 				6043E3D84BD1D902F9D5D36C /* SpacedRepetitionEngine.swift in Sources */,
 				DA864EEDD05CFC68572F4B7B /* ResponseMatcher.swift in Sources */,
 				23C750F9B7A52E3D73639E9B /* StatsCalculator.swift in Sources */,
@@ -482,11 +478,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3FV82DW9JR;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Snap Study";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -628,11 +626,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3FV82DW9JR;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Snap Study";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

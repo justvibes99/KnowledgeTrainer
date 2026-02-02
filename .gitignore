@@ -21,5 +21,14 @@ Pods/
 *.swp
 *~
 
+# Node
+node_modules/
+
+# Archives
+*.xcarchive/
+
+# Export
+ExportOptions.plist
+
 # Secrets
 *.env

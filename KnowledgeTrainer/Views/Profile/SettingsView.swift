@@ -5,9 +5,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: ProfileViewModel
 
-    @State private var apiKey: String = ""
-    @State private var showAPIKey = false
-    @State private var apiKeyStatus: String = ""
     @State private var showResetAlert = false
 
     var body: some View {
@@ -22,49 +19,6 @@ struct SettingsView: View {
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
                             .padding(.top, 16)
-
-                        // API Key Section
-                        settingsSection(title: "API Key") {
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack {
-                                    if showAPIKey {
-                                        TextField("API Key", text: $apiKey)
-                                            .font(.system(.caption, design: .monospaced))
-                                    } else {
-                                        Text(KeychainManager.hasKey() ? "sk-ant-****" : "No key set")
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundColor(.flatSecondaryText)
-                                    }
-                                    Spacer()
-                                    Button(action: { showAPIKey.toggle() }) {
-                                        Image(systemName: showAPIKey ? "eye.slash" : "eye")
-                                            .foregroundColor(.accentColor)
-                                    }
-                                }
-                                .padding(12)
-                                .background(Color.flatSurface)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.flatBorder, lineWidth: 1)
-                                )
-
-                                if !apiKeyStatus.isEmpty {
-                                    Text(apiKeyStatus)
-                                        .font(.system(.caption, design: .monospaced, weight: .medium))
-                                        .foregroundColor(.brutalBlack)
-                                }
-
-                                HStack(spacing: 8) {
-                                    BrutalButton(title: "Save Key", color: .brutalTeal) {
-                                        saveAPIKey()
-                                    }
-                                    BrutalButton(title: "Delete Key", color: .brutalCoral) {
-                                        deleteAPIKey()
-                                    }
-                                }
-                            }
-                        }
 
                         // Timer Section
                         settingsSection(title: "Timer") {
@@ -178,18 +132,13 @@ struct SettingsView: View {
             .brutalAlert(
                 isPresented: $showResetAlert,
                 title: "Reset All Data?",
-                message: "This will permanently delete all topics, questions, review items, deep dives, and your API key. This cannot be undone.",
+                message: "This will permanently delete all topics, questions, review items, and deep dives. This cannot be undone.",
                 primaryButton: BrutalAlertButton(title: "Reset", isDestructive: true) {
                     viewModel.resetAllData(modelContext: modelContext)
                     dismiss()
                 },
                 secondaryButton: BrutalAlertButton(title: "Cancel") {}
             )
-        }
-        .onAppear {
-            if let key = KeychainManager.retrieve() {
-                apiKey = key
-            }
         }
     }
 
@@ -211,31 +160,5 @@ struct SettingsView: View {
                 .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
         }
         .padding(.horizontal, 24)
-    }
-
-    private func saveAPIKey() {
-        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty else {
-            apiKeyStatus = "Please enter an API key"
-            return
-        }
-        do {
-            try KeychainManager.save(apiKey: key)
-            apiKeyStatus = "Key saved successfully"
-            showAPIKey = false
-        } catch {
-            apiKeyStatus = "Failed to save: \(error.localizedDescription)"
-        }
-    }
-
-    private func deleteAPIKey() {
-        do {
-            try KeychainManager.delete()
-            apiKey = ""
-            apiKeyStatus = "Key deleted"
-            showAPIKey = false
-        } catch {
-            apiKeyStatus = "Failed to delete: \(error.localizedDescription)"
-        }
     }
 }
