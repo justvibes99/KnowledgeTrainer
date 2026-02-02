@@ -3,14 +3,24 @@ import SwiftUI
 // MARK: - Colors
 
 extension Color {
-    static let brutalBackground = Color(hex: "FFF8E7")
-    static let brutalBlack = Color(hex: "000000")
-    static let brutalCoral = Color(hex: "FF6B6B")
-    static let brutalTeal = Color(hex: "4ECDC4")
-    static let brutalYellow = Color(hex: "FFE66D")
-    static let brutalLavender = Color(hex: "AA96DA")
-    static let brutalMint = Color(hex: "95E1D3")
-    static let brutalSalmon = Color(hex: "F38181")
+    static let brutalBackground = Color(hex: "F7F5F0")
+    static let brutalBlack = Color(hex: "1A1A1A")
+    static let brutalCoral = Color(hex: "C25B4E")
+    static let brutalTeal = Color(hex: "5BA8A0")
+    static let brutalYellow = Color(hex: "6C5CE7")
+    static let brutalLavender = Color(hex: "5B7FA5")
+    static let brutalMint = Color(hex: "5A8A6C")
+    static let brutalSalmon = Color(hex: "C9963A")
+
+    // New design tokens
+    static let flatSurface = Color(hex: "FDFCF9")
+    static let flatSurfaceSubtle = Color(hex: "F0EDE6")
+    static let flatSecondaryText = Color(hex: "6B6560")
+    static let flatTertiaryText = Color(hex: "9C9690")
+    static let flatBorder = Color(hex: "E8E4DE")
+    static let flatBorderStrong = Color(hex: "D1CCC4")
+    static let flatPrimaryHover = Color(hex: "5A4BD4")
+    static let flatPrimaryActive = Color(hex: "4A3DC0")
 
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -61,26 +71,23 @@ extension Date {
 // MARK: - View Modifiers
 
 struct BrutalCardModifier: ViewModifier {
-    var backgroundColor: Color = .white
+    var backgroundColor: Color = .flatSurface
     var shadowSize: CGFloat = 8
 
     func body(content: Content) -> some View {
         content
             .background(backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
-                Rectangle()
-                    .stroke(Color.brutalBlack, lineWidth: 3)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.flatBorder, lineWidth: 1)
             )
-            .background(
-                Rectangle()
-                    .fill(Color.brutalBlack)
-                    .offset(x: shadowSize, y: shadowSize)
-            )
+            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 }
 
 extension View {
-    func brutalCard(backgroundColor: Color = .white, shadowSize: CGFloat = 8) -> some View {
+    func brutalCard(backgroundColor: Color = .flatSurface, shadowSize: CGFloat = 8) -> some View {
         modifier(BrutalCardModifier(backgroundColor: backgroundColor, shadowSize: shadowSize))
     }
 }
