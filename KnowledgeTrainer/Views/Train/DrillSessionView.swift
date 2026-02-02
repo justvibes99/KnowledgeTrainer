@@ -43,7 +43,7 @@ struct DrillSessionView: View {
                         .scaleEffect(1.5)
                         .tint(.brutalBlack)
                     Text("Loading questions...")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             } else if let question = viewModel.currentQuestion {
@@ -85,12 +85,12 @@ struct DrillSessionView: View {
                             VStack(spacing: 12) {
                                 DisclosureGroup {
                                     Text(question.explanation)
-                                        .font(.system(.body, design: .default))
+                                        .font(.system(.body, design: .monospaced))
                                         .foregroundColor(.brutalBlack)
                                         .padding(.top, 8)
                                 } label: {
                                     Text("Why?")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -114,14 +114,14 @@ struct DrillSessionView: View {
                         // Focus indicator
                         if let focus = viewModel.focusSubtopic {
                             Text("Focusing: \(focus)")
-                                .font(.system(.caption2, design: .default, weight: .medium))
+                                .font(.system(.caption2, design: .monospaced, weight: .medium))
                                 .foregroundColor(.flatSecondaryText)
                         }
 
                         // End Session Button
                         Button(action: { showEndConfirmation = true }) {
                             Text("End Session")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalCoral)
                         }
                         .padding(.bottom, 24)
@@ -184,11 +184,11 @@ struct DrillSessionView: View {
 
             VStack(spacing: 24) {
                 Text("Mastered")
-                    .font(.system(size: 20, weight: .semibold, design: .default))
+                    .font(.system(size: 20, weight: .semibold, design: .monospaced))
                     .foregroundColor(.brutalBlack)
 
                 Text(viewModel.masteredSubtopicName)
-                    .font(.system(size: 28, weight: .semibold, design: .default))
+                    .font(.system(size: 28, weight: .semibold, design: .monospaced))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.center)
 
@@ -198,7 +198,7 @@ struct DrillSessionView: View {
 
                 if let next = viewModel.nextSubtopicName {
                     Text("Next up: \(next)")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack.opacity(0.7))
                 }
 
@@ -229,7 +229,7 @@ struct DrillSessionView: View {
                 .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.flatSecondaryText)
         }
     }

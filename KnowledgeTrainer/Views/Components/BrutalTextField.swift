@@ -9,7 +9,7 @@ struct BrutalTextField: View {
 
     var body: some View {
         TextField(placeholder, text: $text)
-            .font(.system(.body, design: .default))
+            .font(.system(.body, design: .monospaced))
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .background(Color.white)

@@ -10,14 +10,14 @@ struct LessonCardView: View {
                 // Header
                 VStack(spacing: 8) {
                     Text("Lesson")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 6)
                         .background(Color.brutalBlack)
 
                     Text(lesson.subtopic)
-                        .font(.system(size: 28, weight: .semibold, design: .default))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .foregroundColor(.brutalBlack)
                         .multilineTextAlignment(.center)
                 }
@@ -27,7 +27,7 @@ struct LessonCardView: View {
                 BrutalCard(backgroundColor: .brutalMint) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Overview")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         Text(lesson.overview)
@@ -41,7 +41,7 @@ struct LessonCardView: View {
                 // Key Facts
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Key Facts")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
 
@@ -66,7 +66,7 @@ struct LessonCardView: View {
                 if let connections = lesson.connections, !connections.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Connections")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
 

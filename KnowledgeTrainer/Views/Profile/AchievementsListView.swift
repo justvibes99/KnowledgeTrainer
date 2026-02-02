@@ -22,7 +22,7 @@ struct AchievementsListView: View {
                 VStack(spacing: 24) {
                     HStack {
                         Text("Achievements")
-                            .font(.system(size: 28, weight: .semibold, design: .default))
+                            .font(.system(size: 28, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
 
                         Spacer()
@@ -37,7 +37,7 @@ struct AchievementsListView: View {
                     ForEach(grouped, id: \.0) { category, definitions in
                         VStack(alignment: .leading, spacing: 12) {
                             Text(category.rawValue)
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalBlack)
                                 .padding(.horizontal, 24)
 
@@ -78,16 +78,16 @@ struct AchievementsListView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(definition.name)
-                    .font(.system(.subheadline, design: .default, weight: .semibold))
+                    .font(.system(.subheadline, design: .monospaced, weight: .semibold))
                     .foregroundColor(isUnlocked ? .brutalBlack : .flatTertiaryText)
 
                 Text(definition.description)
-                    .font(.system(.caption, design: .default))
+                    .font(.system(.caption, design: .monospaced))
                     .foregroundColor(isUnlocked ? .flatSecondaryText : .flatTertiaryText)
 
                 if isUnlocked, let date = unlockDate {
                     Text("Unlocked \(date.shortDisplay)")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalTeal)
                 }
             }

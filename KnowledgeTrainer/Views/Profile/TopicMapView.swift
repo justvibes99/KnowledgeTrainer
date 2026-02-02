@@ -17,7 +17,7 @@ struct TopicMapView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Topic Map")
-                        .font(.system(size: 28, weight: .semibold, design: .default))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
@@ -25,10 +25,10 @@ struct TopicMapView: View {
                     if topics.isEmpty {
                         VStack(spacing: 12) {
                             Text("No Topics Yet")
-                                .font(.system(.body, design: .default, weight: .semibold))
+                                .font(.system(.body, design: .monospaced, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
                             Text("Start training to see your topic map.")
-                                .font(.system(.caption, design: .default))
+                                .font(.system(.caption, design: .monospaced))
                                 .foregroundColor(.flatSecondaryText)
                         }
                         .frame(maxWidth: .infinity)
@@ -61,7 +61,7 @@ struct TopicMapView: View {
 
         VStack(spacing: 8) {
             Text(topic.name)
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
@@ -69,7 +69,7 @@ struct TopicMapView: View {
             AccuracyRing(accuracy: accuracy, size: 50, lineWidth: 5)
 
             Text("\(StatsCalculator.questionsForTopic(records: records, topicID: topic.id)) Qs")
-                .font(.system(.caption2, design: .default))
+                .font(.system(.caption2, design: .monospaced))
                 .foregroundColor(.brutalBlack)
         }
         .frame(maxWidth: .infinity)

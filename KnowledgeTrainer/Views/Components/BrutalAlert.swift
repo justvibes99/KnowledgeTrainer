@@ -22,12 +22,12 @@ struct BrutalAlert: ViewModifier {
 
                 VStack(spacing: 20) {
                     Text(title)
-                        .font(.system(.body, design: .default, weight: .semibold))
+                        .font(.system(.body, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                         .multilineTextAlignment(.center)
 
                     Text(message)
-                        .font(.system(.subheadline, design: .default))
+                        .font(.system(.subheadline, design: .monospaced))
                         .foregroundColor(.flatSecondaryText)
                         .multilineTextAlignment(.center)
 

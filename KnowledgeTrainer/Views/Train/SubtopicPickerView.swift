@@ -45,13 +45,13 @@ struct LearningPathView: View {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
                     Text(topic.name)
-                        .font(.system(size: 28, weight: .semibold, design: .default))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .foregroundColor(.brutalBlack)
 
                     if !topicProgress.isEmpty {
                         HStack(spacing: 8) {
                             Text("\(masteredCount)/\(topicProgress.count) Mastered")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalBlack)
 
                             GeometryReader { geo in
@@ -69,7 +69,7 @@ struct LearningPathView: View {
                         }
                     } else {
                         Text("Learning Path")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                     }
                 }
@@ -100,7 +100,7 @@ struct LearningPathView: View {
                                     .font(.title3)
                                     .foregroundColor(.brutalTeal)
                                 Text("All Modules Mastered")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
                             .padding(.horizontal, 24)
@@ -129,7 +129,7 @@ struct LearningPathView: View {
                 VStack {
                     Spacer()
                     Text("Added to Queue")
-                        .font(.system(.caption, design: .default, weight: .medium))
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
@@ -148,7 +148,7 @@ struct LearningPathView: View {
 
                 VStack(spacing: 16) {
                     Text(tappedRelatedTopic ?? "")
-                        .font(.system(.body, design: .default, weight: .semibold))
+                        .font(.system(.body, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                         .multilineTextAlignment(.center)
 
@@ -159,7 +159,7 @@ struct LearningPathView: View {
                         }
                     }) {
                         Text("Go Now")
-                            .font(.system(.body, design: .default, weight: .medium))
+                            .font(.system(.body, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -176,7 +176,7 @@ struct LearningPathView: View {
                         }
                     }) {
                         Text("Add to List")
-                            .font(.system(.body, design: .default, weight: .medium))
+                            .font(.system(.body, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -292,14 +292,14 @@ struct LearningPathView: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(progress.subtopicName)
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(isFuture ? Color.flatTertiaryText : .brutalBlack)
                     .lineLimit(2)
 
                 if progress.questionsAnswered > 0 {
                     HStack(spacing: 8) {
                         Text("\(progress.questionsAnswered) Qs")
-                            .font(.system(.caption2, design: .default))
+                            .font(.system(.caption2, design: .monospaced))
                             .foregroundColor(Color.flatSecondaryText)
 
                         Text("\(Int(progress.accuracy))%")
@@ -310,7 +310,7 @@ struct LearningPathView: View {
 
                 if progress.isMastered {
                     Text("Mastered")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalTeal)
                 }
             }
@@ -336,13 +336,13 @@ struct LearningPathView: View {
     private var relatedTopicsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Related Topics")
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
                 .padding(.horizontal, 24)
 
             ForEach(topic.relatedTopics, id: \.self) { related in
                 Text(related)
-                    .font(.system(.caption2, design: .default, weight: .medium))
+                    .font(.system(.caption2, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
                     .lineLimit(2)
                     .padding(.horizontal, 10)
@@ -367,7 +367,7 @@ struct LearningPathView: View {
                     ProgressView()
                         .tint(.brutalBlack)
                     Text("Creating path...")
-                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
                 .padding(.horizontal, 24)

@@ -24,7 +24,7 @@ struct AccuracyRing: View {
                 .rotationEffect(.degrees(-90))
 
             Text("\(Int(accuracy))%")
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
     }

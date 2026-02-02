@@ -18,7 +18,7 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         Text("Settings")
-                            .font(.system(size: 28, weight: .semibold, design: .default))
+                            .font(.system(size: 28, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
                             .padding(.top, 16)
@@ -51,7 +51,7 @@ struct SettingsView: View {
 
                                 if !apiKeyStatus.isEmpty {
                                     Text(apiKeyStatus)
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -74,7 +74,7 @@ struct SettingsView: View {
                                     set: { viewModel.timerEnabled = $0; viewModel.saveTimerSettings() }
                                 )) {
                                     Text("Enable Timer")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .tint(.brutalTeal)
@@ -82,7 +82,7 @@ struct SettingsView: View {
                                 if viewModel.timerEnabled {
                                     VStack(alignment: .leading, spacing: 8) {
                                         Text("Duration")
-                                            .font(.system(.caption2, design: .default, weight: .medium))
+                                            .font(.system(.caption2, design: .monospaced, weight: .medium))
                                             .foregroundColor(.brutalBlack)
 
                                         HStack(spacing: 8) {
@@ -118,7 +118,7 @@ struct SettingsView: View {
                                     }
                                 )) {
                                     Text("Enable Reminder")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .tint(.brutalTeal)
@@ -132,7 +132,7 @@ struct SettingsView: View {
                                         ),
                                         displayedComponents: .hourAndMinute
                                     )
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                 }
                             }
@@ -175,7 +175,7 @@ struct SettingsView: View {
     private func settingsSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
 
             content()

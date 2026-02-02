@@ -17,21 +17,21 @@ struct OnboardingView: View {
 
                     VStack(spacing: 8) {
                         Text("Snap")
-                            .font(.system(size: 42, weight: .semibold, design: .default))
+                            .font(.system(size: 42, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                         Text("Study")
-                            .font(.system(size: 42, weight: .semibold, design: .default))
+                            .font(.system(size: 42, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalYellow)
                     }
 
                     BrutalCard {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Setup")
-                                .font(.system(.title3, design: .default, weight: .semibold))
+                                .font(.system(.title3, design: .monospaced, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
 
                             Text("Enter your Anthropic API key to get started. This is stored securely in your device's Keychain.")
-                                .font(.system(.body, design: .default))
+                                .font(.system(.body, design: .monospaced))
                                 .foregroundColor(.brutalBlack)
 
                             BrutalTextField(
@@ -45,7 +45,7 @@ struct OnboardingView: View {
                                     Image(systemName: testSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
                                         .foregroundColor(testSuccess ? .brutalTeal : .brutalCoral)
                                     Text(result)
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                             }

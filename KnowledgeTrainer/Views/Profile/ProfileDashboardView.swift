@@ -35,7 +35,7 @@ struct ProfileDashboardView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         Text("Profile")
-                            .font(.system(size: 36, weight: .semibold, design: .default))
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -83,7 +83,7 @@ struct ProfileDashboardView: View {
                             if dueCount > 0 {
                                 HStack {
                                     Text("Review due: \(dueCount) items")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .frame(maxWidth: .infinity)
@@ -112,11 +112,11 @@ struct ProfileDashboardView: View {
                         } label: {
                             HStack {
                                 Text("Achievements")
-                                    .font(.system(.body, design: .default, weight: .semibold))
+                                    .font(.system(.body, design: .monospaced, weight: .semibold))
                                     .foregroundColor(.white)
                                 Spacer()
                                 Text("\(achievements.count)/\(AchievementDefinition.all.count) unlocked")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.white.opacity(0.8))
                                 Image(systemName: "arrow.right")
                                     .foregroundColor(.white)
@@ -141,7 +141,7 @@ struct ProfileDashboardView: View {
                                         .font(.title3)
                                         .foregroundColor(.brutalBlack)
                                     Text("Streak Freezes")
-                                        .font(.system(.body, design: .default, weight: .semibold))
+                                        .font(.system(.body, design: .monospaced, weight: .semibold))
                                         .foregroundColor(.brutalBlack)
                                     Spacer()
                                     Text("\(profile.streakFreezes)/3")
@@ -154,7 +154,7 @@ struct ProfileDashboardView: View {
                                         showFreezePurchaseConfirm = true
                                     } label: {
                                         Text("Buy Freeze — 200 XP")
-                                            .font(.system(.caption, design: .default, weight: .semibold))
+                                            .font(.system(.caption, design: .monospaced, weight: .semibold))
                                             .foregroundColor(.brutalBlack)
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 12)
@@ -169,11 +169,11 @@ struct ProfileDashboardView: View {
                                     .buttonStyle(.plain)
                                 } else if profile.streakFreezes >= 3 {
                                     Text("Max freezes held")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.flatSecondaryText)
                                 } else {
                                     Text("Need 200 XP to purchase")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.flatSecondaryText)
                                 }
                             }
@@ -224,7 +224,7 @@ struct ProfileDashboardView: View {
         if !data.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Topic Strength")
-                    .font(.system(.caption, design: .default, weight: .medium))
+                    .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 Chart {
@@ -289,7 +289,7 @@ struct ProfileDashboardView: View {
                 .font(.system(size: 22, weight: .medium, design: .monospaced))
                 .foregroundColor(.flatSecondaryText)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.flatTertiaryText)
         }
         .frame(maxWidth: .infinity)

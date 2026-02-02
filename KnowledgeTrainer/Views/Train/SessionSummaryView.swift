@@ -19,7 +19,7 @@ struct SessionSummaryView: View {
         ScrollView {
             VStack(spacing: 24) {
                 Text("Session Complete")
-                    .font(.system(size: 28, weight: .semibold, design: .default))
+                    .font(.system(size: 28, weight: .semibold, design: .monospaced))
                     .foregroundColor(.brutalBlack)
                     .padding(.top, 24)
 
@@ -40,7 +40,7 @@ struct SessionSummaryView: View {
                 if !masteredThisSession.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Mastered This Session")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(masteredThisSession, id: \.self) { subtopic in
@@ -48,7 +48,7 @@ struct SessionSummaryView: View {
                                 Image(systemName: "checkmark.seal.fill")
                                     .foregroundColor(.brutalTeal)
                                 Text(subtopic)
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
                             .padding(.horizontal, 16)
@@ -78,7 +78,7 @@ struct SessionSummaryView: View {
                 if !subtopicStats.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Subtopics Practiced")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(Array(subtopicStats.keys.sorted()), id: \.self) { subtopic in
@@ -86,7 +86,7 @@ struct SessionSummaryView: View {
                                 let acc = stats.answered > 0 ? Int(Double(stats.correct) / Double(stats.answered) * 100) : 0
                                 HStack {
                                     Text(subtopic)
-                                        .font(.system(.caption2, design: .default, weight: .medium))
+                                        .font(.system(.caption2, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
 
@@ -119,36 +119,36 @@ struct SessionSummaryView: View {
                 if !wrongAnswers.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Review These")
-                            .font(.system(.caption, design: .default, weight: .medium))
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
                             .foregroundColor(.brutalBlack)
 
                         ForEach(Array(wrongAnswers.enumerated()), id: \.offset) { _, item in
                             BrutalCard(backgroundColor: .white) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(item.question.questionText)
-                                        .font(.system(.body, design: .default, weight: .medium))
+                                        .font(.system(.body, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
 
                                     HStack(spacing: 4) {
                                         Text("Your answer:")
-                                            .font(.system(.caption, design: .default))
+                                            .font(.system(.caption, design: .monospaced))
                                             .foregroundColor(.flatSecondaryText)
                                         Text(item.userAnswer.isEmpty ? "(no answer)" : item.userAnswer)
-                                            .font(.system(.caption, design: .default, weight: .medium))
+                                            .font(.system(.caption, design: .monospaced, weight: .medium))
                                             .foregroundColor(.brutalCoral)
                                     }
 
                                     HStack(spacing: 4) {
                                         Text("Correct:")
-                                            .font(.system(.caption, design: .default))
+                                            .font(.system(.caption, design: .monospaced))
                                             .foregroundColor(.flatSecondaryText)
                                         Text(item.question.correctAnswer)
-                                            .font(.system(.caption, design: .default, weight: .medium))
+                                            .font(.system(.caption, design: .monospaced, weight: .medium))
                                             .foregroundColor(.brutalTeal)
                                     }
 
                                     Text(item.question.explanation)
-                                        .font(.system(.caption, design: .default))
+                                        .font(.system(.caption, design: .monospaced))
                                         .foregroundColor(.brutalBlack.opacity(0.8))
                                         .padding(.top, 4)
                                 }
@@ -174,7 +174,7 @@ struct SessionSummaryView: View {
                 .font(.system(size: 32, weight: .semibold, design: .monospaced))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
         .frame(maxWidth: .infinity)

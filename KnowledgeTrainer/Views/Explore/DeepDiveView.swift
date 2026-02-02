@@ -25,17 +25,17 @@ struct DeepDiveView: View {
             BrutalCard(backgroundColor: .white) {
                 VStack(alignment: .leading, spacing: 16) {
                     Text(deepDive.topic)
-                        .font(.system(.title2, design: .default, weight: .semibold))
+                        .font(.system(.title2, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
 
                     Text(deepDive.dateCreated.relativeDisplay)
-                        .font(.system(.caption, design: .default))
+                        .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.flatSecondaryText)
 
                     ForEach(sections, id: \.title) { section in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(section.title)
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalCoral)
 
                             Text(section.content)
@@ -47,7 +47,7 @@ struct DeepDiveView: View {
                     if !deepDive.connectedTopics.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Explore Next")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalCoral)
 
                             FlowLayout(spacing: 8) {

@@ -23,7 +23,7 @@ struct StreakCalendarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Last 28 Days")
-                .font(.system(.caption, design: .default, weight: .medium))
+                .font(.system(.caption, design: .monospaced, weight: .medium))
                 .foregroundColor(.flatSecondaryText)
 
             LazyVGrid(columns: columns, spacing: 4) {

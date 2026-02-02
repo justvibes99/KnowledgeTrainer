@@ -38,7 +38,7 @@ struct StatsStripView: View {
                 .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(highlight ? .brutalCoral : .brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.flatSecondaryText)
         }
         .frame(maxWidth: .infinity)

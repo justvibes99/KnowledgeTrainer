@@ -20,7 +20,7 @@ struct TrainHomeView: View {
                     VStack(spacing: 24) {
                         // Header
                         Text("Train")
-                            .font(.system(size: 36, weight: .semibold, design: .default))
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -39,7 +39,7 @@ struct TrainHomeView: View {
                                     ProgressView()
                                         .tint(.brutalBlack)
                                     Text("Generating...")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)
@@ -61,10 +61,10 @@ struct TrainHomeView: View {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text("Review Due")
-                                                .font(.system(.caption, design: .default, weight: .medium))
+                                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                                 .foregroundColor(.brutalBlack)
                                             Text("\(dueCount) items to review")
-                                                .font(.system(.body, design: .default))
+                                                .font(.system(.body, design: .monospaced))
                                                 .foregroundColor(.brutalBlack)
                                         }
                                         Spacer()
@@ -82,7 +82,7 @@ struct TrainHomeView: View {
                         if !topics.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Your Topics")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                     .padding(.horizontal, 24)
 
@@ -130,17 +130,17 @@ struct TrainHomeView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(topic.name)
-                        .font(.system(.body, design: .default, weight: .medium))
+                        .font(.system(.body, design: .monospaced, weight: .medium))
                         .foregroundColor(.brutalBlack)
                         .lineLimit(1)
 
                     HStack(spacing: 16) {
                         Label("\(count) Qs", systemImage: "questionmark.circle")
-                            .font(.system(.caption2, design: .default))
+                            .font(.system(.caption2, design: .monospaced))
                             .foregroundColor(.brutalBlack)
 
                         Text(topic.lastPracticed.relativeDisplay)
-                            .font(.system(.caption2, design: .default))
+                            .font(.system(.caption2, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                     }
 

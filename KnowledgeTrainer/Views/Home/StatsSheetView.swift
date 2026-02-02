@@ -17,7 +17,7 @@ struct StatsSheetView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         Text("Stats")
-                            .font(.system(size: 28, weight: .semibold, design: .default))
+                            .font(.system(size: 28, weight: .semibold, design: .monospaced))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -79,7 +79,7 @@ struct StatsSheetView: View {
                         if !deepDives.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Saved Deep Dives")
-                                    .font(.system(.caption, design: .default, weight: .medium))
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
 
                                 ForEach(deepDives) { deepDive in
@@ -87,11 +87,11 @@ struct StatsSheetView: View {
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text(deepDive.topic)
-                                                    .font(.system(.caption, design: .default, weight: .medium))
+                                                    .font(.system(.caption, design: .monospaced, weight: .medium))
                                                     .foregroundColor(.brutalBlack)
                                                     .lineLimit(1)
                                                 Text(deepDive.dateCreated.relativeDisplay)
-                                                    .font(.system(.caption2, design: .default))
+                                                    .font(.system(.caption2, design: .monospaced))
                                                     .foregroundColor(.flatSecondaryText)
                                             }
                                             Spacer()
@@ -145,7 +145,7 @@ struct StatsSheetView: View {
                 .font(.system(size: 22, weight: .medium, design: .monospaced))
                 .foregroundColor(.flatSecondaryText)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .medium))
+                .font(.system(.caption2, design: .monospaced, weight: .medium))
                 .foregroundColor(.flatTertiaryText)
         }
         .frame(maxWidth: .infinity)
@@ -159,7 +159,7 @@ struct StatsSheetView: View {
     private func navRow(title: String) -> some View {
         HStack {
             Text(title)
-                .font(.system(.body, design: .default, weight: .medium))
+                .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
             Spacer()
             Image(systemName: "arrow.right")

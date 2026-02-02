@@ -25,7 +25,7 @@ struct ReviewSessionView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         Text("Review Session")
-                            .font(.system(.title3, design: .default, weight: .semibold))
+                            .font(.system(.title3, design: .monospaced, weight: .semibold))
                             .foregroundColor(.brutalBlack)
                             .padding(.top, 16)
 
@@ -61,12 +61,12 @@ struct ReviewSessionView: View {
                             VStack(spacing: 12) {
                                 DisclosureGroup {
                                     Text(question.explanation)
-                                        .font(.system(.body, design: .default))
+                                        .font(.system(.body, design: .monospaced))
                                         .foregroundColor(.brutalBlack)
                                         .padding(.top, 8)
                                 } label: {
                                     Text("Why?")
-                                        .font(.system(.caption, design: .default, weight: .medium))
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -83,7 +83,7 @@ struct ReviewSessionView: View {
                                     .font(.system(.body, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                 Text("Streak")
-                                    .font(.system(.caption2, design: .default, weight: .medium))
+                                    .font(.system(.caption2, design: .monospaced, weight: .medium))
                                     .foregroundColor(.flatSecondaryText)
                             }
                             VStack(spacing: 2) {
@@ -91,7 +91,7 @@ struct ReviewSessionView: View {
                                     .font(.system(.body, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                 Text("Accuracy")
-                                    .font(.system(.caption2, design: .default, weight: .medium))
+                                    .font(.system(.caption2, design: .monospaced, weight: .medium))
                                     .foregroundColor(.flatSecondaryText)
                             }
                         }
@@ -99,7 +99,7 @@ struct ReviewSessionView: View {
 
                         Button(action: { viewModel.endSession() }) {
                             Text("End Review")
-                                .font(.system(.caption, design: .default, weight: .medium))
+                                .font(.system(.caption, design: .monospaced, weight: .medium))
                                 .foregroundColor(.brutalCoral)
                         }
 
@@ -109,7 +109,7 @@ struct ReviewSessionView: View {
             } else {
                 VStack(spacing: 16) {
                     Text("No Reviews Due")
-                        .font(.system(.title3, design: .default, weight: .semibold))
+                        .font(.system(.title3, design: .monospaced, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                     BrutalButton(title: "Go Back", color: .brutalYellow) {
                         dismiss()
