@@ -5,12 +5,14 @@ import SwiftUI
 extension Color {
     static let brutalBackground = Color(hex: "F7F5F0")
     static let brutalBlack = Color(hex: "1A1A1A")
-    static let brutalCoral = Color(hex: "C25B4E")
+    static let brutalCoral = Color(hex: "E05A4E")
     static let brutalTeal = Color(hex: "5BA8A0")
     static let brutalYellow = Color(hex: "6C5CE7")
     static let brutalLavender = Color(hex: "5B7FA5")
     static let brutalMint = Color(hex: "5A8A6C")
     static let brutalSalmon = Color(hex: "C9963A")
+    static let brutalIndigo = Color(hex: "4A5899")
+    static let brutalAmber = Color(hex: "D4915A")
 
     // New design tokens
     static let flatSurface = Color(hex: "FDFCF9")

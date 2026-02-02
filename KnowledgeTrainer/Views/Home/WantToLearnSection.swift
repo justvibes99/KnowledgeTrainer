@@ -8,9 +8,8 @@ struct WantToLearnSection: View {
     var body: some View {
         if !items.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("WANT TO LEARN")
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(1.5)
+                Text("Want to Learn")
+                    .font(.system(.caption, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 ForEach(items) { item in
@@ -18,16 +17,15 @@ struct WantToLearnSection: View {
                         Button(action: { onStart(item) }) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(item.topicName.uppercased())
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(0.8)
+                                    Text(item.topicName)
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
 
                                     if let source = item.sourceSubtopic {
                                         Text("from \(source)")
                                             .font(.system(.caption2, design: .default))
-                                            .foregroundColor(.brutalBlack.opacity(0.5))
+                                            .foregroundColor(.flatSecondaryText)
                                             .lineLimit(1)
                                     }
                                 }
@@ -42,7 +40,7 @@ struct WantToLearnSection: View {
                         Button(action: { onRemove(item) }) {
                             Image(systemName: "xmark")
                                 .font(.caption2.bold())
-                                .foregroundColor(.brutalBlack.opacity(0.4))
+                                .foregroundColor(.accentColor)
                                 .padding(6)
                         }
                         .buttonStyle(.plain)
@@ -50,9 +48,10 @@ struct WantToLearnSection: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(Color.brutalYellow.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.flatBorder, lineWidth: 1)
                     )
                 }
             }

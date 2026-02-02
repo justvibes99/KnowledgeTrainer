@@ -21,15 +21,14 @@ struct AchievementsListView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     HStack {
-                        Text("ACHIEVEMENTS")
-                            .font(.system(size: 28, weight: .bold, design: .default))
-                            .tracking(2)
+                        Text("Achievements")
+                            .font(.system(size: 28, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
 
                         Spacer()
 
                         Text("\(unlockedAchievements.count)/\(AchievementDefinition.all.count)")
-                            .font(.system(.body, design: .monospaced, weight: .bold))
+                            .font(.system(.body, design: .monospaced, weight: .semibold))
                             .foregroundColor(.brutalBlack)
                     }
                     .padding(.horizontal, 24)
@@ -37,9 +36,8 @@ struct AchievementsListView: View {
 
                     ForEach(grouped, id: \.0) { category, definitions in
                         VStack(alignment: .leading, spacing: 12) {
-                            Text(category.rawValue.uppercased())
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.5)
+                            Text(category.rawValue)
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalBlack)
                                 .padding(.horizontal, 24)
 
@@ -68,28 +66,28 @@ struct AchievementsListView: View {
     private func achievementRow(definition: AchievementDefinition, isUnlocked: Bool, unlockDate: Date?) -> some View {
         HStack(spacing: 14) {
             Image(systemName: definition.iconName)
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(isUnlocked ? .brutalBlack : .brutalBlack.opacity(0.25))
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(isUnlocked ? .brutalBlack : .flatTertiaryText)
                 .frame(width: 48, height: 48)
-                .background(isUnlocked ? Color.brutalYellow : Color.brutalBlack.opacity(0.08))
+                .background(isUnlocked ? Color.brutalYellow : Color.flatSurfaceSubtle)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(isUnlocked ? Color.brutalBlack : Color.brutalBlack.opacity(0.2), lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isUnlocked ? Color.brutalBlack : Color.flatSurfaceSubtle, lineWidth: 1)
                 )
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(definition.name.uppercased())
-                    .font(.system(.subheadline, design: .default, weight: .bold))
-                    .tracking(0.8)
-                    .foregroundColor(isUnlocked ? .brutalBlack : .brutalBlack.opacity(0.35))
+                Text(definition.name)
+                    .font(.system(.subheadline, design: .default, weight: .semibold))
+                    .foregroundColor(isUnlocked ? .brutalBlack : .flatTertiaryText)
 
                 Text(definition.description)
                     .font(.system(.caption, design: .default))
-                    .foregroundColor(isUnlocked ? .brutalBlack.opacity(0.7) : .brutalBlack.opacity(0.25))
+                    .foregroundColor(isUnlocked ? .flatSecondaryText : .flatTertiaryText)
 
                 if isUnlocked, let date = unlockDate {
                     Text("Unlocked \(date.shortDisplay)")
-                        .font(.system(.caption2, design: .default, weight: .bold))
+                        .font(.system(.caption2, design: .default, weight: .medium))
                         .foregroundColor(.brutalTeal)
                 }
             }
@@ -97,19 +95,21 @@ struct AchievementsListView: View {
             Spacer()
 
             Text("+\(definition.xpReward) XP")
-                .font(.system(.caption, design: .monospaced, weight: .bold))
-                .foregroundColor(isUnlocked ? .brutalTeal : .brutalBlack.opacity(0.2))
+                .font(.system(.caption, design: .monospaced, weight: .semibold))
+                .foregroundColor(isUnlocked ? .brutalTeal : .flatSurfaceSubtle)
         }
         .padding(14)
-        .background(isUnlocked ? Color.white : Color.brutalBackground)
+        .background(isUnlocked ? Color.flatSurface : Color.brutalBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(isUnlocked ? Color.brutalBlack : Color.brutalBlack.opacity(0.15), lineWidth: isUnlocked ? 3 : 2)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isUnlocked ? Color.brutalBlack : Color.flatSurfaceSubtle, lineWidth: 1)
         )
         .background(
             isUnlocked ?
-                AnyView(Rectangle().fill(Color.brutalBlack).offset(x: 4, y: 4)) :
+                AnyView(EmptyView()) :
                 AnyView(EmptyView())
         )
+        .shadow(color: isUnlocked ? .black.opacity(0.06) : .clear, radius: 4, x: 0, y: 2)
     }
 }

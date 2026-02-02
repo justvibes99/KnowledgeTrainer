@@ -3,10 +3,9 @@ import SwiftUI
 struct BrutalButton: View {
     let title: String
     var color: Color = .brutalYellow
+    var gradient: LinearGradient? = nil
     var fullWidth: Bool = false
     let action: () -> Void
-
-    @State private var isPressed = false
 
     var body: some View {
         Button(action: {
@@ -15,30 +14,29 @@ struct BrutalButton: View {
         }) {
             Text(title)
                 .font(.system(.body, design: .default, weight: .medium))
-                .foregroundColor(color == .brutalYellow ? .white : .brutalBlack)
+                .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)
-                .background(color)
+                .background {
+                    if let gradient {
+                        gradient
+                    } else {
+                        color
+                    }
+                }
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .opacity(isPressed ? 0.8 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
-        )
+        .buttonStyle(PressableButtonStyle())
     }
 }
 
 struct BrutalButtonAsync: View {
     let title: String
     var color: Color = .brutalYellow
+    var gradient: LinearGradient? = nil
     var fullWidth: Bool = false
     let action: () async -> Void
-
-    @State private var isPressed = false
 
     var body: some View {
         Button(action: {
@@ -47,19 +45,26 @@ struct BrutalButtonAsync: View {
         }) {
             Text(title)
                 .font(.system(.body, design: .default, weight: .medium))
-                .foregroundColor(color == .brutalYellow ? .white : .brutalBlack)
+                .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)
-                .background(color)
+                .background {
+                    if let gradient {
+                        gradient
+                    } else {
+                        color
+                    }
+                }
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .opacity(isPressed ? 0.8 : 1.0)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
-        )
+        .buttonStyle(PressableButtonStyle())
+    }
+}
+
+struct PressableButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
     }
 }

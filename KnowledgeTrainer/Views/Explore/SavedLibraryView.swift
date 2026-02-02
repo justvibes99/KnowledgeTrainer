@@ -11,19 +11,19 @@ struct SavedLibraryView: View {
     var body: some View {
         if !deepDives.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("SAVED LIBRARY")
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(1.5)
+                Text("Saved Library")
+                    .font(.system(.caption, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
 
                 TextField("Filter...", text: $filterText)
                     .font(.system(.caption, design: .default))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.white)
+                    .background(Color.flatSurface)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.flatBorder, lineWidth: 1)
                     )
 
                 ForEach(deepDives) { deepDive in
@@ -31,14 +31,13 @@ struct SavedLibraryView: View {
                         Button(action: { onSelect(deepDive) }) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(deepDive.topic.uppercased())
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(0.8)
+                                    Text(deepDive.topic)
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                         .lineLimit(1)
                                     Text(deepDive.dateCreated.relativeDisplay)
                                         .font(.system(.caption2, design: .default))
-                                        .foregroundColor(.brutalBlack.opacity(0.6))
+                                        .foregroundColor(.flatSecondaryText)
                                 }
                                 Spacer()
                             }
@@ -55,10 +54,11 @@ struct SavedLibraryView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(Color.white)
+                    .background(Color.flatSurface)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
-                        Rectangle()
-                            .stroke(Color.brutalBlack, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.flatBorder, lineWidth: 1)
                     )
                 }
             }

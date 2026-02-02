@@ -42,9 +42,8 @@ struct DrillSessionView: View {
                     ProgressView()
                         .scaleEffect(1.5)
                         .tint(.brutalBlack)
-                    Text("LOADING QUESTIONS...")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
+                    Text("Loading questions...")
+                        .font(.system(.caption, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
             } else if let question = viewModel.currentQuestion {
@@ -90,9 +89,8 @@ struct DrillSessionView: View {
                                         .foregroundColor(.brutalBlack)
                                         .padding(.top, 8)
                                 } label: {
-                                    Text("WHY?")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1.2)
+                                    Text("Why?")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -105,27 +103,25 @@ struct DrillSessionView: View {
 
                         // Stats Bar
                         HStack(spacing: 20) {
-                            statItem(label: "STREAK", value: "\(viewModel.currentStreak)")
-                            statItem(label: "ACCURACY", value: "\(Int(viewModel.sessionAccuracy))%")
-                            statItem(label: "ANSWERED", value: "\(viewModel.questionsAnswered)")
-                            statItem(label: "DIFF", value: "\(viewModel.currentDifficulty)")
+                            statItem(label: "Streak", value: "\(viewModel.currentStreak)")
+                            statItem(label: "Accuracy", value: "\(Int(viewModel.sessionAccuracy))%")
+                            statItem(label: "Answered", value: "\(viewModel.questionsAnswered)")
+                            statItem(label: "Diff", value: "\(viewModel.currentDifficulty)")
                         }
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
 
                         // Focus indicator
                         if let focus = viewModel.focusSubtopic {
-                            Text("FOCUSING: \(focus.uppercased())")
-                                .font(.system(.caption2, design: .default, weight: .bold))
-                                .tracking(1)
-                                .foregroundColor(.brutalBlack.opacity(0.5))
+                            Text("Focusing: \(focus)")
+                                .font(.system(.caption2, design: .default, weight: .medium))
+                                .foregroundColor(.flatSecondaryText)
                         }
 
                         // End Session Button
                         Button(action: { showEndConfirmation = true }) {
-                            Text("END SESSION")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.2)
+                            Text("End Session")
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalCoral)
                         }
                         .padding(.bottom, 24)
@@ -140,13 +136,12 @@ struct DrillSessionView: View {
                 masteryCelebrationOverlay
             }
         }
-        .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { showEndConfirmation = true }) {
+            ToolbarItem(placement: .cancellationAction) {
+                Button {
+                    showEndConfirmation = true
+                } label: {
                     Image(systemName: "xmark")
-                        .font(.body.bold())
-                        .foregroundColor(.brutalBlack)
                 }
             }
         }
@@ -188,14 +183,12 @@ struct DrillSessionView: View {
             Color.brutalBlack.opacity(0.6).ignoresSafeArea()
 
             VStack(spacing: 24) {
-                Text("MASTERED")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .tracking(3)
+                Text("Mastered")
+                    .font(.system(size: 20, weight: .semibold, design: .default))
                     .foregroundColor(.brutalBlack)
 
-                Text(viewModel.masteredSubtopicName.uppercased())
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .tracking(1.5)
+                Text(viewModel.masteredSubtopicName)
+                    .font(.system(size: 28, weight: .semibold, design: .default))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.center)
 
@@ -204,9 +197,8 @@ struct DrillSessionView: View {
                     .foregroundColor(.brutalTeal)
 
                 if let next = viewModel.nextSubtopicName {
-                    Text("NEXT UP: \(next.uppercased())")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
+                    Text("Next up: \(next)")
+                        .font(.system(.caption, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack.opacity(0.7))
                 }
 
@@ -220,15 +212,12 @@ struct DrillSessionView: View {
             }
             .padding(32)
             .background(Color.brutalYellow)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
-                Rectangle()
-                    .stroke(Color.brutalBlack, lineWidth: 4)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.flatBorder, lineWidth: 1)
             )
-            .background(
-                Rectangle()
-                    .fill(Color.brutalBlack)
-                    .offset(x: 8, y: 8)
-            )
+            .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
             .padding(.horizontal, 32)
         }
     }
@@ -237,12 +226,11 @@ struct DrillSessionView: View {
     private func statItem(label: String, value: String) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(.body, design: .monospaced, weight: .bold))
+                .font(.system(.body, design: .monospaced, weight: .medium))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(0.8)
-                .foregroundColor(.brutalBlack.opacity(0.6))
+                .font(.system(.caption2, design: .default, weight: .medium))
+                .foregroundColor(.flatSecondaryText)
         }
     }
 }

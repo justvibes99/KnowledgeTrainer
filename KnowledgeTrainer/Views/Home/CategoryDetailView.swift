@@ -29,11 +29,10 @@ struct CategoryDetailView: View {
                     HStack(spacing: 12) {
                         Image(systemName: category.icon)
                             .font(.title)
-                            .foregroundColor(.brutalBlack)
+                            .foregroundColor(category.color)
 
-                        Text(category.rawValue.uppercased())
-                            .font(.system(size: 28, weight: .bold, design: .default))
-                            .tracking(1.5)
+                        Text(category.rawValue)
+                            .font(.system(size: 28, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
 
                         Spacer()
@@ -44,10 +43,9 @@ struct CategoryDetailView: View {
                     // Topic list
                     if topics.isEmpty {
                         VStack(spacing: 8) {
-                            Text("NO TOPICS YET")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.2)
-                                .foregroundColor(.brutalBlack.opacity(0.4))
+                            Text("No topics yet")
+                                .font(.system(.caption, design: .default, weight: .medium))
+                                .foregroundColor(.flatTertiaryText)
                         }
                         .padding(.top, 40)
                     } else {
@@ -60,7 +58,7 @@ struct CategoryDetailView: View {
                                     } label: {
                                         Image(systemName: "trash")
                                             .font(.caption2.bold())
-                                            .foregroundColor(.brutalBlack.opacity(0.4))
+                                            .foregroundColor(.flatTertiaryText)
                                             .padding(10)
                                     }
                                     .buttonStyle(.plain)
@@ -78,17 +76,6 @@ struct CategoryDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.body.bold())
-                        .foregroundColor(.brutalBlack)
-                }
-                .buttonStyle(.plain)
-            }
-        }
         .navigationDestination(item: $selectedTopic) { topic in
             LearningPathView(topic: topic)
         }
@@ -141,12 +128,11 @@ struct CategoryDetailView: View {
         let mastered = viewModel.masteredCount(progressItems: subtopicProgress, topicID: topic.id)
         let total = viewModel.totalSubtopicCount(progressItems: subtopicProgress, topicID: topic.id)
 
-        BrutalCard {
+        BrutalCard(borderColor: category.color) {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(topic.name.uppercased())
-                        .font(.system(.body, design: .default, weight: .bold))
-                        .tracking(0.8)
+                    Text(topic.name)
+                        .font(.system(.body, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                         .lineLimit(1)
 
@@ -161,10 +147,9 @@ struct CategoryDetailView: View {
                     }
 
                     if total > 0 {
-                        Text("\(mastered)/\(total) MASTERED")
-                            .font(.system(.caption2, design: .default, weight: .bold))
-                            .tracking(0.5)
-                            .foregroundColor(mastered == total ? .brutalTeal : .brutalBlack.opacity(0.5))
+                        Text("\(mastered)/\(total) mastered")
+                            .font(.system(.caption2, design: .default, weight: .medium))
+                            .foregroundColor(mastered == total ? .brutalTeal : .flatSecondaryText)
                     }
                 }
 

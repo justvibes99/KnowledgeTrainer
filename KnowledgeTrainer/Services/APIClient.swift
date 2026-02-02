@@ -41,7 +41,7 @@ actor APIClient {
         Return a JSON object with this exact structure:
         {
           "topicName": "cleaned/normalized topic name",
-          "category": "one of: History, Science, Geography, Arts & Culture, Sports, Entertainment, Technology, Nature, Language, Other",
+          "category": "one of: History, Science, Geography, Arts & Culture, Sports, Entertainment, Technology, Nature, Language, People, Other",
           "subtopics": ["subtopic1", "subtopic2", ...],
           "relatedTopics": ["related topic 1", "related topic 2", "related topic 3"],
           "initialLesson": {

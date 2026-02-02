@@ -15,9 +15,8 @@ struct ExploreHomeView: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-                        Text("EXPLORE")
-                            .font(.system(size: 36, weight: .bold, design: .default))
-                            .tracking(2)
+                        Text("Explore")
+                            .font(.system(size: 36, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -35,9 +34,8 @@ struct ExploreHomeView: View {
                                 HStack(spacing: 8) {
                                     ProgressView()
                                         .tint(.brutalBlack)
-                                    Text("GENERATING DEEP DIVE...")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Generating deep dive...")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)
@@ -83,8 +81,6 @@ struct ExploreHomeView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button("Done") { selectedDeepDive = nil }
-                                .font(.system(.body, design: .default, weight: .bold))
-                                .foregroundColor(.brutalBlack)
                         }
                     }
                 }

@@ -24,9 +24,8 @@ struct ReviewSessionView: View {
             } else if let question = viewModel.currentQuestion {
                 ScrollView {
                     VStack(spacing: 20) {
-                        Text("REVIEW SESSION")
-                            .font(.system(.title3, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Review Session")
+                            .font(.system(.title3, design: .default, weight: .semibold))
                             .foregroundColor(.brutalBlack)
                             .padding(.top, 16)
 
@@ -66,9 +65,8 @@ struct ReviewSessionView: View {
                                         .foregroundColor(.brutalBlack)
                                         .padding(.top, 8)
                                 } label: {
-                                    Text("WHY?")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1.2)
+                                    Text("Why?")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
 
@@ -82,27 +80,26 @@ struct ReviewSessionView: View {
                         HStack(spacing: 20) {
                             VStack(spacing: 2) {
                                 Text("\(viewModel.currentStreak)")
-                                    .font(.system(.body, design: .monospaced, weight: .bold))
+                                    .font(.system(.body, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
-                                Text("STREAK")
-                                    .font(.system(.caption2, design: .default, weight: .bold))
-                                    .foregroundColor(.brutalBlack.opacity(0.6))
+                                Text("Streak")
+                                    .font(.system(.caption2, design: .default, weight: .medium))
+                                    .foregroundColor(.flatSecondaryText)
                             }
                             VStack(spacing: 2) {
                                 Text("\(Int(viewModel.sessionAccuracy))%")
-                                    .font(.system(.body, design: .monospaced, weight: .bold))
+                                    .font(.system(.body, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
-                                Text("ACCURACY")
-                                    .font(.system(.caption2, design: .default, weight: .bold))
-                                    .foregroundColor(.brutalBlack.opacity(0.6))
+                                Text("Accuracy")
+                                    .font(.system(.caption2, design: .default, weight: .medium))
+                                    .foregroundColor(.flatSecondaryText)
                             }
                         }
                         .padding(.vertical, 12)
 
                         Button(action: { viewModel.endSession() }) {
-                            Text("END REVIEW")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.2)
+                            Text("End Review")
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalCoral)
                         }
 
@@ -111,8 +108,8 @@ struct ReviewSessionView: View {
                 }
             } else {
                 VStack(spacing: 16) {
-                    Text("NO REVIEWS DUE")
-                        .font(.system(.title3, design: .default, weight: .bold))
+                    Text("No Reviews Due")
+                        .font(.system(.title3, design: .default, weight: .semibold))
                         .foregroundColor(.brutalBlack)
                     BrutalButton(title: "Go Back", color: .brutalYellow) {
                         dismiss()

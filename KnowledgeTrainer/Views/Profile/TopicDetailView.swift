@@ -16,9 +16,8 @@ struct TopicDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header
-                    Text(topic.name.uppercased())
-                        .font(.system(size: 28, weight: .bold, design: .default))
-                        .tracking(1.5)
+                    Text(topic.name)
+                        .font(.system(size: 28, weight: .semibold, design: .default))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
@@ -29,22 +28,21 @@ struct TopicDetailView: View {
                     let maxDiff = StatsCalculator.maxDifficultyReached(records: records, topicID: topic.id)
 
                     HStack(spacing: 12) {
-                        statBox(label: "QUESTIONS", value: "\(topicRecords.count)", color: .brutalTeal)
-                        statBox(label: "ACCURACY", value: "\(Int(accuracy))%", color: .brutalYellow)
-                        statBox(label: "MAX DIFF", value: "\(maxDiff)", color: .brutalLavender)
+                        statBox(label: "Questions", value: "\(topicRecords.count)", color: .brutalTeal)
+                        statBox(label: "Accuracy", value: "\(Int(accuracy))%", color: .brutalYellow)
+                        statBox(label: "Max Diff", value: "\(maxDiff)", color: .brutalLavender)
                     }
                     .padding(.horizontal, 24)
 
                     Text("Last practiced: \(topic.lastPracticed.relativeDisplay)")
                         .font(.system(.caption, design: .default))
-                        .foregroundColor(.brutalBlack.opacity(0.6))
+                        .foregroundColor(.flatSecondaryText)
                         .padding(.horizontal, 24)
 
                     // Subtopic Breakdown
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("SUBTOPICS")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Subtopics")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
 
@@ -58,22 +56,22 @@ struct TopicDetailView: View {
 
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(subtopic.uppercased())
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(0.5)
+                                    Text(subtopic)
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                     Text("\(subCount) questions")
                                         .font(.system(.caption2, design: .default))
-                                        .foregroundColor(.brutalBlack.opacity(0.6))
+                                        .foregroundColor(.flatSecondaryText)
                                 }
                                 Spacer()
                                 AccuracyRing(accuracy: subAccuracy, size: 40, lineWidth: 4)
                             }
                             .padding(16)
-                            .background(Color.white)
+                            .background(Color.flatSurface)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
-                                Rectangle()
-                                    .stroke(Color.brutalBlack, lineWidth: 2)
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.brutalBlack, lineWidth: 1)
                             )
                             .padding(.horizontal, 24)
                         }
@@ -81,9 +79,8 @@ struct TopicDetailView: View {
 
                     // Delete
                     Button(action: { showDeleteConfirmation = true }) {
-                        Text("DELETE TOPIC")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.2)
+                        Text("Delete Topic")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalCoral)
                             .frame(maxWidth: .infinity)
                             .padding(12)
@@ -112,19 +109,19 @@ struct TopicDetailView: View {
     private func statBox(label: String, value: String, color: Color) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(.title3, design: .monospaced, weight: .bold))
+                .font(.system(.title3, design: .monospaced, weight: .semibold))
                 .foregroundColor(.brutalBlack)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(0.8)
+                .font(.system(.caption2, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
         .background(color)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.brutalBlack, lineWidth: 1)
         )
     }
 }

@@ -19,9 +19,8 @@ struct QuestionCardView: View {
         VStack(spacing: 20) {
             // Subtopic label
             HStack(spacing: 6) {
-                Text(question.subtopic.uppercased())
-                    .font(.system(.caption2, design: .default, weight: .bold))
-                    .tracking(1.5)
+                Text(question.subtopic)
+                    .font(.system(.caption2, design: .default, weight: .medium))
                     .foregroundColor(.white)
 
                 if let num = subtopicQuestionNumber, num > 0 {
@@ -36,7 +35,7 @@ struct QuestionCardView: View {
 
             // Question text
             Text(question.questionText)
-                .font(.system(.title3, design: .default, weight: .bold))
+                .font(.system(.title3, design: .default, weight: .semibold))
                 .foregroundColor(.brutalBlack)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
@@ -50,16 +49,13 @@ struct QuestionCardView: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(Color.flatSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(borderColor, lineWidth: isSubmitted ? 4 : 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(borderColor, lineWidth: isSubmitted ? 2 : 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 8, y: 8)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
         .onAppear {
             if !isSubmitted && !question.isMultipleChoice {
                 isTextFieldFocused = true
@@ -76,10 +72,11 @@ struct QuestionCardView: View {
                 .font(.system(.body, design: .default))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Color.white)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
                 .focused($isTextFieldFocused)
                 .onSubmit { onSubmit() }
@@ -124,7 +121,7 @@ struct QuestionCardView: View {
         } label: {
             HStack(spacing: 12) {
                 Text(choice)
-                    .font(.system(.body, design: .default, weight: isSelected ? .bold : .regular))
+                    .font(.system(.body, design: .default, weight: isSelected ? .medium : .regular))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.leading)
 
@@ -148,12 +145,12 @@ struct QuestionCardView: View {
                 Color.white
             )
             .overlay(
-                Rectangle()
+                RoundedRectangle(cornerRadius: 8)
                     .stroke(
                         showAsCorrect ? Color.brutalTeal :
                         showAsWrong ? Color.brutalCoral :
                         Color.brutalBlack,
-                        lineWidth: (showAsCorrect || showAsWrong) ? 3 : 2
+                        lineWidth: 1
                     )
             )
         }
@@ -170,28 +167,27 @@ struct QuestionCardView: View {
                     .font(.title)
                     .foregroundColor(isCorrect ? .brutalTeal : .brutalCoral)
 
-                Text(isCorrect ? "CORRECT" : "INCORRECT")
-                    .font(.system(.body, design: .default, weight: .bold))
-                    .tracking(1.2)
+                Text(isCorrect ? "Correct" : "Incorrect")
+                    .font(.system(.body, design: .default, weight: .medium))
                     .foregroundColor(.brutalBlack)
             }
 
             if !isCorrect && !question.isMultipleChoice {
                 VStack(spacing: 4) {
-                    Text("CORRECT ANSWER")
-                        .font(.system(.caption2, design: .default, weight: .bold))
-                        .tracking(1)
-                        .foregroundColor(.brutalBlack.opacity(0.6))
+                    Text("Correct Answer")
+                        .font(.system(.caption2, design: .default, weight: .medium))
+                        .foregroundColor(.flatSecondaryText)
                     Text(question.correctAnswer)
-                        .font(.system(.body, design: .default, weight: .bold))
+                        .font(.system(.body, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity)
                 .background(Color.brutalCoral.opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
-                    Rectangle()
-                        .stroke(Color.brutalCoral, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.brutalCoral, lineWidth: 1)
                 )
             }
         }

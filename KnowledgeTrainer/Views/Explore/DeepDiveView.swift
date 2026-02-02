@@ -24,20 +24,18 @@ struct DeepDiveView: View {
         VStack(alignment: .leading, spacing: 16) {
             BrutalCard(backgroundColor: .white) {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(deepDive.topic.uppercased())
-                        .font(.system(.title2, design: .default, weight: .bold))
-                        .tracking(1.5)
+                    Text(deepDive.topic)
+                        .font(.system(.title2, design: .default, weight: .semibold))
                         .foregroundColor(.brutalBlack)
 
                     Text(deepDive.dateCreated.relativeDisplay)
                         .font(.system(.caption, design: .default))
-                        .foregroundColor(.brutalBlack.opacity(0.6))
+                        .foregroundColor(.flatSecondaryText)
 
                     ForEach(sections, id: \.title) { section in
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(section.title.uppercased())
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.2)
+                            Text(section.title)
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalCoral)
 
                             Text(section.content)
@@ -48,9 +46,8 @@ struct DeepDiveView: View {
 
                     if !deepDive.connectedTopics.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("EXPLORE NEXT")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1.2)
+                            Text("Explore Next")
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalCoral)
 
                             FlowLayout(spacing: 8) {

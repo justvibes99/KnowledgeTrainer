@@ -16,21 +16,20 @@ struct TopicMapView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("TOPIC MAP")
-                        .font(.system(size: 28, weight: .bold, design: .default))
-                        .tracking(1.5)
+                    Text("Topic Map")
+                        .font(.system(size: 28, weight: .semibold, design: .default))
                         .foregroundColor(.brutalBlack)
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
 
                     if topics.isEmpty {
                         VStack(spacing: 12) {
-                            Text("NO TOPICS YET")
-                                .font(.system(.body, design: .default, weight: .bold))
+                            Text("No Topics Yet")
+                                .font(.system(.body, design: .default, weight: .semibold))
                                 .foregroundColor(.brutalBlack)
                             Text("Start training to see your topic map.")
                                 .font(.system(.caption, design: .default))
-                                .foregroundColor(.brutalBlack.opacity(0.6))
+                                .foregroundColor(.flatSecondaryText)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(40)
@@ -61,9 +60,8 @@ struct TopicMapView: View {
         let cardColor = accuracyCardColor(accuracy)
 
         VStack(spacing: 8) {
-            Text(topic.name.uppercased())
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(0.8)
+            Text(topic.name)
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
@@ -77,15 +75,12 @@ struct TopicMapView: View {
         .frame(maxWidth: .infinity)
         .padding(16)
         .background(cardColor)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.brutalBlack, lineWidth: 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 
     private func accuracyCardColor(_ accuracy: Double) -> Color {

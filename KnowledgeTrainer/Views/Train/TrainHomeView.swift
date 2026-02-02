@@ -19,9 +19,8 @@ struct TrainHomeView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         // Header
-                        Text("TRAIN")
-                            .font(.system(size: 36, weight: .bold, design: .default))
-                            .tracking(2)
+                        Text("Train")
+                            .font(.system(size: 36, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -39,14 +38,13 @@ struct TrainHomeView: View {
                                 HStack(spacing: 8) {
                                     ProgressView()
                                         .tint(.brutalBlack)
-                                    Text("GENERATING...")
-                                        .font(.system(.caption, design: .default, weight: .bold))
-                                        .tracking(1)
+                                    Text("Generating...")
+                                        .font(.system(.caption, design: .default, weight: .medium))
                                         .foregroundColor(.brutalBlack)
                                 }
                                 .padding(.vertical, 8)
                             } else {
-                                BrutalButton(title: "Start", color: .brutalCoral, fullWidth: true) {
+                                BrutalButton(title: "Start", gradient: LinearGradient(colors: [.brutalYellow, .brutalTeal], startPoint: .leading, endPoint: .trailing), fullWidth: true) {
                                     Task { await startTopic() }
                                 }
                             }
@@ -62,9 +60,8 @@ struct TrainHomeView: View {
                                 BrutalCard(backgroundColor: .brutalLavender) {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 4) {
-                                            Text("REVIEW DUE")
-                                                .font(.system(.caption, design: .default, weight: .bold))
-                                                .tracking(1.2)
+                                            Text("Review Due")
+                                                .font(.system(.caption, design: .default, weight: .medium))
                                                 .foregroundColor(.brutalBlack)
                                             Text("\(dueCount) items to review")
                                                 .font(.system(.body, design: .default))
@@ -84,9 +81,8 @@ struct TrainHomeView: View {
                         // Your Topics
                         if !topics.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("YOUR TOPICS")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(1.5)
+                                Text("Your Topics")
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                                     .padding(.horizontal, 24)
 
@@ -133,9 +129,8 @@ struct TrainHomeView: View {
         BrutalCard {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(topic.name.uppercased())
-                        .font(.system(.body, design: .default, weight: .bold))
-                        .tracking(0.8)
+                    Text(topic.name)
+                        .font(.system(.body, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                         .lineLimit(1)
 
@@ -159,7 +154,7 @@ struct TrainHomeView: View {
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
                                     Rectangle()
-                                        .fill(Color.brutalBlack.opacity(0.1))
+                                        .fill(Color.flatSurfaceSubtle)
                                         .frame(height: 6)
 
                                     Rectangle()

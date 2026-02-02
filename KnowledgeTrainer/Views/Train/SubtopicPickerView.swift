@@ -20,6 +20,8 @@ struct LearningPathView: View {
     @State private var navigateToBranch = false
     @State private var didAutoNavigate = false
     @State private var showQueueToast = false
+    @State private var tappedRelatedTopic: String?
+    @State private var showRelatedTopicAction = false
 
     private var topicProgress: [SubtopicProgress] {
         subtopicProgress
@@ -42,22 +44,20 @@ struct LearningPathView: View {
             VStack(spacing: 0) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(topic.name.uppercased())
-                        .font(.system(size: 28, weight: .bold, design: .default))
-                        .tracking(1.5)
+                    Text(topic.name)
+                        .font(.system(size: 28, weight: .semibold, design: .default))
                         .foregroundColor(.brutalBlack)
 
                     if !topicProgress.isEmpty {
                         HStack(spacing: 8) {
-                            Text("\(masteredCount)/\(topicProgress.count) MASTERED")
-                                .font(.system(.caption, design: .default, weight: .bold))
-                                .tracking(1)
+                            Text("\(masteredCount)/\(topicProgress.count) Mastered")
+                                .font(.system(.caption, design: .default, weight: .medium))
                                 .foregroundColor(.brutalBlack)
 
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
-                                    Rectangle()
-                                        .fill(Color.brutalBlack.opacity(0.15))
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.flatSurfaceSubtle)
                                         .frame(height: 8)
 
                                     Rectangle()
@@ -68,9 +68,8 @@ struct LearningPathView: View {
                             .frame(height: 8)
                         }
                     } else {
-                        Text("LEARNING PATH")
-                            .font(.system(.caption, design: .default, weight: .bold))
-                            .tracking(1.5)
+                        Text("Learning Path")
+                            .font(.system(.caption, design: .default, weight: .medium))
                             .foregroundColor(.brutalBlack)
                     }
                 }
@@ -100,9 +99,8 @@ struct LearningPathView: View {
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.title3)
                                     .foregroundColor(.brutalTeal)
-                                Text("ALL MODULES MASTERED")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(1.2)
+                                Text("All Modules Mastered")
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
                             .padding(.horizontal, 24)
@@ -130,9 +128,8 @@ struct LearningPathView: View {
             if showQueueToast {
                 VStack {
                     Spacer()
-                    Text("ADDED TO QUEUE")
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(1.2)
+                    Text("Added to Queue")
+                        .font(.system(.caption, design: .default, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
@@ -142,19 +139,65 @@ struct LearningPathView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .zIndex(10)
             }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.body.bold())
+
+            // Related topic action popup
+            if showRelatedTopicAction {
+                Color.brutalBlack.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { showRelatedTopicAction = false }
+
+                VStack(spacing: 16) {
+                    Text(tappedRelatedTopic ?? "")
+                        .font(.system(.body, design: .default, weight: .semibold))
                         .foregroundColor(.brutalBlack)
+                        .multilineTextAlignment(.center)
+
+                    Button(action: {
+                        showRelatedTopicAction = false
+                        if let name = tappedRelatedTopic {
+                            createBranchTopic(name: name)
+                        }
+                    }) {
+                        Text("Go Now")
+                            .font(.system(.body, design: .default, weight: .medium))
+                            .foregroundColor(.brutalBlack)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.flatSurfaceSubtle)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
+                    }
+                    .buttonStyle(PressableButtonStyle())
+
+                    Button(action: {
+                        showRelatedTopicAction = false
+                        if let name = tappedRelatedTopic {
+                            queueRelatedTopic(name: name)
+                        }
+                    }) {
+                        Text("Add to List")
+                            .font(.system(.body, design: .default, weight: .medium))
+                            .foregroundColor(.brutalBlack)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.flatSurfaceSubtle)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.flatBorder, lineWidth: 1))
+                    }
+                    .buttonStyle(PressableButtonStyle())
                 }
-                .buttonStyle(.plain)
+                .padding(24)
+                .background(Color.flatSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.flatBorder, lineWidth: 1))
+                .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+                .padding(.horizontal, 32)
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .zIndex(20)
             }
         }
+        .animation(.easeInOut(duration: 0.15), value: showRelatedTopicAction)
+        .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToModule) {
             if let selected = selectedSubtopic {
                 ModuleFlowView(
@@ -188,8 +231,8 @@ struct LearningPathView: View {
                     VStack(spacing: 0) {
                         if index > 0 {
                             Rectangle()
-                                .fill(topicProgress[index - 1].isMastered ? Color.brutalTeal : Color.brutalBlack.opacity(0.15))
-                                .frame(width: 3, height: 16)
+                                .fill(topicProgress[index - 1].isMastered ? Color.brutalTeal : Color.flatSurfaceSubtle)
+                                .frame(width: 1, height: 16)
                         } else {
                             Spacer().frame(height: 16)
                         }
@@ -198,8 +241,8 @@ struct LearningPathView: View {
 
                         if index < topicProgress.count - 1 {
                             Rectangle()
-                                .fill(progress.isMastered ? Color.brutalTeal : Color.brutalBlack.opacity(0.15))
-                                .frame(width: 3, height: 16)
+                                .fill(progress.isMastered ? Color.brutalTeal : Color.flatSurfaceSubtle)
+                                .frame(width: 1, height: 16)
                         } else {
                             Spacer().frame(height: 16)
                         }
@@ -228,7 +271,7 @@ struct LearningPathView: View {
                 .frame(width: 28, height: 28)
                 .overlay(
                     Circle()
-                        .stroke(Color.brutalBlack, lineWidth: 3)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
         } else {
             Circle()
@@ -236,7 +279,7 @@ struct LearningPathView: View {
                 .frame(width: 24, height: 24)
                 .overlay(
                     Circle()
-                        .stroke(Color.brutalBlack.opacity(0.3), lineWidth: 2)
+                        .stroke(Color.flatBorder, lineWidth: 1)
                 )
         }
     }
@@ -248,28 +291,26 @@ struct LearningPathView: View {
 
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(progress.subtopicName.uppercased())
-                    .font(.system(.caption, design: .default, weight: .bold))
-                    .tracking(0.8)
-                    .foregroundColor(isFuture ? .brutalBlack.opacity(0.4) : .brutalBlack)
+                Text(progress.subtopicName)
+                    .font(.system(.caption, design: .default, weight: .medium))
+                    .foregroundColor(isFuture ? Color.flatTertiaryText : .brutalBlack)
                     .lineLimit(2)
 
                 if progress.questionsAnswered > 0 {
                     HStack(spacing: 8) {
                         Text("\(progress.questionsAnswered) Qs")
                             .font(.system(.caption2, design: .default))
-                            .foregroundColor(.brutalBlack.opacity(0.6))
+                            .foregroundColor(Color.flatSecondaryText)
 
                         Text("\(Int(progress.accuracy))%")
-                            .font(.system(.caption2, design: .monospaced, weight: .bold))
+                            .font(.system(.caption2, design: .monospaced, weight: .medium))
                             .foregroundColor(progress.accuracy >= 80 ? .brutalTeal : .brutalCoral)
                     }
                 }
 
                 if progress.isMastered {
-                    Text("MASTERED")
-                        .font(.system(.caption2, design: .default, weight: .bold))
-                        .tracking(1)
+                    Text("Mastered")
+                        .font(.system(.caption2, design: .default, weight: .medium))
                         .foregroundColor(.brutalTeal)
                 }
             }
@@ -278,7 +319,7 @@ struct LearningPathView: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption.bold())
-                .foregroundColor(isFuture ? .brutalBlack.opacity(0.25) : .brutalBlack.opacity(0.5))
+                .foregroundColor(isFuture ? Color.flatTertiaryText : Color.flatSecondaryText)
         }
         .padding(.vertical, 8)
         .opacity(isFuture ? 0.6 : 1.0)
@@ -294,32 +335,30 @@ struct LearningPathView: View {
     @ViewBuilder
     private var relatedTopicsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("RELATED TOPICS")
-                .font(.system(.caption, design: .default, weight: .bold))
-                .tracking(1.5)
+            Text("Related Topics")
+                .font(.system(.caption, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
                 .padding(.horizontal, 24)
 
-            FlowLayout(spacing: 8) {
-                ForEach(topic.relatedTopics, id: \.self) { related in
-                    Text(related.uppercased())
-                        .font(.system(.caption, design: .default, weight: .bold))
-                        .tracking(0.8)
-                        .foregroundColor(.brutalBlack)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.brutalMint)
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.brutalBlack, lineWidth: 2)
-                        )
-                        .onTapGesture {
-                            createBranchTopic(name: related)
-                        }
-                        .onLongPressGesture {
-                            queueRelatedTopic(name: related)
-                        }
-                }
+            ForEach(topic.relatedTopics, id: \.self) { related in
+                Text(related)
+                    .font(.system(.caption2, design: .default, weight: .medium))
+                    .foregroundColor(.brutalBlack)
+                    .lineLimit(2)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.brutalTeal.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.brutalTeal.opacity(0.3), lineWidth: 1)
+                    )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        tappedRelatedTopic = related
+                        showRelatedTopicAction = true
+                    }
             }
             .padding(.horizontal, 24)
 
@@ -327,9 +366,8 @@ struct LearningPathView: View {
                 HStack(spacing: 8) {
                     ProgressView()
                         .tint(.brutalBlack)
-                    Text("CREATING PATH...")
-                        .font(.system(.caption2, design: .default, weight: .bold))
-                        .tracking(1)
+                    Text("Creating path...")
+                        .font(.system(.caption2, design: .default, weight: .medium))
                         .foregroundColor(.brutalBlack)
                 }
                 .padding(.horizontal, 24)

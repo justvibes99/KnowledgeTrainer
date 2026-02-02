@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BrutalCard<Content: View>: View {
     var backgroundColor: Color = .flatSurface
+    var borderColor: Color = .flatBorder
     var shadowSize: CGFloat = 8
     @ViewBuilder let content: () -> Content
 
@@ -15,7 +16,7 @@ struct BrutalCard<Content: View>: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.flatBorder, lineWidth: 1)
+                .stroke(borderColor, lineWidth: borderColor == .flatBorder ? 1 : 1.5)
         )
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }

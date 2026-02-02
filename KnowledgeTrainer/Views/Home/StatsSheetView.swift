@@ -16,9 +16,8 @@ struct StatsSheetView: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-                        Text("STATS")
-                            .font(.system(size: 28, weight: .bold, design: .default))
-                            .tracking(1.5)
+                        Text("Stats")
+                            .font(.system(size: 28, weight: .semibold, design: .default))
                             .foregroundColor(.brutalBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 24)
@@ -28,12 +27,12 @@ struct StatsSheetView: View {
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {
                                 dashboardCard(
-                                    label: "QUESTIONS",
+                                    label: "Questions",
                                     value: "\(StatsCalculator.totalQuestionsAnswered(records: records))",
                                     color: .brutalTeal
                                 )
                                 dashboardCard(
-                                    label: "ACCURACY",
+                                    label: "Accuracy",
                                     value: "\(Int(StatsCalculator.overallAccuracy(records: records)))%",
                                     color: .brutalYellow
                                 )
@@ -41,12 +40,12 @@ struct StatsSheetView: View {
 
                             HStack(spacing: 12) {
                                 dashboardCard(
-                                    label: "STREAK",
+                                    label: "Streak",
                                     value: "\(StatsCalculator.currentStreak(dailyStreaks: dailyStreaks))d",
                                     color: .brutalMint
                                 )
                                 dashboardCard(
-                                    label: "TOTAL DAYS",
+                                    label: "Total Days",
                                     value: "\(dailyStreaks.filter { $0.questionsCompleted > 0 }.count)",
                                     color: .brutalLavender
                                 )
@@ -62,7 +61,7 @@ struct StatsSheetView: View {
                         NavigationLink {
                             TopicMapView()
                         } label: {
-                            navRow(title: "TOPIC MAP")
+                            navRow(title: "Topic Map")
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 24)
@@ -71,7 +70,7 @@ struct StatsSheetView: View {
                         NavigationLink {
                             ChartsView()
                         } label: {
-                            navRow(title: "CHARTS")
+                            navRow(title: "Charts")
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 24)
@@ -79,23 +78,21 @@ struct StatsSheetView: View {
                         // Saved Deep Dives
                         if !deepDives.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("SAVED DEEP DIVES")
-                                    .font(.system(.caption, design: .default, weight: .bold))
-                                    .tracking(1.5)
+                                Text("Saved Deep Dives")
+                                    .font(.system(.caption, design: .default, weight: .medium))
                                     .foregroundColor(.brutalBlack)
 
                                 ForEach(deepDives) { deepDive in
                                     Button(action: { selectedDeepDive = deepDive }) {
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
-                                                Text(deepDive.topic.uppercased())
-                                                    .font(.system(.caption, design: .default, weight: .bold))
-                                                    .tracking(0.8)
+                                                Text(deepDive.topic)
+                                                    .font(.system(.caption, design: .default, weight: .medium))
                                                     .foregroundColor(.brutalBlack)
                                                     .lineLimit(1)
                                                 Text(deepDive.dateCreated.relativeDisplay)
                                                     .font(.system(.caption2, design: .default))
-                                                    .foregroundColor(.brutalBlack.opacity(0.6))
+                                                    .foregroundColor(.flatSecondaryText)
                                             }
                                             Spacer()
                                             Image(systemName: "arrow.right")
@@ -104,10 +101,11 @@ struct StatsSheetView: View {
                                         }
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 12)
-                                        .background(Color.white)
+                                        .background(Color.flatSurface)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
                                         .overlay(
-                                            Rectangle()
-                                                .stroke(Color.brutalBlack, lineWidth: 2)
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(Color.flatBorder, lineWidth: 1)
                                         )
                                     }
                                     .buttonStyle(.plain)
@@ -122,14 +120,8 @@ struct StatsSheetView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { dismiss() }) {
-                        Text("DONE")
-                            .font(.system(.body, design: .default, weight: .bold))
-                            .foregroundColor(.brutalBlack)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+                    Button("Done") { dismiss() }
+                }            }
             .sheet(item: $selectedDeepDive) { deepDive in
                 NavigationStack {
                     ScrollView {
@@ -139,14 +131,8 @@ struct StatsSheetView: View {
                     .background(Color.brutalBackground)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { selectedDeepDive = nil }) {
-                                Text("DONE")
-                                    .font(.system(.body, design: .default, weight: .bold))
-                                    .foregroundColor(.brutalBlack)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                            Button("Done") { selectedDeepDive = nil }
+                        }                    }
                 }
             }
         }
@@ -156,48 +142,36 @@ struct StatsSheetView: View {
     private func dashboardCard(label: String, value: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 28, weight: .bold, design: .monospaced))
-                .foregroundColor(.brutalBlack)
+                .font(.system(size: 22, weight: .medium, design: .monospaced))
+                .foregroundColor(.flatSecondaryText)
             Text(label)
-                .font(.system(.caption2, design: .default, weight: .bold))
-                .tracking(1)
-                .foregroundColor(.brutalBlack)
+                .font(.system(.caption2, design: .default, weight: .medium))
+                .foregroundColor(.flatTertiaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(color)
-        .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
-        )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .background(Color(hex: "EAE7E1"))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
     }
 
     @ViewBuilder
     private func navRow(title: String) -> some View {
         HStack {
             Text(title)
-                .font(.system(.body, design: .default, weight: .bold))
-                .tracking(1.2)
+                .font(.system(.body, design: .default, weight: .medium))
                 .foregroundColor(.brutalBlack)
             Spacer()
             Image(systemName: "arrow.right")
                 .foregroundColor(.brutalBlack)
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.flatSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-            Rectangle()
-                .stroke(Color.brutalBlack, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.flatBorder, lineWidth: 1)
         )
-        .background(
-            Rectangle()
-                .fill(Color.brutalBlack)
-                .offset(x: 4, y: 4)
-        )
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 }
