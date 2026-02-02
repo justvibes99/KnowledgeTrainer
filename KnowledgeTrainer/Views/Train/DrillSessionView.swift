@@ -30,7 +30,7 @@ struct DrillSessionView: View {
                     questionsAnswered: viewModel.questionsAnswered,
                     correctAnswers: viewModel.correctAnswers,
                     accuracy: viewModel.sessionAccuracy,
-                    difficultyReached: viewModel.currentDifficulty,
+                    depthLabel: viewModel.learningDepth.displayName,
                     wrongAnswers: viewModel.wrongAnswers,
                     subtopicStats: viewModel.subtopicSessionStats,
                     masteredThisSession: viewModel.masteredThisSession,
@@ -106,7 +106,7 @@ struct DrillSessionView: View {
                             statItem(label: "Streak", value: "\(viewModel.currentStreak)")
                             statItem(label: "Accuracy", value: "\(Int(viewModel.sessionAccuracy))%")
                             statItem(label: "Answered", value: "\(viewModel.questionsAnswered)")
-                            statItem(label: "Diff", value: "\(viewModel.currentDifficulty)")
+                            statItem(label: "Depth", value: viewModel.learningDepth.displayName)
                         }
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

@@ -61,7 +61,7 @@ struct AchievementDefinition: Identifiable {
         ),
         AchievementDefinition(
             id: "difficulty_max", name: "Pinnacle",
-            description: "Answer correctly at difficulty 5",
+            description: "Answer correctly in Deep mode",
             iconName: "mountain.2", xpReward: 50, category: .mastery
         ),
         AchievementDefinition(

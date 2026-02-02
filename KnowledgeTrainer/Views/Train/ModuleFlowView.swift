@@ -469,7 +469,7 @@ struct ModuleFlowView: View {
             questionsAnswered: viewModel.questionsAnswered,
             correctAnswers: viewModel.correctAnswers,
             accuracy: viewModel.sessionAccuracy,
-            difficultyReached: viewModel.currentDifficulty,
+            depthLabel: viewModel.learningDepth.displayName,
             wrongAnswers: viewModel.wrongAnswers,
             subtopicStats: viewModel.subtopicSessionStats,
             masteredThisSession: viewModel.masteredThisSession,
@@ -596,13 +596,15 @@ struct ModuleFlowView: View {
     private func fetchLessonContent() {
         Task {
             do {
+                let depth = LearningDepth.current
                 let (questions, lesson) = try await APIClient.shared.generateQuestionBatch(
                     topic: topic.name,
                     subtopics: Array(topic.subtopics),
-                    difficulty: 1,
+                    difficulty: depth.difficultyInt,
                     previousQuestions: [],
                     focusSubtopic: subtopicName,
-                    nextSubtopic: subtopicName
+                    nextSubtopic: subtopicName,
+                    depth: depth
                 )
 
                 await MainActor.run {
@@ -641,13 +643,15 @@ struct ModuleFlowView: View {
 
         Task {
             do {
+                let depth = LearningDepth.current
                 let (_, lesson) = try await APIClient.shared.generateQuestionBatch(
                     topic: topic.name,
                     subtopics: Array(topic.subtopics),
-                    difficulty: 1,
+                    difficulty: depth.difficultyInt,
                     previousQuestions: [],
                     focusSubtopic: nextName,
-                    nextSubtopic: nextName
+                    nextSubtopic: nextName,
+                    depth: depth
                 )
 
                 if let lesson {
@@ -745,7 +749,7 @@ struct ModuleFlowView: View {
         isCreatingBranch = true
         Task {
             do {
-                let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: name)
+                let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: name, depth: LearningDepth.current)
 
                 let newTopic = Topic(
                     name: structure.name,
