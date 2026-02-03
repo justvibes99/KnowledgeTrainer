@@ -98,6 +98,11 @@ final class HomeViewModel {
                 if let questions {
                     await MainActor.run {
                         self.createdQuestions = questions
+                        // Cache generated questions
+                        for question in questions {
+                            modelContext.insert(CachedQuestion.from(question, topicID: topicID))
+                        }
+                        try? modelContext.save()
                     }
                 }
             }

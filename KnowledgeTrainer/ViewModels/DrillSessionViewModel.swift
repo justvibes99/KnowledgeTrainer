@@ -59,6 +59,7 @@ final class DrillSessionViewModel {
     // Data
     var topic: Topic?
     var selectedSubtopics: Set<String> = []
+    private var modelContext: ModelContext?
     private var questionQueue: [GeneratedQuestion] = []
     private var askedQuestions: [String] = []
     private var wrongQuestions: [(question: GeneratedQuestion, userAnswer: String)] = []
@@ -125,16 +126,28 @@ final class DrillSessionViewModel {
         initialLesson: LessonPayload? = nil,
         focusSubtopic: String? = nil,
         subtopicProgressItems: [SubtopicProgress] = [],
-        questionFormat: QuestionFormat = .mixed
+        questionFormat: QuestionFormat = .mixed,
+        modelContext: ModelContext? = nil
     ) {
         self.topic = topic
         self.selectedSubtopics = subtopics
         self.questionFormat = questionFormat
         self.learningDepth = LearningDepth.current
-        self.questionQueue = filterQuestions(initialQuestions)
+        self.modelContext = modelContext
         self.timerEnabled = timerEnabled
         self.timerDuration = timerDuration
         self.allSubtopicsOrdered = topic.subtopics
+
+        // Load cached questions, supplemented by any passed-in initial questions
+        var questions = initialQuestions
+        if let ctx = modelContext {
+            let cached = loadCachedQuestions(topicID: topic.id, subtopic: focusSubtopic, context: ctx)
+            // Merge: cached questions first, then initial (deduped)
+            let initialTexts = Set(questions.map(\.questionText))
+            let uniqueCached = cached.filter { !initialTexts.contains($0.questionText) }
+            questions = questions + uniqueCached
+        }
+        self.questionQueue = filterQuestions(questions)
 
         let dueReviews = SpacedRepetitionEngine.dueItems(from: reviewItems)
             .filter { $0.topicID == topic.id }
@@ -514,7 +527,11 @@ final class DrillSessionViewModel {
                 nextSubtopic: nextSub,
                 depth: learningDepth
             )
-            questionQueue.append(contentsOf: filterQuestions(newQuestions))
+            let filtered = filterQuestions(newQuestions)
+            questionQueue.append(contentsOf: filtered)
+
+            // Cache newly generated questions
+            saveQuestionsToCache(filtered, topicID: topic.id)
 
             if let lesson = nextLesson {
                 pendingLessonForNext = lesson
@@ -523,6 +540,50 @@ final class DrillSessionViewModel {
             errorMessage = error.localizedDescription
             showError = true
         }
+    }
+
+    // MARK: - Question Cache
+
+    private func loadCachedQuestions(topicID: UUID, subtopic: String?, context: ModelContext) -> [GeneratedQuestion] {
+        // Get question texts already answered for this topic
+        let answeredDescriptor = FetchDescriptor<QuestionRecord>(
+            predicate: #Predicate { $0.topicID == topicID }
+        )
+        let answeredTexts = Set((try? context.fetch(answeredDescriptor))?.map(\.questionText) ?? [])
+
+        // Fetch cached questions for this topic
+        let descriptor: FetchDescriptor<CachedQuestion>
+        if let sub = subtopic {
+            descriptor = FetchDescriptor<CachedQuestion>(
+                predicate: #Predicate { $0.topicID == topicID && $0.subtopic == sub }
+            )
+        } else {
+            descriptor = FetchDescriptor<CachedQuestion>(
+                predicate: #Predicate { $0.topicID == topicID }
+            )
+        }
+
+        guard let cached = try? context.fetch(descriptor) else { return [] }
+
+        // Exclude already-answered questions
+        return cached
+            .filter { !answeredTexts.contains($0.questionText) }
+            .map { $0.toGeneratedQuestion() }
+    }
+
+    private func saveQuestionsToCache(_ questions: [GeneratedQuestion], topicID: UUID) {
+        guard let context = modelContext else { return }
+
+        // Get existing cached question texts to avoid duplicates
+        let descriptor = FetchDescriptor<CachedQuestion>(
+            predicate: #Predicate { $0.topicID == topicID }
+        )
+        let existingTexts = Set((try? context.fetch(descriptor))?.map(\.questionText) ?? [])
+
+        for question in questions where !existingTexts.contains(question.questionText) {
+            context.insert(CachedQuestion.from(question, topicID: topicID))
+        }
+        try? context.save()
     }
 
     // MARK: - Similarity Detection

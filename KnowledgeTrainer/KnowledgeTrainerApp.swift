@@ -15,7 +15,8 @@ struct KnowledgeTrainerApp: App {
             SubtopicProgress.self,
             WantToLearnItem.self,
             ScholarProfile.self,
-            Achievement.self
+            Achievement.self,
+            CachedQuestion.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {

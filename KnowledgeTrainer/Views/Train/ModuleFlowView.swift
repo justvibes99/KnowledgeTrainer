@@ -602,13 +602,16 @@ struct ModuleFlowView: View {
 
                 await MainActor.run {
                     fetchedQuestions = questions
+                    // Cache fetched questions
+                    for question in questions {
+                        modelContext.insert(CachedQuestion.from(question, topicID: topic.id))
+                    }
                     if let lesson {
                         if let progress = subtopicProgressItem {
                             progress.lessonOverview = lesson.overview
                             progress.lessonKeyFacts = lesson.keyFacts
                             progress.lessonMisconceptions = lesson.misconceptions ?? []
                             progress.lessonConnections = lesson.connections ?? []
-                            try? modelContext.save()
                         }
                         fetchedLesson = lesson
                         phase = .lesson
@@ -616,6 +619,7 @@ struct ModuleFlowView: View {
                     } else {
                         startQuizPhase()
                     }
+                    try? modelContext.save()
                 }
             } catch {
                 await MainActor.run {
@@ -637,7 +641,7 @@ struct ModuleFlowView: View {
         Task {
             do {
                 let depth = LearningDepth.current
-                let (_, lesson) = try await APIClient.shared.generateQuestionBatch(
+                let (questions, lesson) = try await APIClient.shared.generateQuestionBatch(
                     topic: topic.name,
                     subtopics: Array(topic.subtopics),
                     difficulty: depth.difficultyInt,
@@ -647,17 +651,22 @@ struct ModuleFlowView: View {
                     depth: depth
                 )
 
-                if let lesson {
-                    await MainActor.run {
+                await MainActor.run {
+                    // Cache prefetched questions
+                    for question in questions {
+                        modelContext.insert(CachedQuestion.from(question, topicID: topic.id))
+                    }
+
+                    if let lesson {
                         if let nextProgress = allProgress.first(where: { $0.topicID == topic.id && $0.subtopicName == nextName }),
                            nextProgress.lessonOverview.isEmpty {
                             nextProgress.lessonOverview = lesson.overview
                             nextProgress.lessonKeyFacts = lesson.keyFacts
                             nextProgress.lessonMisconceptions = lesson.misconceptions ?? []
                             nextProgress.lessonConnections = lesson.connections ?? []
-                            try? modelContext.save()
                         }
                     }
+                    try? modelContext.save()
                 }
             } catch {
                 // Prefetch failure is silent — user will fetch on demand
@@ -691,7 +700,8 @@ struct ModuleFlowView: View {
             initialLesson: nil,
             focusSubtopic: subtopicName,
             subtopicProgressItems: progressItems,
-            questionFormat: questionFormat
+            questionFormat: questionFormat,
+            modelContext: modelContext
         )
     }
 

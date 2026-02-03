@@ -58,6 +58,13 @@ final class TrainViewModel {
 
             try modelContext.save()
 
+            // Cache generated questions
+            for question in questions {
+                let cached = CachedQuestion.from(question, topicID: topic.id)
+                modelContext.insert(cached)
+            }
+            try? modelContext.save()
+
             currentTopic = topic
             currentSubtopics = structure.subtopics
             selectedSubtopics = Set(structure.subtopics)
