@@ -25,7 +25,10 @@ final class HomeViewModel {
         errorMessage = nil
 
         do {
-            let (structure, questions, lesson, relatedTopics, category) = try await APIClient.shared.generateTopicAndFirstBatch(topic: input, depth: LearningDepth.current)
+            let depth = LearningDepth.current
+
+            // Call 1: Get structure (fast)
+            let (structure, relatedTopics, category) = try await APIClient.shared.generateTopicStructure(topic: input)
 
             let topic = Topic(
                 name: structure.name,
@@ -45,28 +48,64 @@ final class HomeViewModel {
                     subtopicName: subtopicName,
                     sortOrder: index
                 )
-                if index == 0, let lesson = lesson {
-                    progress.lessonOverview = lesson.overview
-                    progress.lessonKeyFacts = lesson.keyFacts
-                    progress.lessonMisconceptions = lesson.misconceptions ?? []
-                    progress.lessonConnections = lesson.connections ?? []
-                }
                 modelContext.insert(progress)
             }
 
             try modelContext.save()
 
+            // Navigate immediately — lesson and questions load in the background
             createdTopic = topic
-            createdQuestions = questions
-            createdLesson = lesson
+            createdQuestions = []
+            createdLesson = nil
             topicInput = ""
+            isLoading = false
             navigateToPath = true
+
+            // Calls 2 & 3: Lesson and questions in parallel (background)
+            let firstSubtopic = structure.subtopics.first ?? structure.name
+            let topicName = structure.name
+            let topicID = topic.id
+
+            Task {
+                // Call 2: Generate lesson first
+                let lesson = try? await APIClient.shared.generateInitialLesson(topic: topicName, subtopic: firstSubtopic, depth: depth)
+
+                if let lesson {
+                    await MainActor.run {
+                        self.createdLesson = lesson
+                        // Save lesson to SubtopicProgress
+                        let descriptor = FetchDescriptor<SubtopicProgress>(
+                            predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == firstSubtopic }
+                        )
+                        if let progress = try? modelContext.fetch(descriptor).first {
+                            progress.lessonOverview = lesson.overview
+                            progress.lessonKeyFacts = lesson.keyFacts
+                            progress.lessonMisconceptions = lesson.misconceptions ?? []
+                            progress.lessonConnections = lesson.connections ?? []
+                            try? modelContext.save()
+                        }
+                    }
+                }
+
+                // Call 3: Generate questions, seeded with lesson key facts
+                let questions = try? await APIClient.shared.generateInitialQuestions(
+                    topic: topicName,
+                    subtopic: firstSubtopic,
+                    keyFacts: lesson?.keyFacts ?? [],
+                    depth: depth
+                )
+
+                if let questions {
+                    await MainActor.run {
+                        self.createdQuestions = questions
+                    }
+                }
+            }
         } catch {
             errorMessage = error.localizedDescription
             showError = true
+            isLoading = false
         }
-
-        isLoading = false
     }
 
     // MARK: - Want to Learn Queue

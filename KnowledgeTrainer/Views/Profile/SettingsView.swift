@@ -151,13 +151,12 @@ struct SettingsView: View {
 
             content()
                 .padding(16)
-                .background(Color.flatSurface)
+                .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.flatBorder, lineWidth: 1)
+                        .stroke(Color.flatBorderStrong, lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
         }
         .padding(.horizontal, 24)
     }

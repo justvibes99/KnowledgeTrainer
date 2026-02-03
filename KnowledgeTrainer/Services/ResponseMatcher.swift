@@ -28,16 +28,21 @@ struct ResponseMatcher {
             }
         }
 
-        // Contains match (user answer contains acceptable or vice versa)
-        for acceptable in allAcceptable {
-            if cleaned.contains(acceptable) || acceptable.contains(cleaned) {
-                return .correct
+        // Contains match — skip for purely numeric answers where substring matching is misleading
+        let isNumeric = cleaned.allSatisfy { $0.isNumber || $0 == " " }
+        if !isNumeric {
+            for acceptable in allAcceptable {
+                if cleaned.contains(acceptable) || acceptable.contains(cleaned) {
+                    return .correct
+                }
             }
         }
 
-        // Levenshtein distance <= 2
+        // Levenshtein distance — scale threshold by length to avoid false positives on short answers
         for acceptable in allAcceptable {
-            if levenshteinDistance(cleaned, acceptable) <= 2 {
+            let maxAllowed = acceptable.count <= 4 ? 0 : (acceptable.count <= 7 ? 1 : 2)
+            let distance = levenshteinDistance(cleaned, acceptable)
+            if distance > 0 && distance <= maxAllowed {
                 return .correct
             }
         }

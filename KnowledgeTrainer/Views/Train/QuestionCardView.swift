@@ -109,7 +109,7 @@ struct QuestionCardView: View {
     @ViewBuilder
     private func choiceButton(_ choice: String) -> some View {
         let isSelected = userAnswer == choice
-        let isCorrectChoice = choice == question.correctAnswer
+        let isCorrectChoice = choice.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let showAsCorrect = isSubmitted && isCorrectChoice
         let showAsWrong = isSubmitted && isSelected && !isCorrect
 
@@ -121,7 +121,7 @@ struct QuestionCardView: View {
         } label: {
             HStack(spacing: 12) {
                 Text(choice)
-                    .font(.system(.body, design: .default, weight: isSelected ? .medium : .regular))
+                    .font(.system(.body, design: .default, weight: .regular))
                     .foregroundColor(.brutalBlack)
                     .multilineTextAlignment(.leading)
 

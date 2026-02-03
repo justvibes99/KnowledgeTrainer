@@ -31,9 +31,9 @@ enum LearningDepth: String, CaseIterable {
 
     var difficultyDescription: String {
         switch self {
-        case .casual: return "Simple recall, straightforward questions about key facts"
-        case .standard: return "Analysis, comparing concepts, moderate complexity"
-        case .deep: return "Expert-level, nuanced understanding, edge cases, deep critical thinking"
+        case .casual: return "Recall and identification — ask what, who, when, where. Test recognition of key facts, names, dates, definitions."
+        case .standard: return "Understanding and application — ask why, how, compare, contrast. Require explaining relationships or applying concepts."
+        case .deep: return "Analysis and evaluation — edge cases, exceptions, cause-effect chains, synthesis. Require reasoning, not memorization."
         }
     }
 

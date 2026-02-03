@@ -415,9 +415,10 @@ struct ModuleFlowView: View {
                                     .padding(.top, 8)
                             } label: {
                                 Text("Review")
-                                    .font(.system(.caption, design: .monospaced, weight: .medium))
+                                    .font(.system(.body, design: .monospaced, weight: .medium))
                                     .foregroundColor(.brutalBlack)
                             }
+                            .tint(.brutalBlack)
 
                             BrutalButton(title: "Next", color: .brutalTeal, fullWidth: true) {
                                 viewModel.serveNextQuestion()
@@ -429,17 +430,9 @@ struct ModuleFlowView: View {
                     // Stats Bar
                     HStack(spacing: 20) {
                         VStack(spacing: 2) {
-                            if viewModel.comboTier != .none {
-                                Text(viewModel.comboTier.label)
-                                    .font(.system(.caption, design: .monospaced, weight: .semibold))
-                                    .foregroundColor(viewModel.comboTier.color)
-                                    .scaleEffect(viewModel.comboTier == .five ? 1.1 : viewModel.comboTier == .ten ? 1.2 : 1.0)
-                                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: viewModel.comboTier)
-                            } else {
-                                Text("\(viewModel.currentStreak)")
-                                    .font(.system(.body, design: .monospaced, weight: .semibold))
-                                    .foregroundColor(.brutalBlack)
-                            }
+                            Text("\(viewModel.currentStreak)")
+                                .font(.system(.body, design: .monospaced, weight: .semibold))
+                                .foregroundColor(viewModel.comboTier != .none ? viewModel.comboTier.color : .brutalBlack)
                             Text("Streak")
                                 .font(.system(.caption2, design: .monospaced, weight: .medium))
                                 .foregroundColor(Color.flatSecondaryText)
@@ -681,12 +674,7 @@ struct ModuleFlowView: View {
     private func startQuizPhase() {
         phase = .quiz
 
-        // Reset subtopic progress for a fresh quiz attempt
-        if let progress = subtopicProgressItem, !progress.isMastered {
-            progress.questionsAnswered = 0
-            progress.questionsCorrect = 0
-            try? modelContext.save()
-        }
+        // Accumulate subtopic progress across attempts (don't reset)
 
         let progressItems = allProgress.filter { $0.topicID == topic.id }
         let timerOn = UserDefaults.standard.bool(forKey: "timerEnabled")

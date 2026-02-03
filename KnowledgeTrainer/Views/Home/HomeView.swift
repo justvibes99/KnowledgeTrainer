@@ -133,6 +133,7 @@ struct HomeView: View {
                                 .padding(.vertical, 8)
                             } else {
                                 BrutalButton(title: "Start Learning", gradient: LinearGradient(colors: [.brutalYellow, .brutalTeal], startPoint: .leading, endPoint: .trailing), fullWidth: true) {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                     Task { await viewModel.startNewTopic(modelContext: modelContext) }
                                 }
                             }

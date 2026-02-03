@@ -13,6 +13,7 @@
 		23C750F9B7A52E3D73639E9B /* StatsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB5FB44D302E8F4778BF1E /* StatsCalculator.swift */; };
 		255BC271372EC5B41438675C /* TimerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723B91A08DEEEAB7E98E7B4E /* TimerBar.swift */; };
 		2A6AAFB19454460E71772F14 /* BrutalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBD11BAAA59D76E3D5609188 /* BrutalButton.swift */; };
+		68A885A3C653AC2F15C77425 /* BrutalToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2D53E7006A10C0875B5C6B8 /* BrutalToggleStyle.swift */; };
 		2E7606E5AC67B6B8FB780179 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A5C7539847BDED4E66911B /* ExploreViewModel.swift */; };
 		35A95F47FB368B751AFDA307 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D2A5D406D5C5FB232646A6 /* Extensions.swift */; };
 		35B8B63C172E271E212001FE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA62DA239DA18539DFF31CEE /* HomeView.swift */; };
@@ -134,6 +135,7 @@
 		C4A73B57C822943B8C60A290 /* KnowledgeTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeTrainerApp.swift; sourceTree = "<group>"; };
 		CA62DA239DA18539DFF31CEE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		CBD11BAAA59D76E3D5609188 /* BrutalButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrutalButton.swift; sourceTree = "<group>"; };
+		A2D53E7006A10C0875B5C6B8 /* BrutalToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrutalToggleStyle.swift; sourceTree = "<group>"; };
 		CC2A3B4C5D6E7F8900000001 /* LearningDepth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningDepth.swift; sourceTree = "<group>"; };
 		CF710AE19A85BBF9A3298564 /* ChartsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsView.swift; sourceTree = "<group>"; };
 		D4C7C19ECF80E2C87A9E1684 /* SpacedRepetitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionEngine.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 			children = (
 				55A67CDD2A1D7E38D9D00A4C /* AccuracyRing.swift */,
 				CBD11BAAA59D76E3D5609188 /* BrutalButton.swift */,
+				A2D53E7006A10C0875B5C6B8 /* BrutalToggleStyle.swift */,
 				41DC4919D3343F92F0E3D463 /* BrutalCard.swift */,
 				E08BB96AED84DB2388F9A841 /* BrutalAlert.swift */,
 				5B2F7D8D3C64F55AB4148B6A /* BrutalChip.swift */,
@@ -424,6 +427,7 @@
 				F29E766F0DBE46B337323F23 /* ChartsView.swift in Sources */,
 				DCF49DE4A8B547F2E034A0F2 /* SettingsView.swift in Sources */,
 				2A6AAFB19454460E71772F14 /* BrutalButton.swift in Sources */,
+				68A885A3C653AC2F15C77425 /* BrutalToggleStyle.swift in Sources */,
 				89D1884DEDBE2EC3B4527F14 /* BrutalCard.swift in Sources */,
 				8AF4B1285D3BB47C35956C25 /* BrutalAlert.swift in Sources */,
 				902F825D953FDFE42814FD5D /* BrutalTextField.swift in Sources */,
@@ -475,7 +479,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 3FV82DW9JR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Snap Study";
@@ -623,7 +627,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 3FV82DW9JR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Snap Study";

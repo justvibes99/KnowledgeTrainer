@@ -292,8 +292,8 @@ final class DrillSessionViewModel {
         let answer = userAnswer.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if question.isMultipleChoice {
-            // Multiple choice: exact match against correct answer
-            isCorrect = answer == question.correctAnswer
+            // Multiple choice: case-insensitive, trimmed comparison
+            isCorrect = answer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         } else {
             // Free-response: fuzzy matching with API fallback
             let matchResult = ResponseMatcher.evaluate(

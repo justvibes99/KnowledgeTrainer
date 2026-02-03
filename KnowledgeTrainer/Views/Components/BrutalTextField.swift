@@ -8,20 +8,28 @@ struct BrutalTextField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        TextField(placeholder, text: $text)
-            .font(.system(.body, design: .monospaced))
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isFocused ? Color.flatBorderStrong : Color.flatBorder, lineWidth: 1)
-            )
-            .shadow(color: isFocused ? Color.brutalYellow.opacity(0.1) : .clear, radius: 3, x: 0, y: 0)
-            .focused($isFocused)
-            .onSubmit {
-                onSubmit?()
+        ZStack(alignment: .leading) {
+            if text.isEmpty {
+                Text(placeholder)
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.flatSecondaryText)
+                    .padding(.horizontal, 14)
             }
+            TextField("", text: $text)
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.brutalBlack)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .focused($isFocused)
+                .onSubmit {
+                    onSubmit?()
+                }
+        }
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(Color.flatBorderStrong, lineWidth: 2)
+        )
     }
 }

@@ -25,6 +25,10 @@ struct KnowledgeTrainerApp: App {
         }
     }()
 
+    init() {
+        ToggleAppearance.configure()
+    }
+
     var body: some Scene {
         WindowGroup {
             if hasCompletedOnboarding {
