@@ -66,6 +66,7 @@ final class DrillSessionViewModel {
     private var isServingReview: Bool = false
     private var currentReviewItem: ReviewItem?
     private var timerTask: Task<Void, Never>?
+    private var backgroundFetchTask: Task<Void, Never>?
     private var allSubtopicsOrdered: [String] = []
 
     // Gamification
@@ -154,10 +155,12 @@ final class DrillSessionViewModel {
             let alreadyViewed = subtopicProgressItems.first { $0.topicID == topic.id && $0.subtopicName == lessonSubtopic }?.lessonViewed ?? false
             if !alreadyViewed {
                 self.showingLesson = true
+                startBackgroundFetching()
                 return
             }
         }
 
+        startBackgroundFetching()
         serveNextQuestion()
     }
 
@@ -255,16 +258,6 @@ final class DrillSessionViewModel {
                 }
             }
             return
-        }
-
-        // Pre-fetch when running low, but only if we still need more questions
-        let questionsRemaining = maxQuestions - questionsAnswered
-        if questionQueue.count <= 5 && questionQueue.count < questionsRemaining && !isFetchingBatch && topic != nil {
-            isFetchingBatch = true
-            Task { @MainActor in
-                await fetchNextBatch()
-                isFetchingBatch = false
-            }
         }
 
         let q = questionQueue.removeFirst()
@@ -460,6 +453,8 @@ final class DrillSessionViewModel {
 
     func endSession() {
         stopTimer()
+        backgroundFetchTask?.cancel()
+        backgroundFetchTask = nil
         gamificationService?.onSessionEnd(
             questionsAnswered: questionsAnswered,
             correctAnswers: correctAnswers,
@@ -530,6 +525,49 @@ final class DrillSessionViewModel {
         }
     }
 
+    // MARK: - Similarity Detection
+
+    private func wordSet(_ text: String) -> Set<String> {
+        Set(text.lowercased()
+            .components(separatedBy: .alphanumerics.inverted)
+            .filter { $0.count > 2 })
+    }
+
+    private func isTooSimilar(_ question: GeneratedQuestion) -> Bool {
+        let newWords = wordSet(question.questionText)
+        guard !newWords.isEmpty else { return false }
+
+        let allExisting = askedQuestions + questionQueue.map(\.questionText)
+        for existing in allExisting {
+            let existingWords = wordSet(existing)
+            guard !existingWords.isEmpty else { continue }
+            let overlap = Double(newWords.intersection(existingWords).count)
+            let smaller = Double(min(newWords.count, existingWords.count))
+            if overlap / smaller > 0.7 {
+                return true
+            }
+        }
+        return false
+    }
+
+    // MARK: - Background Queue Filler
+
+    private func startBackgroundFetching() {
+        backgroundFetchTask?.cancel()
+        backgroundFetchTask = Task { @MainActor in
+            while !Task.isCancelled {
+                let totalAvailable = questionQueue.count + questionsAnswered
+                let needed = maxQuestions - totalAvailable
+                if needed <= 0 { break }
+
+                await fetchNextBatch()
+
+                // Small delay to avoid hammering the API
+                try? await Task.sleep(nanoseconds: 500_000_000)
+            }
+        }
+    }
+
     private func filterQuestions(_ questions: [GeneratedQuestion]) -> [GeneratedQuestion] {
         // First filter by subtopic if focused
         var result = questions
@@ -540,17 +578,20 @@ final class DrillSessionViewModel {
             }
         }
 
-        // Then filter by format
+        // Filter by format
         switch questionFormat {
         case .mixed:
-            return result
+            break
         case .multipleChoice:
             let filtered = result.filter { $0.isMultipleChoice }
-            return filtered.isEmpty ? result : filtered
+            if !filtered.isEmpty { result = filtered }
         case .shortAnswer:
             let filtered = result.filter { !$0.isMultipleChoice }
-            return filtered.isEmpty ? result : filtered
+            if !filtered.isEmpty { result = filtered }
         }
+
+        // Remove questions too similar to existing ones
+        return result.filter { !isTooSimilar($0) }
     }
 
     // MARK: - Daily Streak

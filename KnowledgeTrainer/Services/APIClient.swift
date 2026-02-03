@@ -132,7 +132,7 @@ actor APIClient {
         }
 
         let prompt = """
-        Generate 10 quiz questions about "\(topic)", ALL about the subtopic "\(subtopic)" only.
+        Generate 5 quiz questions about "\(topic)", ALL about the subtopic "\(subtopic)" only.
         \(factsContext)
         Return a JSON object with ONLY this structure:
         {
@@ -150,9 +150,9 @@ actor APIClient {
         }
 
         Requirements:
-        - Exactly 10 questions at difficulty \(depth.difficultyInt): \(depth.difficultyDescription)
+        - Exactly 5 questions at difficulty \(depth.difficultyInt): \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
-        - About 6 multiple choice, 4 free-response
+        - About 3 multiple choice, 2 free-response
 
         Multiple choice rules:
         - "choices" with exactly 4 options; correctAnswer must exactly match one choice
@@ -186,7 +186,7 @@ actor APIClient {
         - Return ONLY the JSON object
         """
 
-        let response = try await makeRequest(prompt: prompt, maxTokens: 3072)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 1536)
         let parsed = try decodeJSON(QuestionsResponse.self, from: response)
         return parsed.questions
     }
@@ -224,7 +224,7 @@ actor APIClient {
 
         let focusInstruction: String
         if let focus = focusSubtopic {
-            focusInstruction = "ALL 10 questions MUST be about the subtopic \"\(focus)\" only. Do NOT include questions about any other subtopic."
+            focusInstruction = "ALL 5 questions MUST be about the subtopic \"\(focus)\" only. Do NOT include questions about any other subtopic."
         } else {
             focusInstruction = "Spread across the listed subtopics."
         }
@@ -250,7 +250,7 @@ actor APIClient {
         }
 
         let prompt = """
-        Generate 10 quiz questions about "\(topic)".
+        Generate 5 quiz questions about "\(topic)".
 
         Available subtopics: \(subtopicList)
         Difficulty level: \(difficulty) (1=beginner, 5=expert)
@@ -289,11 +289,11 @@ actor APIClient {
         \(lessonInstruction)
 
         Requirements:
-        - Exactly 10 questions
+        - Exactly 5 questions
         - Difficulty \(difficulty): \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
         - Do not repeat any previously asked question
-        - About 6 multiple choice, 4 free-response
+        - About 3 multiple choice, 2 free-response
 
         Multiple choice rules:
         - "choices" with exactly 4 options; correctAnswer must exactly match one choice
@@ -327,7 +327,7 @@ actor APIClient {
         - Return ONLY the JSON object
         """
 
-        let response = try await makeRequest(prompt: prompt)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 2048)
         let parsed = try decodeJSON(QuestionBatchResponse.self, from: response)
         return (parsed.questions, parsed.nextLesson)
     }
