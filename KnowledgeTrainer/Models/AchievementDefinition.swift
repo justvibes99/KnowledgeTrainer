@@ -92,6 +92,18 @@ struct AchievementDefinition: Identifiable {
         ),
     ]
 
+    enum AchievementTier {
+        case standard  // 25-50 XP
+        case notable   // 75-150 XP
+        case epic      // 250-500 XP
+    }
+
+    var tier: AchievementTier {
+        if xpReward >= 250 { return .epic }
+        if xpReward >= 75 { return .notable }
+        return .standard
+    }
+
     static func find(_ id: String) -> AchievementDefinition? {
         all.first { $0.id == id }
     }

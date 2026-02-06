@@ -21,8 +21,7 @@ struct ModuleFlowView: View {
 
     // Gamification
     @State private var gamificationService: GamificationService?
-    @State private var showAchievementToast = false
-    @State private var unlockedAchievement: AchievementDefinition?
+    @State private var sessionAchievements: [AchievementDefinition] = []
     @State private var showLevelUp = false
     @State private var levelUpRank: ScholarRank?
 
@@ -97,15 +96,6 @@ struct ModuleFlowView: View {
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .zIndex(10)
-            }
-
-            // Achievement toast overlay
-            if showAchievementToast, let achievement = unlockedAchievement {
-                AchievementToast(achievement: achievement) {
-                    showAchievementToast = false
-                    unlockedAchievement = nil
-                }
-                .zIndex(20)
             }
 
             // Level-up overlay
@@ -479,6 +469,7 @@ struct ModuleFlowView: View {
             subtopicStats: viewModel.subtopicSessionStats,
             masteredThisSession: viewModel.masteredThisSession,
             xpEvents: gamificationService?.pendingXPEvents ?? [],
+            unlockedAchievements: sessionAchievements,
             onContinueLearning: {
                 let nextSub = viewModel.nextSubtopicName
                 viewModel.endSession()
@@ -774,11 +765,9 @@ struct ModuleFlowView: View {
 
     private func checkGamificationResults() {
         guard let service = gamificationService else { return }
-        if let achievement = service.unlockedAchievement {
-            unlockedAchievement = achievement
-            showAchievementToast = true
-            HapticManager.success()
-            service.unlockedAchievement = nil
+        if !service.unlockedAchievements.isEmpty {
+            sessionAchievements.append(contentsOf: service.unlockedAchievements)
+            service.unlockedAchievements.removeAll()
         }
         if service.didRankUp, let rank = service.newRank {
             levelUpRank = rank

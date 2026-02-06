@@ -7,6 +7,8 @@ struct ReviewSessionView: View {
 
     let reviewItems: [ReviewItem]
     @State private var viewModel = DrillSessionViewModel()
+    @State private var gamificationService: GamificationService?
+    @State private var sessionAchievements: [AchievementDefinition] = []
 
     var body: some View {
         ZStack {
@@ -19,6 +21,8 @@ struct ReviewSessionView: View {
                     accuracy: viewModel.sessionAccuracy,
                     depthLabel: LearningDepth.current.displayName,
                     wrongAnswers: viewModel.wrongAnswers,
+                    xpEvents: gamificationService?.pendingXPEvents ?? [],
+                    unlockedAchievements: sessionAchievements,
                     onDone: { dismiss() }
                 )
             } else if let question = viewModel.currentQuestion {
@@ -119,6 +123,10 @@ struct ReviewSessionView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            let service = GamificationService(context: modelContext)
+            gamificationService = service
+            viewModel.gamificationService = service
+
             let timerOn = UserDefaults.standard.bool(forKey: "timerEnabled")
             let timerDur = UserDefaults.standard.integer(forKey: "timerDuration")
             viewModel.setupReviewOnly(
@@ -126,6 +134,19 @@ struct ReviewSessionView: View {
                 timerEnabled: timerOn,
                 timerDuration: timerDur > 0 ? timerDur : 15
             )
+        }
+        .onChange(of: viewModel.sessionEnded) { _, ended in
+            if ended {
+                checkGamificationResults()
+            }
+        }
+    }
+
+    private func checkGamificationResults() {
+        guard let service = gamificationService else { return }
+        if !service.unlockedAchievements.isEmpty {
+            sessionAchievements.append(contentsOf: service.unlockedAchievements)
+            service.unlockedAchievements.removeAll()
         }
     }
 }

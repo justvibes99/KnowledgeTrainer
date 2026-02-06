@@ -9,7 +9,7 @@ struct XPEvent: Identifiable {
 
 final class GamificationService: ObservableObject {
     @Published var pendingXPEvents: [XPEvent] = []
-    @Published var unlockedAchievement: AchievementDefinition?
+    @Published var unlockedAchievements: [AchievementDefinition] = []
     @Published var didRankUp = false
     @Published var newRank: ScholarRank?
 
@@ -151,35 +151,86 @@ final class GamificationService: ObservableObject {
         sessionMaxDifficulty: Int = 0
     ) {
         let unlocked = fetchUnlockedAchievementIDs()
-        let allProgress = fetchAllSubtopicProgress()
-        let totalMastered = allProgress.filter { $0.isMastered }.count
-        let fullyMasteredTopics = countFullyMasteredTopics()
-        let allRecords = fetchAllQuestionRecords()
-        let totalQuestions = allRecords.count
-        let dailyStreaks = fetchDailyStreaks()
-        let streak = StatsCalculator.currentStreak(dailyStreaks: dailyStreaks)
-        let overallAccuracy = StatsCalculator.overallAccuracy(records: allRecords)
 
-        let checks: [(String, Bool)] = [
-            ("first_subtopic", totalMastered >= 1),
-            ("first_topic", fullyMasteredTopics >= 1),
-            ("five_topics", fullyMasteredTopics >= 5),
-            ("ten_topics", fullyMasteredTopics >= 10),
-            ("streak_7", streak >= 7),
-            ("streak_14", streak >= 14),
-            ("streak_30", streak >= 30),
+        // Early exit if all achievements are already unlocked
+        if unlocked.count >= AchievementDefinition.all.count { return }
+
+        // Session-dependent checks (no fetch needed)
+        let sessionChecks: [(String, Bool)] = [
             ("perfect_session", sessionQuestions >= 5 && sessionCorrect == sessionQuestions && sessionQuestions > 0),
             ("difficulty_max", sessionMaxDifficulty >= 5 && sessionCorrect > 0),
-            ("ninety_accuracy", totalQuestions >= 100 && overallAccuracy >= 90),
-            ("three_subtopics_one_day", subtopicsMasteredToday() >= 3),
-            ("hundred_questions", totalQuestions >= 100),
-            ("five_hundred_questions", totalQuestions >= 500),
-            ("review_clear", checkAllReviewsCleared()),
         ]
 
-        for (achievementID, condition) in checks {
-            if condition && !unlocked.contains(achievementID) {
-                unlockAchievement(id: achievementID, profile: profile)
+        for (id, condition) in sessionChecks {
+            if condition && !unlocked.contains(id) {
+                unlockAchievement(id: id, profile: profile)
+            }
+        }
+
+        // Progress-dependent checks
+        let progressIDs: Set<String> = ["first_subtopic", "first_topic", "five_topics", "ten_topics", "three_subtopics_one_day"]
+        if !progressIDs.isSubset(of: unlocked) {
+            let allProgress = fetchAllSubtopicProgress()
+            let totalMastered = allProgress.filter { $0.isMastered }.count
+            let fullyMasteredTopics = countFullyMasteredTopics()
+
+            let progressChecks: [(String, Bool)] = [
+                ("first_subtopic", totalMastered >= 1),
+                ("first_topic", fullyMasteredTopics >= 1),
+                ("five_topics", fullyMasteredTopics >= 5),
+                ("ten_topics", fullyMasteredTopics >= 10),
+                ("three_subtopics_one_day", subtopicsMasteredToday() >= 3),
+            ]
+
+            for (id, condition) in progressChecks {
+                if condition && !unlocked.contains(id) {
+                    unlockAchievement(id: id, profile: profile)
+                }
+            }
+        }
+
+        // Record-dependent checks
+        let recordIDs: Set<String> = ["hundred_questions", "five_hundred_questions", "ninety_accuracy"]
+        if !recordIDs.isSubset(of: unlocked) {
+            let allRecords = fetchAllQuestionRecords()
+            let totalQuestions = allRecords.count
+            let overallAccuracy = StatsCalculator.overallAccuracy(records: allRecords)
+
+            let recordChecks: [(String, Bool)] = [
+                ("hundred_questions", totalQuestions >= 100),
+                ("five_hundred_questions", totalQuestions >= 500),
+                ("ninety_accuracy", totalQuestions >= 100 && overallAccuracy >= 90),
+            ]
+
+            for (id, condition) in recordChecks {
+                if condition && !unlocked.contains(id) {
+                    unlockAchievement(id: id, profile: profile)
+                }
+            }
+        }
+
+        // Streak-dependent checks
+        let streakIDs: Set<String> = ["streak_7", "streak_14", "streak_30"]
+        if !streakIDs.isSubset(of: unlocked) {
+            let streak = StatsCalculator.currentStreak(dailyStreaks: fetchDailyStreaks())
+
+            let streakChecks: [(String, Bool)] = [
+                ("streak_7", streak >= 7),
+                ("streak_14", streak >= 14),
+                ("streak_30", streak >= 30),
+            ]
+
+            for (id, condition) in streakChecks {
+                if condition && !unlocked.contains(id) {
+                    unlockAchievement(id: id, profile: profile)
+                }
+            }
+        }
+
+        // Review-dependent check
+        if !unlocked.contains("review_clear") {
+            if checkAllReviewsCleared() {
+                unlockAchievement(id: "review_clear", profile: profile)
             }
         }
     }
@@ -191,14 +242,54 @@ final class GamificationService: ObservableObject {
         context.insert(achievement)
 
         awardXP(definition.xpReward, reason: "Achievement: \(definition.name)", profile: profile)
-        unlockedAchievement = definition
+        unlockedAchievements.append(definition)
+        HapticManager.success()
+    }
+
+    // MARK: - Achievement Progress
+
+    func achievementProgress() -> [String: (current: Int, target: Int)] {
+        let allProgress = fetchAllSubtopicProgress()
+        let totalMastered = allProgress.filter { $0.isMastered }.count
+        let fullyMasteredTopics = countFullyMasteredTopics()
+        let allRecords = fetchAllQuestionRecords()
+        let totalQuestions = allRecords.count
+        let streak = StatsCalculator.currentStreak(dailyStreaks: fetchDailyStreaks())
+
+        return [
+            "first_subtopic": (min(totalMastered, 1), 1),
+            "first_topic": (min(fullyMasteredTopics, 1), 1),
+            "five_topics": (min(fullyMasteredTopics, 5), 5),
+            "ten_topics": (min(fullyMasteredTopics, 10), 10),
+            "streak_7": (min(streak, 7), 7),
+            "streak_14": (min(streak, 14), 14),
+            "streak_30": (min(streak, 30), 30),
+            "hundred_questions": (min(totalQuestions, 100), 100),
+            "five_hundred_questions": (min(totalQuestions, 500), 500),
+            "ninety_accuracy": (min(totalQuestions, 100), 100),
+        ]
+    }
+
+    // MARK: - Closest Achievement
+
+    func closestAchievement() -> (definition: AchievementDefinition, current: Int, target: Int)? {
+        let unlocked = fetchUnlockedAchievementIDs()
+        let progress = achievementProgress()
+
+        return progress
+            .filter { !unlocked.contains($0.key) }
+            .compactMap { id, prog -> (AchievementDefinition, Int, Int)? in
+                guard let def = AchievementDefinition.find(id), prog.current > 0 else { return nil }
+                return (def, prog.current, prog.target)
+            }
+            .max { Double($0.1) / Double($0.2) < Double($1.1) / Double($1.2) }
     }
 
     // MARK: - Helpers
 
     func clearPendingEvents() {
         pendingXPEvents.removeAll()
-        unlockedAchievement = nil
+        unlockedAchievements.removeAll()
         didRankUp = false
         newRank = nil
     }

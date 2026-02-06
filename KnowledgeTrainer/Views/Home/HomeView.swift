@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var quickContinueTopic: Topic?
     @State private var quickContinueSubtopic: String?
     @State private var navigateToQuickContinue = false
+    @State private var closestAchievement: (definition: AchievementDefinition, current: Int, target: Int)?
 
     private var profile: ScholarProfile? { scholarProfiles.first }
 
@@ -145,6 +146,53 @@ struct HomeView: View {
                             .padding(.horizontal, 24)
                         }
 
+                        // Achievement Nudge
+                        if let closest = closestAchievement {
+                            Button {
+                                selectedTab = 1
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: closest.definition.iconName)
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.brutalBlack)
+                                        .frame(width: 32, height: 32)
+                                        .background(Color.brutalYellow)
+                                        .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(closest.definition.name)
+                                            .font(.system(.caption, design: .monospaced, weight: .medium))
+                                            .foregroundColor(.brutalBlack)
+
+                                        GeometryReader { geo in
+                                            ZStack(alignment: .leading) {
+                                                RoundedRectangle(cornerRadius: 2)
+                                                    .fill(Color.flatSurfaceSubtle)
+                                                    .frame(height: 4)
+                                                RoundedRectangle(cornerRadius: 2)
+                                                    .fill(Color.brutalTeal)
+                                                    .frame(width: geo.size.width * CGFloat(closest.current) / CGFloat(closest.target), height: 4)
+                                            }
+                                        }
+                                        .frame(height: 4)
+                                    }
+
+                                    Text("\(closest.current)/\(closest.target)")
+                                        .font(.system(.caption2, design: .monospaced, weight: .semibold))
+                                        .foregroundColor(.flatSecondaryText)
+                                }
+                                .padding(12)
+                                .background(Color.flatSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.flatBorder, lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 24)
+                        }
+
                         // Review Due Banner
                         if dueCount > 0 {
                             NavigationLink {
@@ -256,6 +304,10 @@ struct HomeView: View {
                         subtopicName: subtopic
                     )
                 }
+            }
+            .onAppear {
+                let service = GamificationService(context: modelContext)
+                closestAchievement = service.closestAchievement()
             }
             .sheet(isPresented: $showStats) {
                 StatsSheetView()

@@ -9,6 +9,7 @@ struct SessionSummaryView: View {
     var subtopicStats: [String: (answered: Int, correct: Int)] = [:]
     var masteredThisSession: [String] = []
     var xpEvents: [XPEvent] = []
+    var unlockedAchievements: [AchievementDefinition] = []
     var onContinueLearning: (() -> Void)? = nil
     var onRetryMistakes: (() -> Void)? = nil
     let onDone: () -> Void
@@ -61,6 +62,53 @@ struct SessionSummaryView: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.brutalTeal, lineWidth: 1)
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                }
+
+                // Achievements Unlocked
+                if !unlockedAchievements.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Achievements Unlocked")
+                            .font(.system(.caption, design: .monospaced, weight: .medium))
+                            .foregroundColor(.brutalBlack)
+
+                        ForEach(unlockedAchievements) { achievement in
+                            HStack(spacing: 12) {
+                                Image(systemName: achievement.iconName)
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.brutalBlack)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.brutalYellow)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.brutalBlack, lineWidth: 1)
+                                    )
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(achievement.name)
+                                        .font(.system(.subheadline, design: .monospaced, weight: .semibold))
+                                        .foregroundColor(.brutalBlack)
+                                    Text(achievement.description)
+                                        .font(.system(.caption2, design: .monospaced))
+                                        .foregroundColor(.flatSecondaryText)
+                                }
+
+                                Spacer()
+
+                                Text("+\(achievement.xpReward) XP")
+                                    .font(.system(.caption, design: .monospaced, weight: .semibold))
+                                    .foregroundColor(.brutalTeal)
+                            }
+                            .padding(12)
+                            .background(Color.brutalYellow.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.brutalYellow, lineWidth: 1)
                             )
                         }
                     }
