@@ -22,7 +22,7 @@ final class SubtopicProgress {
     }
 
     var hasMasteryThreshold: Bool {
-        questionsAnswered >= 20 && accuracy >= 100
+        questionsAnswered >= 10 && accuracy >= 80
     }
 
     init(

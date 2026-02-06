@@ -37,17 +37,86 @@ struct QuestionsResponse: Codable {
 actor APIClient {
     static let shared = APIClient()
 
-    private let baseURL = "https://kt-proxy.vercel.app/api/claude"
-    private let model = "claude-haiku-4-5-20251001"
+    private let baseURL = "https://kt-proxy.vercel.app/api/openai"
+    private let model = "gpt-4.1-mini"
+    private let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 120
+        config.timeoutIntervalForResource = 120
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        return URLSession(configuration: config)
+    }()
     private let systemPrompt = """
     You are a knowledgeable tutor who generates pedagogically sound, factually accurate quiz questions \
-    and educational content. Adjust cognitive complexity to the specified difficulty level (1=beginner \
-    recall, 5=expert analysis). Always respond in the specified JSON format. correctAnswer and every \
-    entry in acceptableAnswers must be plain text: no parentheses, hyphens, colons, semicolons, or \
-    special characters. Provide multiple acceptable answer phrasings to enable local answer checking.
+    and educational content. Adjust cognitive complexity to the specified difficulty level. \
+    Always respond with valid JSON matching the requested schema. \
+    If you are not confident about a specific fact, date, or number, use well-established widely-known \
+    facts instead of guessing. Never fabricate statistics, dates, or attributions. \
+    correctAnswer and every entry in acceptableAnswers must be plain text: no parentheses, hyphens, \
+    colons, semicolons, or special characters.
     """
 
     private init() {}
+
+    // MARK: - Shared Question Rules
+
+    private var questionRules: String {
+        """
+        Example of a well-formed MC question:
+        {
+          "questionText": "Which planet in our solar system has the most moons?",
+          "correctAnswer": "Saturn",
+          "acceptableAnswers": [],
+          "choices": ["Jupiter", "Saturn", "Uranus", "Neptune"],
+          "explanation": "Saturn has 146 confirmed moons as of 2024, surpassing Jupiter's 95. Many were discovered by the Cassini mission.",
+          "subtopic": "Planets",
+          "difficulty": 3
+        }
+
+        Example of a well-formed FR question:
+        {
+          "questionText": "What year did the Wright Brothers make their first powered flight?",
+          "correctAnswer": "1903",
+          "acceptableAnswers": ["1903", "nineteen oh three", "nineteen hundred and three"],
+          "choices": null,
+          "explanation": "The Wright Brothers' first powered flight occurred on December 17, 1903, at Kitty Hawk, North Carolina. The flight lasted 12 seconds.",
+          "subtopic": "Aviation History",
+          "difficulty": 2
+        }
+
+        Multiple choice rules:
+        - "choices" with exactly 4 options
+        - correctAnswer must be a CHARACTER-FOR-CHARACTER copy of one of the choices entries (same case, spacing, and wording)
+        - Distractors MUST target common misconceptions or confusions, not random wrong answers
+        - All 4 options must be similar in length, grammatical structure, and specificity
+        - Never use absolutes ("always", "never") in only some options
+        - Never use "all of the above" or "none of the above"
+        - Vary the position of the correct answer across questions (not always first or last)
+        - The question stem should be answerable before reading the options
+        - Never embed a false premise or incorrect assumption in the stem
+        - For multiple choice questions, set acceptableAnswers to an empty array []
+
+        Free-response rules:
+        - Set "choices" to null
+        - Only ask for short unambiguous answers: a name, date, number, place, or term (1-5 words)
+        - Use precise question stems: "Name the...", "What year...", "In which country..."
+        - Never embed a false premise or incorrect assumption in the stem
+        - Never require an answer that contains special characters, hyphens, or punctuation
+        - correctAnswer = simplest common phrasing (e.g. "Everest" not "Mount Everest")
+
+        acceptableAnswers (3-5 per FR question, empty [] for MC):
+        - Include abbreviations, alternate spellings, and common short forms
+        - For answers containing abbreviations (St., Mt., Dr.), include both abbreviated and full-word forms
+        - Numeric answers: include both digit and written forms ("7" and "seven")
+        - All entries: lowercase plain text, no articles ("the", "a"), no punctuation
+
+        Explanation structure (2-4 sentences):
+        1. State the correct answer and why it is correct
+        2. If a distractor reflects a real misconception, explain why it's wrong. For factual/numeric recall, add useful context instead.
+        3. Optional: a memory hook, mnemonic, or broader topic connection
+        """
+    }
 
     // MARK: - Generate Topic Structure (fast, ~500 tokens)
 
@@ -105,7 +174,7 @@ actor APIClient {
         Requirements:
         - Overview: \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers. Never vague.
         - keyFacts: \(depth.keyFactsCount) detailed facts. Each MUST include specific names, dates, numbers, or concrete examples.
-        - If the subtopic contains enumerable items (e.g., lakes, planets, states), ALL items must be listed.
+        - For well-known finite sets (e.g., planets, Great Lakes, continents), list all items. For large or open-ended sets, list the most notable examples.
         - connections: 2-3 short topic names (2-4 words each), NOT full sentences
         - Return ONLY the JSON object
         """
@@ -123,7 +192,7 @@ actor APIClient {
             let factsList = keyFacts.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
             factsContext = """
 
-            The lesson taught these key facts — base your questions on them:
+            The lesson taught these key facts. Every question MUST be answerable using ONLY the facts listed below. Do not ask about details not covered in these facts.
             \(factsList)
 
             """
@@ -132,9 +201,9 @@ actor APIClient {
         }
 
         let prompt = """
-        Generate 5 quiz questions about "\(topic)", ALL about the subtopic "\(subtopic)" only.
+        Generate 10 quiz questions about "\(topic)", ALL about the subtopic "\(subtopic)" only.
         \(factsContext)
-        Return a JSON object with ONLY this structure:
+        Return a JSON object with this structure:
         {
           "questions": [
             {
@@ -150,45 +219,16 @@ actor APIClient {
         }
 
         Requirements:
-        - Exactly 5 questions at difficulty \(depth.difficultyInt): \(depth.difficultyDescription)
+        - Exactly 10 questions at difficulty \(depth.difficultyInt): \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
-        - About 3 multiple choice, 2 free-response
+        - About 6 multiple choice, 4 free-response
 
-        Multiple choice rules:
-        - "choices" with exactly 4 options; correctAnswer must exactly match one choice
-        - Distractors MUST target common misconceptions or confusions, not random wrong answers
-        - All 4 options must be similar in length, grammatical structure, and specificity
-        - Never use absolutes ("always", "never") in only some options
-        - Never use "all of the above" or "none of the above"
-        - Vary the position of the correct answer across questions (not always first or last)
-        - The question stem should be answerable before reading the options
-        - Never embed a false premise or incorrect assumption in the stem (e.g. don't imply a causal relationship that doesn't exist)
-        - Use MC for distinctions, comparisons, and conceptual understanding
-
-        Free-response rules:
-        - Set "choices" to null
-        - Only ask for short unambiguous answers: a name, date, number, place, or term (1-5 words)
-        - Use precise question stems: "Name the...", "What year...", "In which country..."
-        - Never embed a false premise or incorrect assumption in the stem
-        - Never require an answer that contains special characters, hyphens, or punctuation
-        - correctAnswer = simplest common phrasing (e.g. "Everest" not "Mount Everest")
-
-        acceptableAnswers (3-5 per question):
-        - Include abbreviations, alternate spellings, and common short forms
-        - Numeric answers: include both digit and written forms ("7" and "seven")
-        - All entries: lowercase plain text, no articles ("the", "a"), no punctuation
-
-        Explanation structure (2-4 sentences):
-        1. State the correct answer and why it is correct
-        2. If a distractor reflects a real misconception, explain why it's wrong. Do NOT invent a misconception that doesn't match the distractors — for factual/numeric recall, add useful context instead.
-        3. Optional: a memory hook, mnemonic, or broader topic connection
-
-        - Return ONLY the JSON object
+        \(questionRules)
         """
 
-        let response = try await makeRequest(prompt: prompt, maxTokens: 1536)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 4096)
         let parsed = try decodeJSON(QuestionsResponse.self, from: response)
-        return parsed.questions
+        return GeneratedQuestion.validateBatch(parsed.questions)
     }
 
     // MARK: - Generate Topic and First Batch (structure → lesson → questions)
@@ -217,67 +257,79 @@ actor APIClient {
         previousQuestions: [String],
         focusSubtopic: String? = nil,
         nextSubtopic: String? = nil,
-        depth: LearningDepth = .standard
+        depth: LearningDepth = .standard,
+        keyFacts: [String] = [],
+        previousSubtopicSummaries: [String] = []
     ) async throws -> ([GeneratedQuestion], LessonPayload?) {
         let subtopicList = subtopics.joined(separator: ", ")
-        let previousList = previousQuestions.map { "- \($0)" }.joined(separator: "\n")
+        let recentQuestions = previousQuestions.suffix(15)
+        let previousList = recentQuestions.map { "- \($0)" }.joined(separator: "\n")
 
         let focusInstruction: String
         if let focus = focusSubtopic {
-            focusInstruction = "ALL 5 questions MUST be about the subtopic \"\(focus)\" only. Do NOT include questions about any other subtopic."
+            focusInstruction = "ALL 10 questions MUST be about the subtopic \"\(focus)\" only. Do NOT include questions about any other subtopic."
         } else {
             focusInstruction = "Spread across the listed subtopics."
         }
 
+        let factsContext: String
+        if !keyFacts.isEmpty {
+            let factsList = keyFacts.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
+            factsContext = """
+
+            The lesson taught these key facts. Base your questions on them:
+            \(factsList)
+
+            """
+        } else {
+            factsContext = ""
+        }
+
         let lessonInstruction: String
         if let next = nextSubtopic {
+            let previousContext = previousSubtopicSummaries.isEmpty ? "" : """
+            Previously covered subtopics (do NOT repeat this material in the new lesson):
+            \(previousSubtopicSummaries.joined(separator: "\n"))
+
+            """
             lessonInstruction = """
             Also include a "nextLesson" field to teach the upcoming subtopic "\(next)":
             "nextLesson": {
               "subtopic": "\(next)",
-              "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples. Not vague — include the who, what, when, and why.",
+              "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples.",
               "keyFacts": ["Detailed fact with specific names, dates, numbers", ...],
               "connections": ["Short Topic Name 1", "Short Topic Name 2"]
             }
-            The overview must be \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers, concrete examples. Never vague.
-            Each keyFact (\(depth.keyFactsCount) total) MUST include specific names, dates, numbers, or concrete examples. No vague generalizations like "early versions were simple". Instead: "The Wright Model B (1910) was the first aircraft purchased by the US military, costing $25,000".
-            IMPORTANT: If the subtopic contains enumerable items (e.g., specific lakes, planets, states), ALL items must be listed. Depth controls verbosity, never completeness.
+            \(previousContext)The overview must be \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers, concrete examples. Never vague.
+            Each keyFact (\(depth.keyFactsCount) total) MUST include specific names, dates, numbers, or concrete examples.
+            For well-known finite sets (e.g., planets, Great Lakes), list all items. For large or open-ended sets, list the most notable examples.
             If the subtopic is a specific item (a mountain, a president, a country, etc.), the lesson should comprehensively cover that item: key stats, history, notable facts, and what makes it significant.
-            connections: 2-3 short topic names (2-4 words each) like "Radar Technology" or "Aerial Tactics", NOT full sentences
+            connections: 2-3 short topic names (2-4 words each), NOT full sentences
             """
         } else {
             lessonInstruction = "Set \"nextLesson\" to null."
         }
 
         let prompt = """
-        Generate 5 quiz questions about "\(topic)".
+        Generate 10 quiz questions about "\(topic)".
 
         Available subtopics: \(subtopicList)
         Difficulty level: \(difficulty) (1=beginner, 5=expert)
         \(focusInstruction)
-
-        If the subtopics are specific items (e.g., specific mountains, specific presidents, specific countries), then questions should ask about concrete facts, stats, and details of those specific items. For example, for a subtopic "Himalayas": "What is the height of Mount Everest?", "Which country contains the most Himalayan peaks over 8,000m?", etc.
+        \(factsContext)
+        If the subtopics are specific items (e.g., specific mountains, specific presidents, specific countries), then questions should ask about concrete facts, stats, and details of those specific items.
 
         Previously asked questions (DO NOT repeat these):
         \(previousList)
 
-        Return a JSON object with this exact structure:
+        Return a JSON object with this structure:
         {
           "questions": [
             {
-              "questionText": "Multiple choice question?",
-              "correctAnswer": "the correct option",
-              "acceptableAnswers": ["variation 1"],
-              "choices": ["the correct option", "wrong 1", "wrong 2", "wrong 3"],
-              "explanation": "2-4 sentence teaching explanation",
-              "subtopic": "which subtopic",
-              "difficulty": \(difficulty)
-            },
-            {
-              "questionText": "Free response question?",
-              "correctAnswer": "short answer",
-              "acceptableAnswers": ["variation 1", "variation 2"],
-              "choices": null,
+              "questionText": "Question text?",
+              "correctAnswer": "the correct answer",
+              "acceptableAnswers": [],
+              "choices": ["correct", "wrong 1", "wrong 2", "wrong 3"],
               "explanation": "2-4 sentence teaching explanation",
               "subtopic": "which subtopic",
               "difficulty": \(difficulty)
@@ -289,47 +341,19 @@ actor APIClient {
         \(lessonInstruction)
 
         Requirements:
-        - Exactly 5 questions
+        - Exactly 10 questions
         - Difficulty \(difficulty): \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
         - Do not repeat any previously asked question
-        - About 3 multiple choice, 2 free-response
+        - About 6 multiple choice, 4 free-response
 
-        Multiple choice rules:
-        - "choices" with exactly 4 options; correctAnswer must exactly match one choice
-        - Distractors MUST target common misconceptions or confusions, not random wrong answers
-        - All 4 options must be similar in length, grammatical structure, and specificity
-        - Never use absolutes ("always", "never") in only some options
-        - Never use "all of the above" or "none of the above"
-        - Vary the position of the correct answer across questions (not always first or last)
-        - The question stem should be answerable before reading the options
-        - Never embed a false premise or incorrect assumption in the stem (e.g. don't imply a causal relationship that doesn't exist)
-        - Use MC for distinctions, comparisons, and conceptual understanding
-
-        Free-response rules:
-        - Set "choices" to null
-        - Only ask for short unambiguous answers: a name, date, number, place, or term (1-5 words)
-        - Use precise question stems: "Name the...", "What year...", "In which country..."
-        - Never embed a false premise or incorrect assumption in the stem
-        - Never require an answer that contains special characters, hyphens, or punctuation
-        - correctAnswer = simplest common phrasing (e.g. "Everest" not "Mount Everest")
-
-        acceptableAnswers (3-5 per question):
-        - Include abbreviations, alternate spellings, and common short forms
-        - Numeric answers: include both digit and written forms ("7" and "seven")
-        - All entries: lowercase plain text, no articles ("the", "a"), no punctuation
-
-        Explanation structure (2-4 sentences):
-        1. State the correct answer and why it is correct
-        2. If a distractor reflects a real misconception, explain why it's wrong. Do NOT invent a misconception that doesn't match the distractors — for factual/numeric recall, add useful context instead.
-        3. Optional: a memory hook, mnemonic, or broader topic connection
-
-        - Return ONLY the JSON object
+        \(questionRules)
         """
 
-        let response = try await makeRequest(prompt: prompt, maxTokens: 2048)
+        let batchMaxTokens = nextSubtopic != nil ? 5120 : 4096
+        let response = try await makeRequest(prompt: prompt, maxTokens: batchMaxTokens)
         let parsed = try decodeJSON(QuestionBatchResponse.self, from: response)
-        return (parsed.questions, parsed.nextLesson)
+        return (GeneratedQuestion.validateBatch(parsed.questions), parsed.nextLesson)
     }
 
     // MARK: - Evaluate Uncertain Response
@@ -348,7 +372,7 @@ actor APIClient {
         Return ONLY a JSON object: {"correct": true} or {"correct": false}
         """
 
-        let response = try await makeRequest(prompt: prompt)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 64)
         let parsed = try decodeJSON(EvaluationResponse.self, from: response)
         return parsed.correct
     }
@@ -381,7 +405,7 @@ actor APIClient {
         - Return ONLY the JSON object
         """
 
-        let response = try await makeRequest(prompt: prompt)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 2048)
         return try decodeJSON(DeepDiveContent.self, from: response)
     }
 
@@ -396,17 +420,20 @@ actor APIClient {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
 
-        let body = ClaudeAPIRequest(
+        let body = OpenAIAPIRequest(
             model: model,
             max_tokens: maxTokens,
-            system: systemPrompt,
-            messages: [ClaudeMessage(role: "user", content: prompt)]
+            messages: [
+                OpenAIMessage(role: "system", content: systemPrompt),
+                OpenAIMessage(role: "user", content: prompt)
+            ],
+            response_format: OpenAIAPIRequest.ResponseFormat(type: "json_object")
         )
 
         request.httpBody = try JSONEncoder().encode(body)
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await session.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
@@ -414,16 +441,23 @@ actor APIClient {
 
             if httpResponse.statusCode != 200 {
                 let errorBody = String(data: data, encoding: .utf8) ?? "Unknown error"
-                if retryCount > 0 {
-                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                let isRetryable = httpResponse.statusCode == 429 || httpResponse.statusCode >= 500
+                if isRetryable && retryCount > 0 {
+                    let delay: UInt64 = httpResponse.statusCode == 429 ? 2_000_000_000 : 1_000_000_000
+                    try await Task.sleep(nanoseconds: delay)
                     return try await makeRequest(prompt: prompt, maxTokens: maxTokens, retryCount: retryCount - 1)
                 }
                 throw APIError.httpError(httpResponse.statusCode, errorBody)
             }
 
-            let apiResponse = try JSONDecoder().decode(ClaudeAPIResponse.self, from: data)
+            // Proxy returns reassembled JSON (may have leading whitespace from keepalives)
+            let trimmedData = String(data: data, encoding: .utf8)?
+                .trimmingCharacters(in: .whitespaces)
+                .data(using: .utf8) ?? data
 
-            guard let text = apiResponse.content.first?.text else {
+            let apiResponse = try JSONDecoder().decode(OpenAIAPIResponse.self, from: trimmedData)
+
+            guard let text = apiResponse.choices.first?.message.content else {
                 throw APIError.invalidResponse
             }
 
@@ -431,7 +465,8 @@ actor APIClient {
         } catch let error as APIError {
             throw error
         } catch {
-            if retryCount > 0 {
+            let isRetryable = !(error is CancellationError)
+            if isRetryable && retryCount > 0 {
                 try await Task.sleep(nanoseconds: 1_000_000_000)
                 return try await makeRequest(prompt: prompt, maxTokens: maxTokens, retryCount: retryCount - 1)
             }
@@ -440,11 +475,7 @@ actor APIClient {
     }
 
     private func decodeJSON<T: Decodable>(_ type: T.Type, from text: String) throws -> T {
-        let cleaned = text
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "```json", with: "")
-            .replacingOccurrences(of: "```", with: "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard let data = cleaned.data(using: .utf8) else {
             throw APIError.decodingError("Failed to convert response to data")

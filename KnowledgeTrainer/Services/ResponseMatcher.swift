@@ -28,11 +28,15 @@ struct ResponseMatcher {
             }
         }
 
-        // Contains match — skip for purely numeric answers where substring matching is misleading
+        // Contains match — guarded by length ratio to prevent false positives (e.g. "iron" in "environment")
         let isNumeric = cleaned.allSatisfy { $0.isNumber || $0 == " " }
         if !isNumeric {
             for acceptable in allAcceptable {
-                if cleaned.contains(acceptable) || acceptable.contains(cleaned) {
+                let shorter = min(cleaned.count, acceptable.count)
+                let longer = max(cleaned.count, acceptable.count)
+                guard shorter >= 4, longer > 0 else { continue }
+                let ratio = Double(shorter) / Double(longer)
+                if ratio >= 0.5 && (cleaned.contains(acceptable) || acceptable.contains(cleaned)) {
                     return .correct
                 }
             }

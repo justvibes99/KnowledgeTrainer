@@ -3,6 +3,10 @@
     {
       "src": "/api/claude",
       "dest": "/api/claude"
+    },
+    {
+      "src": "/api/openai",
+      "dest": "/api/openai"
     }
   ]
 }

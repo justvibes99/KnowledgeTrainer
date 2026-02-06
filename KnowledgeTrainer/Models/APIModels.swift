@@ -1,26 +1,33 @@
 import Foundation
 
-// MARK: - Claude API Request/Response
+// MARK: - OpenAI API Request/Response
 
-struct ClaudeAPIRequest: Codable {
+struct OpenAIAPIRequest: Codable {
     let model: String
     let max_tokens: Int
-    let system: String
-    let messages: [ClaudeMessage]
+    let messages: [OpenAIMessage]
+    let response_format: ResponseFormat?
+
+    struct ResponseFormat: Codable {
+        let type: String
+    }
 }
 
-struct ClaudeMessage: Codable {
+struct OpenAIMessage: Codable {
     let role: String
     let content: String
 }
 
-struct ClaudeAPIResponse: Codable {
-    let content: [ClaudeContent]
+struct OpenAIAPIResponse: Codable {
+    let choices: [OpenAIChoice]
 }
 
-struct ClaudeContent: Codable {
-    let type: String
-    let text: String?
+struct OpenAIChoice: Codable {
+    let message: OpenAIResponseMessage
+}
+
+struct OpenAIResponseMessage: Codable {
+    let content: String?
 }
 
 // MARK: - Lesson Payload
@@ -56,6 +63,18 @@ struct GeneratedQuestion: Codable, Identifiable {
     var id: String { questionText }
 
     var isMultipleChoice: Bool { choices != nil && !(choices?.isEmpty ?? true) }
+
+    /// Validates MC questions have correctAnswer in choices. Returns nil for invalid MC questions.
+    var validated: GeneratedQuestion? {
+        guard let choices = choices, !choices.isEmpty else { return self }
+        let normalizedCorrect = correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let hasMatch = choices.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedCorrect }
+        return hasMatch ? self : nil
+    }
+
+    static func validateBatch(_ questions: [GeneratedQuestion]) -> [GeneratedQuestion] {
+        questions.compactMap { $0.validated }
+    }
 }
 
 // MARK: - Question Batch Response

@@ -17,10 +17,10 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: "Server misconfigured: missing API key" }),
+      JSON.stringify({ error: "Server misconfigured: missing OpenAI API key" }),
       {
         status: 500,
         headers: { ...corsHeaders(), "content-type": "application/json" },
@@ -37,30 +37,32 @@ export default async function handler(req: Request): Promise<Response> {
       });
     }
 
-    // Inject stream: true into the request body
     const parsed = JSON.parse(body);
     parsed.stream = true;
+    parsed.stream_options = { include_usage: true };
     const streamBody = JSON.stringify(parsed);
 
-    const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: streamBody,
-    });
+    const openaiRes = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${apiKey}`,
+        },
+        body: streamBody,
+      }
+    );
 
-    if (!anthropicRes.ok) {
-      const errorBody = await anthropicRes.text();
+    if (!openaiRes.ok) {
+      const errorBody = await openaiRes.text();
       return new Response(errorBody, {
-        status: anthropicRes.status,
+        status: openaiRes.status,
         headers: { ...corsHeaders(), "content-type": "application/json" },
       });
     }
 
-    const reader = anthropicRes.body?.getReader();
+    const reader = openaiRes.body?.getReader();
     if (!reader) {
       return new Response(JSON.stringify({ error: "No response body" }), {
         status: 502,
@@ -68,17 +70,11 @@ export default async function handler(req: Request): Promise<Response> {
       });
     }
 
-    // Stream a response that sends whitespace keepalives while we consume
-    // the Anthropic SSE stream, then sends the reassembled JSON at the end.
-    // This avoids Vercel's edge function timeout while returning standard JSON
-    // that iOS URLSession handles reliably.
     const encoder = new TextEncoder();
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
 
-    // Start consuming the SSE stream in the background
     (async () => {
-      // Send a space every 2s to keep the connection alive
       const keepalive = setInterval(
         () => writer.write(encoder.encode(" ")).catch(() => {}),
         2000
@@ -86,12 +82,12 @@ export default async function handler(req: Request): Promise<Response> {
 
       const decoder = new TextDecoder();
       let buffer = "";
-      let fullText = "";
-      let messageId = "";
+      let fullContent = "";
+      let completionId = "";
       let model = "";
-      let inputTokens = 0;
-      let outputTokens = 0;
-      let stopReason = "";
+      let promptTokens = 0;
+      let completionTokens = 0;
+      let finishReason = "";
 
       try {
         while (true) {
@@ -110,20 +106,20 @@ export default async function handler(req: Request): Promise<Response> {
             try {
               const event = JSON.parse(data);
 
-              if (event.type === "message_start" && event.message) {
-                messageId = event.message.id || "";
-                model = event.message.model || "";
-                if (event.message.usage) {
-                  inputTokens = event.message.usage.input_tokens || 0;
-                }
-              } else if (
-                event.type === "content_block_delta" &&
-                event.delta?.text
-              ) {
-                fullText += event.delta.text;
-              } else if (event.type === "message_delta" && event.usage) {
-                outputTokens = event.usage.output_tokens || 0;
-                stopReason = event.delta?.stop_reason || "end_turn";
+              if (event.id) completionId = event.id;
+              if (event.model) model = event.model;
+
+              if (event.usage) {
+                promptTokens = event.usage.prompt_tokens || 0;
+                completionTokens = event.usage.completion_tokens || 0;
+              }
+
+              if (event.choices?.[0]?.delta?.content) {
+                fullContent += event.choices[0].delta.content;
+              }
+
+              if (event.choices?.[0]?.finish_reason) {
+                finishReason = event.choices[0].finish_reason;
               }
             } catch {
               // skip unparseable lines
@@ -135,14 +131,21 @@ export default async function handler(req: Request): Promise<Response> {
       }
 
       const result = {
-        id: messageId,
-        type: "message",
-        role: "assistant",
+        id: completionId,
+        object: "chat.completion",
         model,
-        content: [{ type: "text", text: fullText }],
-        stop_reason: stopReason || "end_turn",
-        stop_sequence: null,
-        usage: { input_tokens: inputTokens, output_tokens: outputTokens },
+        choices: [
+          {
+            index: 0,
+            message: { role: "assistant", content: fullContent },
+            finish_reason: finishReason || "stop",
+          },
+        ],
+        usage: {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: promptTokens + completionTokens,
+        },
       };
 
       await writer.write(encoder.encode(JSON.stringify(result)));

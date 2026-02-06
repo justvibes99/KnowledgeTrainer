@@ -54,7 +54,7 @@ final class DrillSessionViewModel {
     var questionFormat: QuestionFormat = .mixed
 
     // Quiz Length
-    let maxQuestions: Int = 20
+    let maxQuestions: Int = 10
 
     // Data
     var topic: Topic?
@@ -201,10 +201,12 @@ final class DrillSessionViewModel {
         )
         if let progress = try? modelContext.fetch(descriptor).first {
             progress.lessonViewed = true
-            progress.lessonOverview = lesson.overview
-            progress.lessonKeyFacts = lesson.keyFacts
-            progress.lessonMisconceptions = lesson.misconceptions ?? []
-            progress.lessonConnections = lesson.connections ?? []
+            if progress.lessonOverview.isEmpty {
+                progress.lessonOverview = lesson.overview
+                progress.lessonKeyFacts = lesson.keyFacts
+                progress.lessonMisconceptions = lesson.misconceptions ?? []
+                progress.lessonConnections = lesson.connections ?? []
+            }
             try? modelContext.save()
         }
 
@@ -321,7 +323,9 @@ final class DrillSessionViewModel {
                         questionContext: question.questionText
                     )
                 } catch {
-                    isCorrect = false
+                    // Network failure — can't verify, don't penalize or count
+                    isCorrect = true
+                    return
                 }
             }
         }
@@ -424,7 +428,15 @@ final class DrillSessionViewModel {
 
             // If there's a pending lesson for the next subtopic, queue it
             if let pending = pendingLessonForNext, pending.subtopic == nextSubtopicName {
-                currentLesson = pending
+                // Only use pending lesson if that subtopic doesn't already have one
+                let subName = pending.subtopic
+                let checkDescriptor = FetchDescriptor<SubtopicProgress>(
+                    predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == subName }
+                )
+                let hasExistingLesson = (try? modelContext.fetch(checkDescriptor).first)?.lessonOverview.isEmpty == false
+                if !hasExistingLesson {
+                    currentLesson = pending
+                }
                 pendingLessonForNext = nil
             }
 
@@ -506,9 +518,75 @@ final class DrillSessionViewModel {
         // Determine if we should request a lesson for the next subtopic
         let nextSub: String?
         if let focus = focusSubtopic {
-            nextSub = findNextSubtopic(after: focus)
+            let candidate = findNextSubtopic(after: focus)
+            // Only request lesson if next subtopic doesn't already have one
+            if let candidate, let ctx = modelContext {
+                let subName = candidate
+                let topicID = topic.id
+                let descriptor = FetchDescriptor<SubtopicProgress>(
+                    predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == subName }
+                )
+                let hasLesson = (try? ctx.fetch(descriptor).first)?.lessonOverview.isEmpty == false
+                nextSub = hasLesson ? nil : candidate
+            } else {
+                nextSub = candidate
+            }
         } else {
             nextSub = nil
+        }
+
+        // Load keyFacts for current subtopic from SubtopicProgress
+        var currentKeyFacts: [String] = []
+        if let focus = focusSubtopic, let ctx = modelContext {
+            let subName = focus
+            let topicID = topic.id
+            let descriptor = FetchDescriptor<SubtopicProgress>(
+                predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == subName }
+            )
+            currentKeyFacts = (try? ctx.fetch(descriptor).first)?.lessonKeyFacts ?? []
+        }
+
+        // If current subtopic has no lesson, generate one on-demand
+        if currentKeyFacts.isEmpty, let focus = focusSubtopic {
+            if let lesson = try? await APIClient.shared.generateInitialLesson(
+                topic: topic.name,
+                subtopic: focus,
+                depth: learningDepth
+            ) {
+                currentKeyFacts = lesson.keyFacts
+                if let ctx = modelContext {
+                    let subName = focus
+                    let topicID = topic.id
+                    let descriptor = FetchDescriptor<SubtopicProgress>(
+                        predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == subName }
+                    )
+                    if let progress = try? ctx.fetch(descriptor).first, progress.lessonOverview.isEmpty {
+                        progress.lessonOverview = lesson.overview
+                        progress.lessonKeyFacts = lesson.keyFacts
+                        progress.lessonMisconceptions = lesson.misconceptions ?? []
+                        progress.lessonConnections = lesson.connections ?? []
+                        try? ctx.save()
+                    }
+                }
+                currentLesson = lesson
+                showingLesson = true
+            }
+        }
+
+        // Build summaries of previously completed subtopics for lesson cohesion
+        var previousSummaries: [String] = []
+        if nextSub != nil, let ctx = modelContext {
+            let topicID = topic.id
+            let descriptor = FetchDescriptor<SubtopicProgress>(
+                predicate: #Predicate { $0.topicID == topicID }
+            )
+            if let allProgress = try? ctx.fetch(descriptor) {
+                previousSummaries = allProgress
+                    .filter { $0.isMastered || !$0.lessonOverview.isEmpty }
+                    .sorted { $0.sortOrder < $1.sortOrder }
+                    .prefix(10)
+                    .map { "- \($0.subtopicName): \(String($0.lessonOverview.prefix(100)))" }
+            }
         }
 
         do {
@@ -525,7 +603,9 @@ final class DrillSessionViewModel {
                 previousQuestions: askedQuestions,
                 focusSubtopic: focusSubtopic,
                 nextSubtopic: nextSub,
-                depth: learningDepth
+                depth: learningDepth,
+                keyFacts: currentKeyFacts,
+                previousSubtopicSummaries: previousSummaries
             )
             let filtered = filterQuestions(newQuestions)
             questionQueue.append(contentsOf: filtered)
@@ -565,10 +645,12 @@ final class DrillSessionViewModel {
 
         guard let cached = try? context.fetch(descriptor) else { return [] }
 
-        // Exclude already-answered questions
-        return cached
-            .filter { !answeredTexts.contains($0.questionText) }
-            .map { $0.toGeneratedQuestion() }
+        // Exclude already-answered questions and validate MC correctAnswer/choices
+        return GeneratedQuestion.validateBatch(
+            cached
+                .filter { !answeredTexts.contains($0.questionText) }
+                .map { $0.toGeneratedQuestion() }
+        )
     }
 
     private func saveQuestionsToCache(_ questions: [GeneratedQuestion], topicID: UUID) {
