@@ -19,6 +19,7 @@ final class DrillSessionViewModel {
     var isLoading: Bool = false
     var isFetchingBatch: Bool = false
     var sessionEnded: Bool = false
+    var sessionComplete: Bool = false
     var errorMessage: String?
     var showError: Bool = false
 
@@ -226,9 +227,9 @@ final class DrillSessionViewModel {
         currentReviewItem = nil
         isServingReview = false
 
-        // Auto-end when max questions reached
+        // Mark session complete when max questions reached — let user see last answer
         if questionsAnswered >= maxQuestions {
-            endSession()
+            sessionComplete = true
             return
         }
 
@@ -539,15 +540,19 @@ final class DrillSessionViewModel {
             nextSub = nil
         }
 
-        // Load keyFacts for current subtopic from SubtopicProgress
+        // Load keyFacts and misconceptions for current subtopic from SubtopicProgress
         var currentKeyFacts: [String] = []
+        var currentMisconceptions: [String] = []
         if let focus = focusSubtopic, let ctx = modelContext {
             let subName = focus
             let topicID = topic.id
             let descriptor = FetchDescriptor<SubtopicProgress>(
                 predicate: #Predicate { $0.topicID == topicID && $0.subtopicName == subName }
             )
-            currentKeyFacts = (try? ctx.fetch(descriptor).first)?.lessonKeyFacts ?? []
+            if let progress = try? ctx.fetch(descriptor).first {
+                currentKeyFacts = progress.lessonKeyFacts
+                currentMisconceptions = progress.lessonMisconceptions
+            }
         }
 
         // If current subtopic has no lesson, generate one on-demand
@@ -558,6 +563,7 @@ final class DrillSessionViewModel {
                 depth: learningDepth
             ) {
                 currentKeyFacts = lesson.keyFacts
+                currentMisconceptions = lesson.misconceptions ?? []
                 if let ctx = modelContext {
                     let subName = focus
                     let topicID = topic.id
@@ -613,6 +619,7 @@ final class DrillSessionViewModel {
                 nextSubtopic: nextSub,
                 depth: learningDepth,
                 keyFacts: currentKeyFacts,
+                misconceptions: currentMisconceptions,
                 previousSubtopicSummaries: previousSummaries
             )
             let filtered = filterQuestions(newQuestions)
@@ -679,10 +686,20 @@ final class DrillSessionViewModel {
 
     // MARK: - Similarity Detection
 
+    private static let stopwords: Set<String> = [
+        "the", "and", "for", "are", "but", "not", "you", "all", "can", "had",
+        "her", "was", "one", "our", "out", "has", "his", "how", "its", "may",
+        "new", "now", "old", "see", "way", "who", "did", "get", "let", "say",
+        "she", "too", "use", "which", "what", "when", "where", "that", "this",
+        "with", "from", "have", "been", "were", "they", "them", "than", "each",
+        "make", "like", "into", "over", "such", "after", "about", "between",
+        "does", "most", "also", "some", "more", "very", "just", "because"
+    ]
+
     private func wordSet(_ text: String) -> Set<String> {
         Set(text.lowercased()
             .components(separatedBy: .alphanumerics.inverted)
-            .filter { $0.count > 2 })
+            .filter { $0.count > 2 && !Self.stopwords.contains($0) })
     }
 
     private func isTooSimilar(_ question: GeneratedQuestion) -> Bool {
@@ -695,7 +712,7 @@ final class DrillSessionViewModel {
             guard !existingWords.isEmpty else { continue }
             let overlap = Double(newWords.intersection(existingWords).count)
             let smaller = Double(min(newWords.count, existingWords.count))
-            if overlap / smaller > 0.7 {
+            if overlap / smaller > 0.6 {
                 return true
             }
         }

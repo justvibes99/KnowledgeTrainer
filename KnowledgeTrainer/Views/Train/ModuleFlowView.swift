@@ -425,8 +425,15 @@ struct ModuleFlowView: View {
                             }
                             .tint(.brutalBlack)
 
-                            BrutalButton(title: "Next", color: .brutalTeal, fullWidth: true) {
-                                viewModel.serveNextQuestion()
+                            if viewModel.sessionComplete {
+                                BrutalButton(title: "Finish", color: .brutalCoral, fullWidth: true) {
+                                    viewModel.endSession()
+                                    phase = .summary
+                                }
+                            } else {
+                                BrutalButton(title: "Next", color: .brutalTeal, fullWidth: true) {
+                                    viewModel.serveNextQuestion()
+                                }
                             }
                         }
                         .padding(.horizontal, 24)
@@ -451,7 +458,7 @@ struct ModuleFlowView: View {
                     Spacer().frame(height: 60)
                 }
             }
-        } else {
+        } else if viewModel.sessionEnded {
             // Session ended naturally — move to summary
             Color.clear.onAppear {
                 phase = .summary

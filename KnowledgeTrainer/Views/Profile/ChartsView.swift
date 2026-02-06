@@ -73,6 +73,7 @@ struct ChartsView: View {
                             .chartXAxis {
                                 AxisMarks(values: [0, 25, 50, 75, 100])
                             }
+                            .chartPlotStyle { $0.padding(.trailing, 40) }
                             .frame(height: CGFloat(categoryData.count * 44 + 20))
                         }
                     }

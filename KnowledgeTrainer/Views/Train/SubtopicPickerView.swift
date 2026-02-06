@@ -291,13 +291,6 @@ struct LearningPathView: View {
     private var orderedPathView: some View {
         VStack(spacing: 0) {
             ForEach(Array(topicProgress.enumerated()), id: \.element.id) { index, progress in
-                // "What's Next" card at the mastered → unmastered transition
-                if !progress.isMastered && index > 0 && topicProgress[index - 1].isMastered && currentSubtopic?.subtopicName == progress.subtopicName {
-                    whatsNextCard(subtopicName: progress.subtopicName)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
-                }
-
                 HStack(spacing: 16) {
                     // Status indicator + connecting line
                     VStack(spacing: 0) {
@@ -332,44 +325,6 @@ struct LearningPathView: View {
     }
 
     @ViewBuilder
-    private func whatsNextCard(subtopicName: String) -> some View {
-        Button {
-            selectedSubtopic = subtopicName
-            navigateToModule = true
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "arrow.right.circle.fill")
-                    .font(.title3)
-                    .foregroundColor(.brutalYellow)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Next Up")
-                        .font(.system(.caption2, design: .monospaced, weight: .medium))
-                        .foregroundColor(.flatSecondaryText)
-                    Text(subtopicName)
-                        .font(.system(.caption, design: .monospaced, weight: .medium))
-                        .foregroundColor(.brutalBlack)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.bold())
-                    .foregroundColor(.flatSecondaryText)
-            }
-            .padding(12)
-            .background(Color.brutalYellow.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.brutalYellow.opacity(0.3), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
     private func statusIcon(for progress: SubtopicProgress) -> some View {
         if progress.isMastered {
             Image(systemName: "checkmark.circle.fill")
@@ -401,6 +356,12 @@ struct LearningPathView: View {
 
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
+                if isCurrent {
+                    Text("Next Up")
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
+                        .foregroundColor(.brutalYellow)
+                }
+
                 Text(progress.subtopicName)
                     .font(.system(.caption, design: .monospaced, weight: .medium))
                     .foregroundColor(isFuture ? Color.flatTertiaryText : .brutalBlack)
@@ -431,7 +392,14 @@ struct LearningPathView: View {
                 .font(.caption.bold())
                 .foregroundColor(isFuture ? Color.flatTertiaryText : Color.flatSecondaryText)
         }
+        .padding(.horizontal, isCurrent ? 12 : 0)
         .padding(.vertical, 8)
+        .background(isCurrent ? Color.brutalYellow.opacity(0.1) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isCurrent ? Color.brutalYellow.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
         .opacity(isFuture ? 0.6 : 1.0)
         .contentShape(Rectangle())
         .onTapGesture {

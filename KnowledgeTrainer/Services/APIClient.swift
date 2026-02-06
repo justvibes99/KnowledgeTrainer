@@ -8,6 +8,24 @@ enum APIError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
+        case .invalidResponse:
+            return "Something went wrong. Please try again."
+        case .httpError(let code, _):
+            if code == 429 {
+                return "Too many requests. Please wait a moment and try again."
+            } else if code >= 500 {
+                return "The server is having trouble. Please try again later."
+            }
+            return "Something went wrong. Please try again."
+        case .decodingError:
+            return "We received an unexpected response. Please try again."
+        case .networkError:
+            return "Couldn't connect. Check your internet and try again."
+        }
+    }
+
+    var technicalDescription: String {
+        switch self {
         case .invalidResponse: return "Invalid response from API."
         case .httpError(let code, let message): return "API error (\(code)): \(message)"
         case .decodingError(let message): return "Failed to parse response: \(message)"
@@ -64,29 +82,85 @@ actor APIClient {
 
     // MARK: - Shared Question Rules
 
-    private var questionRules: String {
-        """
-        Example of a well-formed MC question:
-        {
-          "questionText": "Which planet in our solar system has the most moons?",
-          "correctAnswer": "Saturn",
-          "acceptableAnswers": [],
-          "choices": ["Jupiter", "Saturn", "Uranus", "Neptune"],
-          "explanation": "Saturn has 146 confirmed moons as of 2024, surpassing Jupiter's 95. Many were discovered by the Cassini mission.",
-          "subtopic": "Planets",
-          "difficulty": 3
+    private func questionRules(for depth: LearningDepth) -> String {
+        let examples: String
+        switch depth {
+        case .casual:
+            examples = """
+            Example of a well-formed MC question (Remember level):
+            {
+              "questionText": "Which planet in our solar system has the most moons?",
+              "correctAnswer": "Saturn",
+              "acceptableAnswers": [],
+              "choices": ["Jupiter", "Saturn", "Uranus", "Neptune"],
+              "explanation": "Saturn has 146 confirmed moons as of 2024, surpassing Jupiter's 95. Many were discovered by the Cassini mission.",
+              "subtopic": "Planets",
+              "difficulty": 2
+            }
+
+            Example of a well-formed FR question (Remember level):
+            {
+              "questionText": "What year did the Wright Brothers make their first powered flight?",
+              "correctAnswer": "1903",
+              "acceptableAnswers": ["1903", "nineteen oh three", "nineteen hundred and three"],
+              "choices": null,
+              "explanation": "The Wright Brothers' first powered flight occurred on December 17, 1903, at Kitty Hawk, North Carolina. The flight lasted 12 seconds.",
+              "subtopic": "Aviation History",
+              "difficulty": 2
+            }
+            """
+        case .standard:
+            examples = """
+            Example of a well-formed MC question (Apply level):
+            {
+              "questionText": "A coastal city is experiencing rapid population growth. Which geographic factor would most limit its expansion?",
+              "correctAnswer": "Mountain range bordering the city",
+              "acceptableAnswers": [],
+              "choices": ["Mountain range bordering the city", "A river running through downtown", "Proximity to a national forest", "Being located in a seismic zone"],
+              "explanation": "Mountains create a hard physical barrier to urban sprawl, forcing vertical growth or costly tunneling. Rivers and forests can be built around, and seismic zones slow but don't prevent expansion.",
+              "subtopic": "Urban Geography",
+              "difficulty": 3
+            }
+
+            Example of a well-formed FR question (Understand level):
+            {
+              "questionText": "What process causes tectonic plates to move apart at mid-ocean ridges?",
+              "correctAnswer": "seafloor spreading",
+              "acceptableAnswers": ["sea floor spreading", "ocean floor spreading", "divergence", "mantle convection"],
+              "choices": null,
+              "explanation": "Seafloor spreading occurs when magma rises at mid-ocean ridges, pushing plates apart. This was first proposed by Harry Hess in 1962 and confirmed by symmetric magnetic striping patterns on the ocean floor.",
+              "subtopic": "Plate Tectonics",
+              "difficulty": 3
+            }
+            """
+        case .deep:
+            examples = """
+            Example of a well-formed MC question (Analyze level):
+            {
+              "questionText": "The Treaty of Westphalia (1648) established the principle of state sovereignty. Which modern development most directly challenges this principle?",
+              "correctAnswer": "International criminal tribunals prosecuting heads of state",
+              "acceptableAnswers": [],
+              "choices": ["International criminal tribunals prosecuting heads of state", "The formation of military alliances like NATO", "Bilateral trade agreements between nations", "The establishment of the United Nations General Assembly"],
+              "explanation": "International criminal tribunals like the ICC directly override state sovereignty by asserting jurisdiction over national leaders. Military alliances and trade agreements are voluntary, and the UN General Assembly has no binding authority over members.",
+              "subtopic": "International Relations",
+              "difficulty": 5
+            }
+
+            Example of a well-formed FR question (Evaluate level):
+            {
+              "questionText": "Name the logical fallacy in this argument: 'We should trust this diet plan because a famous actor endorses it.'",
+              "correctAnswer": "appeal to authority",
+              "acceptableAnswers": ["argument from authority", "false authority", "ad verecundiam", "celebrity endorsement fallacy"],
+              "choices": null,
+              "explanation": "This is an appeal to authority (argumentum ad verecundiam) because the actor's fame doesn't make them a nutrition expert. A valid authority appeal requires expertise relevant to the claim being made.",
+              "subtopic": "Critical Thinking",
+              "difficulty": 4
+            }
+            """
         }
 
-        Example of a well-formed FR question:
-        {
-          "questionText": "What year did the Wright Brothers make their first powered flight?",
-          "correctAnswer": "1903",
-          "acceptableAnswers": ["1903", "nineteen oh three", "nineteen hundred and three"],
-          "choices": null,
-          "explanation": "The Wright Brothers' first powered flight occurred on December 17, 1903, at Kitty Hawk, North Carolina. The flight lasted 12 seconds.",
-          "subtopic": "Aviation History",
-          "difficulty": 2
-        }
+        return """
+        \(examples)
 
         Multiple choice rules:
         - "choices" with exactly 4 options
@@ -196,14 +270,20 @@ actor APIClient {
 
     // MARK: - Generate Initial Questions (parallel call, ~2000 tokens)
 
-    func generateInitialQuestions(topic: String, subtopic: String, keyFacts: [String] = [], depth: LearningDepth = .standard) async throws -> [GeneratedQuestion] {
+    func generateInitialQuestions(topic: String, subtopic: String, keyFacts: [String] = [], misconceptions: [String] = [], depth: LearningDepth = .standard) async throws -> [GeneratedQuestion] {
         let factsContext: String
         if !keyFacts.isEmpty {
             let factsList = keyFacts.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
+            let misconceptionContext: String
+            if !misconceptions.isEmpty {
+                misconceptionContext = "\n\nCommon misconceptions to target with distractor choices:\n" + misconceptions.map { "- \($0)" }.joined(separator: "\n")
+            } else {
+                misconceptionContext = ""
+            }
             factsContext = """
 
             The lesson taught these key facts. Every question MUST be answerable using ONLY the facts listed below. Do not ask about details not covered in these facts.
-            \(factsList)
+            \(factsList)\(misconceptionContext)
 
             """
         } else {
@@ -231,13 +311,14 @@ actor APIClient {
         Requirements:
         - Exactly 10 questions. Difficulty range: \(depth.difficultyRange)
         - Style: \(depth.difficultyDescription)
-        - Order questions from easier recall to harder application within the batch
+        - Bloom's taxonomy allocation: \(depth.bloomsAllocation)
+        - Each question must test a DIFFERENT concept, fact, or relationship — no two questions should ask about the same underlying idea even if worded differently
         - Exactly 6 multiple choice and exactly 4 free-response
 
-        \(questionRules)
+        \(questionRules(for: depth))
         """
 
-        let response = try await makeRequest(prompt: prompt, maxTokens: 4096)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 4096, temperature: 0.5)
         let parsed = try decodeJSON(QuestionsResponse.self, from: response)
         return GeneratedQuestion.validateBatch(parsed.questions)
     }
@@ -256,8 +337,8 @@ actor APIClient {
             lesson = try? await generateInitialLesson(topic: structure.name, subtopic: firstSubtopic, depth: depth)
         }
 
-        // Call 3: Generate questions, seeded with lesson key facts
-        let questions = (try? await generateInitialQuestions(topic: structure.name, subtopic: firstSubtopic, keyFacts: lesson?.keyFacts ?? [], depth: depth)) ?? []
+        // Call 3: Generate questions, seeded with lesson key facts and misconceptions
+        let questions = (try? await generateInitialQuestions(topic: structure.name, subtopic: firstSubtopic, keyFacts: lesson?.keyFacts ?? [], misconceptions: lesson?.misconceptions ?? [], depth: depth)) ?? []
 
         return (structure, questions, lesson, relatedTopics, category)
     }
@@ -273,6 +354,7 @@ actor APIClient {
         nextSubtopic: String? = nil,
         depth: LearningDepth = .standard,
         keyFacts: [String] = [],
+        misconceptions: [String] = [],
         previousSubtopicSummaries: [String] = []
     ) async throws -> ([GeneratedQuestion], LessonPayload?) {
         let subtopicList = subtopics.joined(separator: ", ")
@@ -289,10 +371,16 @@ actor APIClient {
         let factsContext: String
         if !keyFacts.isEmpty {
             let factsList = keyFacts.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
+            let misconceptionContext: String
+            if !misconceptions.isEmpty {
+                misconceptionContext = "\n\nCommon misconceptions to target with distractor choices:\n" + misconceptions.map { "- \($0)" }.joined(separator: "\n")
+            } else {
+                misconceptionContext = ""
+            }
             factsContext = """
 
             The lesson taught these key facts. Every question MUST be answerable using ONLY the facts listed below. Do not ask about details not covered in these facts.
-            \(factsList)
+            \(factsList)\(misconceptionContext)
 
             """
         } else {
@@ -359,11 +447,12 @@ actor APIClient {
         Requirements:
         - Exactly 10 questions. Difficulty range: \(depth.difficultyRange)
         - Style: \(depth.difficultyDescription)
-        - Order questions from easier recall to harder application within the batch
+        - Bloom's taxonomy allocation: \(depth.bloomsAllocation)
+        - Each question must test a DIFFERENT concept, fact, or relationship — no two questions should ask about the same underlying idea even if worded differently
         - Do not repeat any previously asked question
         - Exactly 6 multiple choice and exactly 4 free-response
 
-        \(questionRules)
+        \(questionRules(for: depth))
         """
 
         let batchMaxTokens: Int
@@ -372,7 +461,7 @@ actor APIClient {
         } else {
             batchMaxTokens = 4096
         }
-        let response = try await makeRequest(prompt: prompt, maxTokens: batchMaxTokens)
+        let response = try await makeRequest(prompt: prompt, maxTokens: batchMaxTokens, temperature: 0.5)
         let parsed = try decodeJSON(QuestionBatchResponse.self, from: response)
         return (GeneratedQuestion.validateBatch(parsed.questions), parsed.nextLesson)
     }

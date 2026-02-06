@@ -234,6 +234,7 @@ struct ProfileDashboardView: View {
                 .chartXAxis {
                     AxisMarks(values: [0, 25, 50, 75, 100])
                 }
+                .chartPlotStyle { $0.padding(.trailing, 40) }
                 .frame(height: CGFloat(data.count * 44 + 20))
                 .padding(16)
                 .background(Color.flatSurface)

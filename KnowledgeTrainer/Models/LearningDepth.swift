@@ -60,4 +60,16 @@ enum LearningDepth: String, CaseIterable {
         case .deep: return "8-10"
         }
     }
+
+    /// Bloom's taxonomy allocation for question generation — how many of each cognitive level per 10-question batch
+    var bloomsAllocation: String {
+        switch self {
+        case .casual:
+            return "6 Remember, 3 Understand, 1 Apply"
+        case .standard:
+            return "2 Remember, 3 Understand, 3 Apply, 2 Analyze"
+        case .deep:
+            return "1 Understand, 2 Apply, 4 Analyze, 2 Evaluate, 1 Create"
+        }
+    }
 }
