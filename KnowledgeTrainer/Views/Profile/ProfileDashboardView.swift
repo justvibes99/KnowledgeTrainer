@@ -13,7 +13,6 @@ struct ProfileDashboardView: View {
     @Query private var subtopicProgress: [SubtopicProgress]
 
     @State private var viewModel = ProfileViewModel()
-    @State private var showSettings = false
     @State private var showFreezePurchaseConfirm = false
 
     private var profile: ScholarProfile? { scholarProfiles.first }
@@ -113,13 +112,13 @@ struct ProfileDashboardView: View {
                             HStack {
                                 Text("Achievements")
                                     .font(.system(.body, design: .monospaced, weight: .semibold))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.brutalOnAccent)
                                 Spacer()
                                 Text("\(achievements.count)/\(AchievementDefinition.all.count) unlocked")
                                     .font(.system(.caption, design: .monospaced, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.8))
+                                    .foregroundColor(.brutalOnAccent.opacity(0.8))
                                 Image(systemName: "arrow.right")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.brutalOnAccent)
                             }
                             .padding(16)
                             .background(LinearGradient(colors: [Color.brutalYellow, Color.brutalTeal], startPoint: .leading, endPoint: .trailing))
@@ -191,16 +190,6 @@ struct ProfileDashboardView: View {
                         Spacer().frame(height: 100)
                     }
                 }
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showSettings = true }) {
-                        Image(systemName: "gearshape")
-                    }
-                }
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsView(viewModel: viewModel)
             }
             .alert("Buy Streak Freeze?", isPresented: $showFreezePurchaseConfirm) {
                 Button("Buy for 200 XP") {
@@ -294,7 +283,7 @@ struct ProfileDashboardView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color(hex: "EAE7E1"))
+        .background(Color.flatDashboardCard)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
     }

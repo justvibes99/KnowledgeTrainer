@@ -12,7 +12,7 @@ struct AchievementToast: View {
                 HStack(spacing: 12) {
                     Image(systemName: achievement.iconName)
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.brutalOnAccent)
                         .frame(width: 48, height: 48)
                         .background(Color.brutalYellow)
                         .clipShape(RoundedRectangle(cornerRadius: 8))

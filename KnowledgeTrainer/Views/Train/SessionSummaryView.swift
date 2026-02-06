@@ -9,6 +9,8 @@ struct SessionSummaryView: View {
     var subtopicStats: [String: (answered: Int, correct: Int)] = [:]
     var masteredThisSession: [String] = []
     var xpEvents: [XPEvent] = []
+    var onContinueLearning: (() -> Void)? = nil
+    var onRetryMistakes: (() -> Void)? = nil
     let onDone: () -> Void
 
     private var isPerfectSession: Bool {
@@ -123,7 +125,7 @@ struct SessionSummaryView: View {
                             .foregroundColor(.brutalBlack)
 
                         ForEach(Array(wrongAnswers.enumerated()), id: \.offset) { _, item in
-                            BrutalCard(backgroundColor: .white) {
+                            BrutalCard(backgroundColor: .brutalSurface) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(item.question.questionText)
                                         .font(.system(.body, design: .monospaced, weight: .medium))
@@ -158,8 +160,29 @@ struct SessionSummaryView: View {
                     .padding(.horizontal, 24)
                 }
 
-                BrutalButton(title: "Done", color: .brutalYellow, fullWidth: true) {
-                    onDone()
+                // Action Buttons
+                VStack(spacing: 12) {
+                    if let onRetryMistakes, !wrongAnswers.isEmpty {
+                        BrutalButton(title: "Retry \(wrongAnswers.count) Mistake\(wrongAnswers.count == 1 ? "" : "s")", color: .brutalCoral, fullWidth: true) {
+                            onRetryMistakes()
+                        }
+                    }
+
+                    if let onContinueLearning {
+                        BrutalButton(title: "Continue Learning", color: .brutalTeal, fullWidth: true) {
+                            onContinueLearning()
+                        }
+                    }
+
+                    Button {
+                        onDone()
+                    } label: {
+                        Text("Done")
+                            .font(.system(.body, design: .monospaced, weight: .medium))
+                            .foregroundColor(.flatSecondaryText)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)

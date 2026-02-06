@@ -13,7 +13,7 @@ struct RankCardView: View {
             HStack(spacing: 12) {
                 Image(systemName: rank.iconName)
                     .font(.system(size: 32, weight: .medium))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.brutalOnAccent)
                     .frame(width: 56, height: 56)
                     .background(rank.color)
                     .clipShape(RoundedRectangle(cornerRadius: 8))

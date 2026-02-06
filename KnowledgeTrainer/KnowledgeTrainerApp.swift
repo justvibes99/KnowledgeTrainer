@@ -33,22 +33,11 @@ struct KnowledgeTrainerApp: App {
     var body: some Scene {
         WindowGroup {
             if hasCompletedOnboarding {
-                HomeView()
-                    .onAppear { ensureScholarProfile() }
+                MainTabView()
             } else {
                 OnboardingView(isOnboarded: $hasCompletedOnboarding)
             }
         }
         .modelContainer(sharedModelContainer)
-    }
-
-    private func ensureScholarProfile() {
-        let context = sharedModelContainer.mainContext
-        let descriptor = FetchDescriptor<ScholarProfile>()
-        let count = (try? context.fetchCount(descriptor)) ?? 0
-        if count == 0 {
-            context.insert(ScholarProfile())
-            try? context.save()
-        }
     }
 }

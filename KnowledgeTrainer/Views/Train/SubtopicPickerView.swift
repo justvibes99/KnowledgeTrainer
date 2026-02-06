@@ -37,6 +37,14 @@ struct LearningPathView: View {
         topicProgress.first { !$0.isMastered }
     }
 
+    private var dueReviewItems: [ReviewItem] {
+        SpacedRepetitionEngine.dueItems(from: reviewItems).filter { $0.topicID == topic.id }
+    }
+
+    private var dueReviewCount: Int {
+        dueReviewItems.count
+    }
+
     var body: some View {
         ZStack {
             Color.brutalBackground.ignoresSafeArea()
@@ -95,13 +103,70 @@ struct LearningPathView: View {
                             .padding(.bottom, 20)
                         } else if !topicProgress.isEmpty {
                             // All mastered
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.seal.fill")
-                                    .font(.title3)
-                                    .foregroundColor(.brutalTeal)
-                                Text("All Modules Mastered")
-                                    .font(.system(.caption, design: .monospaced, weight: .medium))
-                                    .foregroundColor(.brutalBlack)
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.seal.fill")
+                                        .font(.title3)
+                                        .foregroundColor(.brutalTeal)
+                                    Text("All Modules Mastered")
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
+                                        .foregroundColor(.brutalBlack)
+                                }
+
+                                if dueReviewCount > 0 {
+                                    NavigationLink {
+                                        ReviewSessionView(reviewItems: dueReviewItems)
+                                    } label: {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: "arrow.counterclockwise")
+                                                .font(.caption)
+                                                .foregroundColor(.brutalLavender)
+                                            Text("Review \(dueReviewCount) due item\(dueReviewCount == 1 ? "" : "s")")
+                                                .font(.system(.caption, design: .monospaced, weight: .medium))
+                                                .foregroundColor(.brutalBlack)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption2)
+                                                .foregroundColor(.flatSecondaryText)
+                                        }
+                                        .padding(12)
+                                        .background(Color.brutalLavender.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(Color.brutalLavender.opacity(0.3), lineWidth: 1)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+
+                                if let firstRelated = topic.relatedTopics.first {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "arrow.turn.down.right")
+                                            .font(.caption)
+                                            .foregroundColor(.brutalTeal)
+                                        Text("Try: \(firstRelated)")
+                                            .font(.system(.caption, design: .monospaced, weight: .medium))
+                                            .foregroundColor(.brutalBlack)
+                                            .lineLimit(1)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption2)
+                                            .foregroundColor(.flatSecondaryText)
+                                    }
+                                    .padding(12)
+                                    .background(Color.brutalTeal.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.brutalTeal.opacity(0.3), lineWidth: 1)
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        tappedRelatedTopic = firstRelated
+                                        showRelatedTopicAction = true
+                                    }
+                                }
                             }
                             .padding(.horizontal, 24)
                             .padding(.bottom, 20)
@@ -130,7 +195,7 @@ struct LearningPathView: View {
                     Spacer()
                     Text("Added to Queue")
                         .font(.system(.caption, design: .monospaced, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(.brutalOnAccent)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(Color.brutalBlack)
@@ -226,6 +291,13 @@ struct LearningPathView: View {
     private var orderedPathView: some View {
         VStack(spacing: 0) {
             ForEach(Array(topicProgress.enumerated()), id: \.element.id) { index, progress in
+                // "What's Next" card at the mastered → unmastered transition
+                if !progress.isMastered && index > 0 && topicProgress[index - 1].isMastered && currentSubtopic?.subtopicName == progress.subtopicName {
+                    whatsNextCard(subtopicName: progress.subtopicName)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
+                }
+
                 HStack(spacing: 16) {
                     // Status indicator + connecting line
                     VStack(spacing: 0) {
@@ -260,6 +332,44 @@ struct LearningPathView: View {
     }
 
     @ViewBuilder
+    private func whatsNextCard(subtopicName: String) -> some View {
+        Button {
+            selectedSubtopic = subtopicName
+            navigateToModule = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.title3)
+                    .foregroundColor(.brutalYellow)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Next Up")
+                        .font(.system(.caption2, design: .monospaced, weight: .medium))
+                        .foregroundColor(.flatSecondaryText)
+                    Text(subtopicName)
+                        .font(.system(.caption, design: .monospaced, weight: .medium))
+                        .foregroundColor(.brutalBlack)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundColor(.flatSecondaryText)
+            }
+            .padding(12)
+            .background(Color.brutalYellow.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.brutalYellow.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
     private func statusIcon(for progress: SubtopicProgress) -> some View {
         if progress.isMastered {
             Image(systemName: "checkmark.circle.fill")
@@ -275,7 +385,7 @@ struct LearningPathView: View {
                 )
         } else {
             Circle()
-                .fill(Color.white)
+                .fill(Color.brutalSurface)
                 .frame(width: 24, height: 24)
                 .overlay(
                     Circle()

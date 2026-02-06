@@ -21,12 +21,12 @@ struct QuestionCardView: View {
             HStack(spacing: 6) {
                 Text(question.subtopic)
                     .font(.system(.caption2, design: .monospaced, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(.brutalOnAccent)
 
                 if let num = subtopicQuestionNumber, num > 0 {
                     Text("Q\(num)")
                         .font(.system(.caption2, design: .monospaced, weight: .bold))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.brutalOnAccent.opacity(0.7))
                 }
             }
             .padding(.horizontal, 12)
@@ -56,6 +56,7 @@ struct QuestionCardView: View {
                 .stroke(borderColor, lineWidth: isSubmitted ? 2 : 1)
         )
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+        .animation(.easeInOut(duration: 0.2), value: userAnswer)
         .onAppear {
             if !isSubmitted && !question.isMultipleChoice {
                 isTextFieldFocused = true
@@ -100,6 +101,13 @@ struct QuestionCardView: View {
                 }
             }
 
+            if !isSubmitted && !userAnswer.isEmpty {
+                BrutalButton(title: "Submit", color: .brutalYellow, fullWidth: true) {
+                    onSubmit()
+                }
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
+
             if isSubmitted {
                 resultView
             }
@@ -116,7 +124,7 @@ struct QuestionCardView: View {
         Button {
             if !isSubmitted {
                 userAnswer = choice
-                onSubmit()
+                HapticManager.selection()
             }
         } label: {
             HStack(spacing: 12) {
@@ -133,6 +141,9 @@ struct QuestionCardView: View {
                 } else if showAsWrong {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.brutalCoral)
+                } else if isSelected && !isSubmitted {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.brutalYellow)
                 }
             }
             .padding(.horizontal, 16)
@@ -141,8 +152,8 @@ struct QuestionCardView: View {
             .background(
                 showAsCorrect ? Color.brutalTeal.opacity(0.15) :
                 showAsWrong ? Color.brutalCoral.opacity(0.15) :
-                isSelected ? Color.brutalYellow.opacity(0.3) :
-                Color.white
+                isSelected ? Color.brutalYellow.opacity(0.5) :
+                Color.brutalSurface
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8)

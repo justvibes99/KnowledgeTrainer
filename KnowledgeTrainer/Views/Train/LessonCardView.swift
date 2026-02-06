@@ -11,7 +11,7 @@ struct LessonCardView: View {
                 VStack(spacing: 8) {
                     Text("Lesson")
                         .font(.system(.caption, design: .monospaced, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(.brutalOnAccent)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 6)
                         .background(Color.brutalBlack)
@@ -49,7 +49,7 @@ struct LessonCardView: View {
                         HStack(alignment: .top, spacing: 12) {
                             Text("\(index + 1)")
                                 .font(.system(.body, design: .monospaced, weight: .semibold))
-                                .foregroundColor(.white)
+                                .foregroundColor(.brutalOnAccent)
                                 .frame(width: 32, height: 32)
                                 .background(Color.brutalBlack)
 

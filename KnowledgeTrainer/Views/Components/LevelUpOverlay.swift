@@ -20,7 +20,7 @@ struct LevelUpOverlay: View {
                 if showContent {
                     Image(systemName: rank.iconName)
                         .font(.system(size: 72, weight: .medium))
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.brutalOnAccent)
                         .frame(width: 120, height: 120)
                         .background(rank.color)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -32,7 +32,7 @@ struct LevelUpOverlay: View {
 
                     Text(rank.title)
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.brutalOnAccent)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
                         .background(Color.brutalYellow)

@@ -8,6 +8,7 @@ final class ProfileViewModel {
     var showResetConfirmation: Bool = false
 
     // Settings
+    var appearanceMode: String = UserDefaults.standard.string(forKey: "appearanceMode") ?? "System"
     var learningDepth: LearningDepth = LearningDepth.current
     var timerEnabled: Bool = UserDefaults.standard.bool(forKey: "timerEnabled")
     var timerDuration: Int = UserDefaults.standard.integer(forKey: "timerDuration") == 0 ? 15 : UserDefaults.standard.integer(forKey: "timerDuration")
@@ -21,6 +22,11 @@ final class ProfileViewModel {
         components.minute = 0
         return Calendar.current.date(from: components) ?? Date()
     }()
+
+    func saveAppearanceMode() {
+        UserDefaults.standard.set(appearanceMode, forKey: "appearanceMode")
+        applyAppearanceMode()
+    }
 
     func saveLearningDepth() {
         UserDefaults.standard.set(learningDepth.rawValue, forKey: "learningDepth")

@@ -64,6 +64,6 @@ struct SessionXPSummaryView: View {
             }
         }
         .padding(20)
-        .brutalCard(backgroundColor: .white)
+        .brutalCard(backgroundColor: .brutalSurface)
     }
 }

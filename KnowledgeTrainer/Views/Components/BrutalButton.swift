@@ -14,7 +14,7 @@ struct BrutalButton: View {
         }) {
             Text(title)
                 .font(.system(.body, design: .monospaced, weight: .medium))
-                .foregroundColor(.white)
+                .foregroundColor(.brutalOnAccent)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)
@@ -45,7 +45,7 @@ struct BrutalButtonAsync: View {
         }) {
             Text(title)
                 .font(.system(.body, design: .monospaced, weight: .medium))
-                .foregroundColor(.white)
+                .foregroundColor(.brutalOnAccent)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .frame(maxWidth: fullWidth ? .infinity : nil)

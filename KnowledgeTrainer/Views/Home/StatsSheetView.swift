@@ -150,7 +150,7 @@ struct StatsSheetView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color(hex: "EAE7E1"))
+        .background(Color.flatDashboardCard)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
     }

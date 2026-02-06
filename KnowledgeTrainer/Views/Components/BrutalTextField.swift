@@ -25,7 +25,7 @@ struct BrutalTextField: View {
                     onSubmit?()
                 }
         }
-        .background(Color.white)
+        .background(Color.brutalSurface)
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)

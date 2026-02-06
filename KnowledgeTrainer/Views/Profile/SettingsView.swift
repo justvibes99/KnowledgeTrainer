@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: ProfileViewModel
+    var isSheet: Bool = true
 
     @State private var showResetAlert = false
 
@@ -19,6 +20,22 @@ struct SettingsView: View {
                             .foregroundColor(.brutalBlack)
                             .padding(.horizontal, 24)
                             .padding(.top, 16)
+
+                        // Appearance Section
+                        settingsSection(title: "Appearance") {
+                            HStack(spacing: 8) {
+                                ForEach(["System", "Light", "Dark"], id: \.self) { mode in
+                                    BrutalChip(
+                                        title: mode,
+                                        isSelected: viewModel.appearanceMode == mode,
+                                        color: .brutalYellow
+                                    ) {
+                                        viewModel.appearanceMode = mode
+                                        viewModel.saveAppearanceMode()
+                                    }
+                                }
+                            }
+                        }
 
                         // Timer Section
                         settingsSection(title: "Timer") {
@@ -126,9 +143,12 @@ struct SettingsView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
-                }            }
+                if isSheet {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") { dismiss() }
+                    }
+                }
+            }
             .brutalAlert(
                 isPresented: $showResetAlert,
                 title: "Reset All Data?",
@@ -151,7 +171,7 @@ struct SettingsView: View {
 
             content()
                 .padding(16)
-                .background(Color.white)
+                .background(Color.brutalSurface)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)

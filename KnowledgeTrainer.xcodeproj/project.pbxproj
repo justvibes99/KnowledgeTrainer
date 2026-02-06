@@ -76,6 +76,8 @@
 		FA3BA6783A9049F7BFF3FF93 /* BrutalChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B2F7D8D3C64F55AB4148B6A /* BrutalChip.swift */; };
 		FF7D9E7F116FFF31192D5D71 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9991F58B6B7D0A0FB15A1E2 /* SessionSummaryView.swift */; };
 		FF8008DDD322A9CF0C4B0DFE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C7FF04C0D4FA3E59C6EFA58 /* Assets.xcassets */; };
+		A10000000000000000000003 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* MainTabView.swift */; };
+		A10000000000000000000004 /* SettingsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* SettingsTabView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,6 +151,8 @@
 		F2CF0F12D82ACA12CE91833D /* StatsStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsStripView.swift; sourceTree = "<group>"; };
 		F626AEE95D5D4D993A7FE4CA /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		FC30C1E889D42B93653381EE /* DeepDiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepDiveView.swift; sourceTree = "<group>"; };
+		A10000000000000000000001 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* SettingsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTabView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +236,7 @@
 				1A4C81A27C45C1C96F672292 /* Components */,
 				A8024BFC55C1D9F75BFA0005 /* Explore */,
 				1FAE46592096FCBD390D5521 /* Home */,
+				A10000000000000000000001 /* MainTabView.swift */,
 				2998C1BE4C0080E3E92787FA /* Onboarding */,
 				9118AAF635C463753BD7B821 /* Profile */,
 				39B3A8B9F5B3B649B4A9EC7A /* Train */,
@@ -289,6 +294,7 @@
 				CF710AE19A85BBF9A3298564 /* ChartsView.swift */,
 				78141682480B35E110878C8D /* ProfileDashboardView.swift */,
 				A67449CFA1D074D39650F909 /* SettingsView.swift */,
+				A10000000000000000000002 /* SettingsTabView.swift */,
 				55893E9942A69D97AACFD0E8 /* TopicDetailView.swift */,
 				1088C9A728F6CC0D57F43DE4 /* TopicMapView.swift */,
 				BB1B2C3D4E5F6A7B0000000D /* AchievementsListView.swift */,
@@ -471,6 +477,8 @@
 				AA1B2C3D4E5F6A7B0000000C /* SessionXPSummaryView.swift in Sources */,
 				AA1B2C3D4E5F6A7B0000000D /* AchievementsListView.swift in Sources */,
 				CC2A3B4C5D6E7F8900000002 /* LearningDepth.swift in Sources */,
+				A10000000000000000000003 /* MainTabView.swift in Sources */,
+				A10000000000000000000004 /* SettingsTabView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

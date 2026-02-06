@@ -174,4 +174,17 @@ final class HomeViewModel {
     func totalSubtopicCount(progressItems: [SubtopicProgress], topicID: UUID) -> Int {
         progressItems.filter { $0.topicID == topicID }.count
     }
+
+    func quickContinueData(topics: [Topic], progressItems: [SubtopicProgress]) -> (topic: Topic, subtopic: String, masteredCount: Int, totalCount: Int)? {
+        for topic in topics {  // Already sorted by lastPracticed desc
+            let progress = progressItems
+                .filter { $0.topicID == topic.id }
+                .sorted { $0.sortOrder < $1.sortOrder }
+            let mastered = progress.filter(\.isMastered).count
+            if let firstUnmastered = progress.first(where: { !$0.isMastered }) {
+                return (topic, firstUnmastered.subtopicName, mastered, progress.count)
+            }
+        }
+        return nil
+    }
 }

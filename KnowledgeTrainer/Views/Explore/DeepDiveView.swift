@@ -22,7 +22,7 @@ struct DeepDiveView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            BrutalCard(backgroundColor: .white) {
+            BrutalCard(backgroundColor: .brutalSurface) {
                 VStack(alignment: .leading, spacing: 16) {
                     Text(deepDive.topic)
                         .font(.system(.title2, design: .monospaced, weight: .semibold))

@@ -35,11 +35,16 @@ struct ModuleFlowView: View {
     @State private var showQueueToast = false
     @State private var questionFormat: QuestionFormat = .mixed
     @State private var showFormatPicker = false
+    @State private var continueSubtopicName: String?
     @State private var tappedRelatedTopic: String?
     @State private var showRelatedTopicAction = false
 
+    private var activeSubtopicName: String {
+        continueSubtopicName ?? subtopicName
+    }
+
     private var subtopicProgressItem: SubtopicProgress? {
-        allProgress.first { $0.topicID == topic.id && $0.subtopicName == subtopicName }
+        allProgress.first { $0.topicID == topic.id && $0.subtopicName == activeSubtopicName }
     }
 
     private var hasLesson: Bool {
@@ -84,7 +89,7 @@ struct ModuleFlowView: View {
                     Spacer()
                     Text("Added to Queue")
                         .font(.system(.caption, design: .monospaced, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundColor(.brutalOnAccent)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(Color.brutalBlack)
@@ -314,7 +319,7 @@ struct ModuleFlowView: View {
                                 HStack(alignment: .top, spacing: 10) {
                                     Text("\(index + 1)")
                                         .font(.system(.caption, design: .monospaced, weight: .medium))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.brutalOnAccent)
                                         .frame(width: 24, height: 24)
                                         .background(Color.flatSecondaryText)
                                         .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -467,6 +472,42 @@ struct ModuleFlowView: View {
             subtopicStats: viewModel.subtopicSessionStats,
             masteredThisSession: viewModel.masteredThisSession,
             xpEvents: gamificationService?.pendingXPEvents ?? [],
+            onContinueLearning: {
+                let nextSub = viewModel.nextSubtopicName
+                viewModel.endSession()
+                viewModel = DrillSessionViewModel()
+                viewModel.gamificationService = gamificationService
+                gamificationService?.resetPendingXPEvents()
+                fetchedQuestions = []
+                phase = .loading
+                if let next = nextSub {
+                    continueSubtopicName = next
+                }
+                setupModule()
+            },
+            onRetryMistakes: viewModel.wrongAnswers.isEmpty ? nil : {
+                let retryQs = viewModel.wrongAnswers.map { $0.question }
+                viewModel.endSession()
+                viewModel = DrillSessionViewModel()
+                viewModel.gamificationService = gamificationService
+                gamificationService?.resetPendingXPEvents()
+                phase = .quiz
+                let progressItems = allProgress.filter { $0.topicID == topic.id }
+                let timerOn = UserDefaults.standard.bool(forKey: "timerEnabled")
+                let timerDur = UserDefaults.standard.integer(forKey: "timerDuration")
+                viewModel.setup(
+                    topic: topic,
+                    subtopics: Set([continueSubtopicName ?? subtopicName]),
+                    initialQuestions: retryQs,
+                    reviewItems: [],
+                    timerEnabled: timerOn,
+                    timerDuration: timerDur > 0 ? timerDur : 15,
+                    focusSubtopic: continueSubtopicName ?? subtopicName,
+                    subtopicProgressItems: progressItems,
+                    questionFormat: questionFormat,
+                    modelContext: modelContext
+                )
+            },
             onDone: { dismiss() }
         )
     }
@@ -595,8 +636,8 @@ struct ModuleFlowView: View {
                     subtopics: Array(topic.subtopics),
                     difficulty: depth.difficultyInt,
                     previousQuestions: [],
-                    focusSubtopic: subtopicName,
-                    nextSubtopic: subtopicName,
+                    focusSubtopic: activeSubtopicName,
+                    nextSubtopic: activeSubtopicName,
                     depth: depth
                 )
 
@@ -692,13 +733,13 @@ struct ModuleFlowView: View {
 
         viewModel.setup(
             topic: topic,
-            subtopics: Set([subtopicName]),
+            subtopics: Set([activeSubtopicName]),
             initialQuestions: questions,
-            reviewItems: SpacedRepetitionEngine.dueItems(from: reviewItems).filter { $0.topicID == topic.id },
+            reviewItems: [],  // Reviews only happen in ReviewSessionView
             timerEnabled: timerOn,
             timerDuration: timerDur > 0 ? timerDur : 15,
             initialLesson: nil,
-            focusSubtopic: subtopicName,
+            focusSubtopic: activeSubtopicName,
             subtopicProgressItems: progressItems,
             questionFormat: questionFormat,
             modelContext: modelContext

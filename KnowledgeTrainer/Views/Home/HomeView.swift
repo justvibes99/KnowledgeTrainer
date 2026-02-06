@@ -12,11 +12,15 @@ struct HomeView: View {
 
     @Query private var scholarProfiles: [ScholarProfile]
 
+    @Binding var selectedTab: Int
+
     @State private var viewModel = HomeViewModel()
-    @State private var showSettings = false
     @State private var showStats = false
     @State private var topicToDelete: Topic?
     @State private var showDeleteConfirmation = false
+    @State private var quickContinueTopic: Topic?
+    @State private var quickContinueSubtopic: String?
+    @State private var navigateToQuickContinue = false
 
     private var profile: ScholarProfile? { scholarProfiles.first }
 
@@ -33,9 +37,11 @@ struct HomeView: View {
                                 .font(.system(size: 32, weight: .semibold, design: .monospaced))
                                 .foregroundColor(.brutalBlack)
 
+                            Spacer()
+
                             if let profile {
-                                NavigationLink {
-                                    ProfileDashboardView()
+                                Button {
+                                    selectedTab = 1
                                 } label: {
                                     HStack(spacing: 6) {
                                         Image(systemName: profile.rank.iconName)
@@ -56,17 +62,61 @@ struct HomeView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-
-                            Spacer()
-
-                            Button(action: { showSettings = true }) {
-                                Image(systemName: "gearshape")
-                                    .font(.title3)
-                                    .foregroundColor(.brutalBlack)
-                            }
                         }
                         .padding(.horizontal, 24)
                         .padding(.top, 16)
+
+                        // Quick Continue Card
+                        if let data = viewModel.quickContinueData(topics: topics, progressItems: subtopicProgress) {
+                            Button {
+                                quickContinueTopic = data.topic
+                                quickContinueSubtopic = data.subtopic
+                                navigateToQuickContinue = true
+                            } label: {
+                                HStack(spacing: 12) {
+                                    VStack(spacing: 4) {
+                                        Text("\(data.masteredCount)/\(data.totalCount)")
+                                            .font(.system(.body, design: .monospaced, weight: .semibold))
+                                            .foregroundColor(.brutalBlack)
+                                        Text("Mastered")
+                                            .font(.system(.caption2, design: .monospaced))
+                                            .foregroundColor(.flatSecondaryText)
+                                    }
+                                    .frame(width: 56)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(data.topic.name)
+                                            .font(.system(.caption, design: .monospaced, weight: .medium))
+                                            .foregroundColor(.brutalBlack)
+                                            .lineLimit(1)
+                                        Text(data.subtopic)
+                                            .font(.system(.caption2, design: .monospaced))
+                                            .foregroundColor(.flatSecondaryText)
+                                            .lineLimit(1)
+                                    }
+
+                                    Spacer()
+
+                                    Text("Continue")
+                                        .font(.system(.caption, design: .monospaced, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.brutalYellow)
+                                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                                }
+                                .padding(16)
+                                .background(Color.flatSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.flatBorder, lineWidth: 1)
+                                )
+                                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 24)
+                        }
 
                         // Stats Strip
                         let dueCount = viewModel.dueReviewCount(items: reviewItems)
@@ -84,8 +134,15 @@ struct HomeView: View {
                         // Daily Goal Banner
                         if let profile {
                             let _ = profile.resetDailyGoalIfNeeded()
-                            DailyGoalBanner(isCompleted: profile.isDailyGoalCurrent() && profile.dailyGoalCompleted)
-                                .padding(.horizontal, 24)
+                            let todayQuestionCount = records.filter { Calendar.current.isDateInToday($0.date) }.count
+                            Button { showStats = true } label: {
+                                DailyGoalBanner(
+                                    isCompleted: profile.isDailyGoalCurrent() && profile.dailyGoalCompleted,
+                                    questionsToday: todayQuestionCount
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 24)
                         }
 
                         // Review Due Banner
@@ -192,8 +249,13 @@ struct HomeView: View {
                     )
                 }
             }
-            .sheet(isPresented: $showSettings) {
-                SettingsView(viewModel: ProfileViewModel())
+            .navigationDestination(isPresented: $navigateToQuickContinue) {
+                if let topic = quickContinueTopic, let subtopic = quickContinueSubtopic {
+                    ModuleFlowView(
+                        topic: topic,
+                        subtopicName: subtopic
+                    )
+                }
             }
             .sheet(isPresented: $showStats) {
                 StatsSheetView()

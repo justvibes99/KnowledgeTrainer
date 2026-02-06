@@ -393,7 +393,9 @@ final class DrillSessionViewModel {
     }
 
     func submitTimedOut(modelContext: ModelContext) async {
-        userAnswer = ""
+        if userAnswer.isEmpty {
+            userAnswer = ""  // No selection was made
+        }
         await submitAnswer(modelContext: modelContext)
     }
 

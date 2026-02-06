@@ -203,6 +203,10 @@ final class GamificationService: ObservableObject {
         newRank = nil
     }
 
+    func resetPendingXPEvents() {
+        pendingXPEvents.removeAll()
+    }
+
     private func fetchAllSubtopicProgress() -> [SubtopicProgress] {
         let descriptor = FetchDescriptor<SubtopicProgress>()
         return (try? context.fetch(descriptor)) ?? []
