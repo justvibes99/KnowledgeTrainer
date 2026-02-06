@@ -141,7 +141,7 @@ final class DrillSessionViewModel {
         // Load cached questions, supplemented by any passed-in initial questions
         var questions = initialQuestions
         if let ctx = modelContext {
-            let cached = loadCachedQuestions(topicID: topic.id, subtopic: focusSubtopic, context: ctx)
+            let cached = loadCachedQuestions(topicID: topic.id, subtopic: focusSubtopic, difficulty: learningDepth.difficultyInt, context: ctx)
             // Merge: cached questions first, then initial (deduped)
             let initialTexts = Set(questions.map(\.questionText))
             let uniqueCached = cached.filter { !initialTexts.contains($0.questionText) }
@@ -323,9 +323,8 @@ final class DrillSessionViewModel {
                         questionContext: question.questionText
                     )
                 } catch {
-                    // Network failure — can't verify, don't penalize or count
-                    isCorrect = true
-                    return
+                    // Network failure — can't verify, mark wrong (conservative)
+                    isCorrect = false
                 }
             }
         }
@@ -513,7 +512,10 @@ final class DrillSessionViewModel {
     // MARK: - Fetch Batch
 
     private func fetchNextBatch() async {
+        guard !isFetchingBatch else { return }
         guard let topic = topic else { return }
+        isFetchingBatch = true
+        defer { isFetchingBatch = false }
 
         // Determine if we should request a lesson for the next subtopic
         let nextSub: String?
@@ -568,8 +570,12 @@ final class DrillSessionViewModel {
                         try? ctx.save()
                     }
                 }
-                currentLesson = lesson
-                showingLesson = true
+                // Show lesson if no subtopic questions answered yet (review items don't count)
+                let subtopicAnswered = subtopicSessionStats[focus]?.answered ?? 0
+                if subtopicAnswered == 0 {
+                    currentLesson = lesson
+                    showingLesson = true
+                }
             }
         }
 
@@ -585,7 +591,7 @@ final class DrillSessionViewModel {
                     .filter { $0.isMastered || !$0.lessonOverview.isEmpty }
                     .sorted { $0.sortOrder < $1.sortOrder }
                     .prefix(10)
-                    .map { "- \($0.subtopicName): \(String($0.lessonOverview.prefix(100)))" }
+                    .map { "- \($0.subtopicName): \(String($0.lessonOverview.prefix(200)))" }
             }
         }
 
@@ -624,7 +630,7 @@ final class DrillSessionViewModel {
 
     // MARK: - Question Cache
 
-    private func loadCachedQuestions(topicID: UUID, subtopic: String?, context: ModelContext) -> [GeneratedQuestion] {
+    private func loadCachedQuestions(topicID: UUID, subtopic: String?, difficulty: Int, context: ModelContext) -> [GeneratedQuestion] {
         // Get question texts already answered for this topic
         let answeredDescriptor = FetchDescriptor<QuestionRecord>(
             predicate: #Predicate { $0.topicID == topicID }
@@ -645,10 +651,11 @@ final class DrillSessionViewModel {
 
         guard let cached = try? context.fetch(descriptor) else { return [] }
 
-        // Exclude already-answered questions and validate MC correctAnswer/choices
+        // Exclude already-answered, wrong difficulty, and validate MC correctAnswer/choices
         return GeneratedQuestion.validateBatch(
             cached
                 .filter { !answeredTexts.contains($0.questionText) }
+                .filter { abs($0.difficulty - difficulty) <= 1 }
                 .map { $0.toGeneratedQuestion() }
         )
     }
@@ -690,6 +697,16 @@ final class DrillSessionViewModel {
                 return true
             }
         }
+
+        // Prevent 3+ questions with the same correct answer in the queue
+        let newAnswer = question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let sameAnswerCount = questionQueue.filter {
+            $0.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == newAnswer
+        }.count
+        if sameAnswerCount >= 2 {
+            return true
+        }
+
         return false
     }
 
@@ -698,15 +715,28 @@ final class DrillSessionViewModel {
     private func startBackgroundFetching() {
         backgroundFetchTask?.cancel()
         backgroundFetchTask = Task { @MainActor in
+            var consecutiveFailures = 0
             while !Task.isCancelled {
                 let totalAvailable = questionQueue.count + questionsAnswered
                 let needed = maxQuestions - totalAvailable
                 if needed <= 0 { break }
 
+                let queueBefore = questionQueue.count
                 await fetchNextBatch()
+                let queueAfter = questionQueue.count
 
-                // Small delay to avoid hammering the API
-                try? await Task.sleep(nanoseconds: 500_000_000)
+                if queueAfter > queueBefore {
+                    consecutiveFailures = 0
+                } else {
+                    consecutiveFailures += 1
+                    if consecutiveFailures >= 3 { break }
+                }
+
+                // Exponential backoff on failure, 500ms on success
+                let delay: UInt64 = consecutiveFailures > 0
+                    ? UInt64(pow(2.0, Double(consecutiveFailures))) * 1_000_000_000
+                    : 500_000_000
+                try? await Task.sleep(nanoseconds: delay)
             }
         }
     }

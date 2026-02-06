@@ -53,6 +53,9 @@ actor APIClient {
     Always respond with valid JSON matching the requested schema. \
     If you are not confident about a specific fact, date, or number, use well-established widely-known \
     facts instead of guessing. Never fabricate statistics, dates, or attributions. \
+    Only include facts that would appear in a standard encyclopedia or textbook. \
+    Do not include statistics, rankings, or records that change frequently unless the question \
+    explicitly asks about a well-established historical record. \
     correctAnswer and every entry in acceptableAnswers must be plain text: no parentheses, hyphens, \
     colons, semicolons, or special characters.
     """
@@ -104,6 +107,9 @@ actor APIClient {
         - Never embed a false premise or incorrect assumption in the stem
         - Never require an answer that contains special characters, hyphens, or punctuation
         - correctAnswer = simplest common phrasing (e.g. "Everest" not "Mount Everest")
+        - Every FR question must have exactly ONE factual answer verifiable in an encyclopedia
+        - BAD: "What caused the French Revolution?" (too many valid answers)
+        - GOOD: "In what year did the French Revolution begin?" (single answer: 1789)
 
         acceptableAnswers (3-5 per FR question, empty [] for MC):
         - Include abbreviations, alternate spellings, and common short forms
@@ -151,7 +157,9 @@ actor APIClient {
 
         let response = try await makeRequest(prompt: prompt, maxTokens: 1024)
         let parsed = try decodeJSON(TopicStructureResponse.self, from: response)
-        let structure = TopicStructure(name: parsed.topicName, subtopics: parsed.subtopics)
+        // Ensure at least one subtopic (fallback to topic name)
+        let subtopics = parsed.subtopics.isEmpty ? [parsed.topicName] : parsed.subtopics
+        let structure = TopicStructure(name: parsed.topicName, subtopics: subtopics)
         return (structure, parsed.relatedTopics ?? [], parsed.category ?? "Other")
     }
 
@@ -167,6 +175,7 @@ actor APIClient {
             "subtopic": "\(subtopic)",
             "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples.",
             "keyFacts": ["Detailed fact 1", "Detailed fact 2", ...],
+            "misconceptions": ["Common misconception and why it is wrong"],
             "connections": ["Short Topic Name 1", "Short Topic Name 2"]
           }
         }
@@ -175,6 +184,7 @@ actor APIClient {
         - Overview: \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers. Never vague.
         - keyFacts: \(depth.keyFactsCount) detailed facts. Each MUST include specific names, dates, numbers, or concrete examples.
         - For well-known finite sets (e.g., planets, Great Lakes, continents), list all items. For large or open-ended sets, list the most notable examples.
+        - misconceptions: 1-3 things people commonly get wrong about this subtopic, with brief corrections
         - connections: 2-3 short topic names (2-4 words each), NOT full sentences
         - Return ONLY the JSON object
         """
@@ -219,9 +229,10 @@ actor APIClient {
         }
 
         Requirements:
-        - Exactly 10 questions at difficulty \(depth.difficultyInt): \(depth.difficultyDescription)
+        - Exactly 10 questions. Difficulty range: \(depth.difficultyRange)
+        - Style: \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
-        - About 6 multiple choice, 4 free-response
+        - Exactly 6 multiple choice and exactly 4 free-response
 
         \(questionRules)
         """
@@ -237,10 +248,13 @@ actor APIClient {
         // Call 1: Get structure first (fastest)
         let (structure, relatedTopics, category) = try await generateTopicStructure(topic: topic)
 
-        let firstSubtopic = structure.subtopics.first ?? structure.name
+        let firstSubtopic = structure.subtopics[0]
 
-        // Call 2: Generate lesson
-        let lesson = try? await generateInitialLesson(topic: structure.name, subtopic: firstSubtopic, depth: depth)
+        // Call 2: Generate lesson (retry once on failure)
+        var lesson = try? await generateInitialLesson(topic: structure.name, subtopic: firstSubtopic, depth: depth)
+        if lesson == nil {
+            lesson = try? await generateInitialLesson(topic: structure.name, subtopic: firstSubtopic, depth: depth)
+        }
 
         // Call 3: Generate questions, seeded with lesson key facts
         let questions = (try? await generateInitialQuestions(topic: structure.name, subtopic: firstSubtopic, keyFacts: lesson?.keyFacts ?? [], depth: depth)) ?? []
@@ -262,7 +276,7 @@ actor APIClient {
         previousSubtopicSummaries: [String] = []
     ) async throws -> ([GeneratedQuestion], LessonPayload?) {
         let subtopicList = subtopics.joined(separator: ", ")
-        let recentQuestions = previousQuestions.suffix(15)
+        let recentQuestions = previousQuestions.suffix(30)
         let previousList = recentQuestions.map { "- \($0)" }.joined(separator: "\n")
 
         let focusInstruction: String
@@ -277,7 +291,7 @@ actor APIClient {
             let factsList = keyFacts.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
             factsContext = """
 
-            The lesson taught these key facts. Base your questions on them:
+            The lesson taught these key facts. Every question MUST be answerable using ONLY the facts listed below. Do not ask about details not covered in these facts.
             \(factsList)
 
             """
@@ -298,12 +312,14 @@ actor APIClient {
               "subtopic": "\(next)",
               "overview": "\(depth.overviewSentences) sentence overview rich with specific names, dates, and examples.",
               "keyFacts": ["Detailed fact with specific names, dates, numbers", ...],
+              "misconceptions": ["Common misconception and why it is wrong"],
               "connections": ["Short Topic Name 1", "Short Topic Name 2"]
             }
             \(previousContext)The overview must be \(depth.overviewSentences) sentences packed with specific details: names, dates, places, numbers, concrete examples. Never vague.
             Each keyFact (\(depth.keyFactsCount) total) MUST include specific names, dates, numbers, or concrete examples.
             For well-known finite sets (e.g., planets, Great Lakes), list all items. For large or open-ended sets, list the most notable examples.
             If the subtopic is a specific item (a mountain, a president, a country, etc.), the lesson should comprehensively cover that item: key stats, history, notable facts, and what makes it significant.
+            misconceptions: 1-3 things people commonly get wrong about this subtopic, with brief corrections
             connections: 2-3 short topic names (2-4 words each), NOT full sentences
             """
         } else {
@@ -341,16 +357,21 @@ actor APIClient {
         \(lessonInstruction)
 
         Requirements:
-        - Exactly 10 questions
-        - Difficulty \(difficulty): \(depth.difficultyDescription)
+        - Exactly 10 questions. Difficulty range: \(depth.difficultyRange)
+        - Style: \(depth.difficultyDescription)
         - Order questions from easier recall to harder application within the batch
         - Do not repeat any previously asked question
-        - About 6 multiple choice, 4 free-response
+        - Exactly 6 multiple choice and exactly 4 free-response
 
         \(questionRules)
         """
 
-        let batchMaxTokens = nextSubtopic != nil ? 5120 : 4096
+        let batchMaxTokens: Int
+        if nextSubtopic != nil {
+            batchMaxTokens = depth == .deep ? 6144 : 5120
+        } else {
+            batchMaxTokens = 4096
+        }
         let response = try await makeRequest(prompt: prompt, maxTokens: batchMaxTokens)
         let parsed = try decodeJSON(QuestionBatchResponse.self, from: response)
         return (GeneratedQuestion.validateBatch(parsed.questions), parsed.nextLesson)
@@ -368,11 +389,22 @@ actor APIClient {
         The correct answer is: "\(correctAnswer)"
         The student answered: "\(userAnswer)"
 
-        Is the student's answer correct or essentially correct (captures the key concept)?
-        Return ONLY a JSON object: {"correct": true} or {"correct": false}
+        Is the student's answer factually equivalent to the correct answer?
+        Accept: synonyms, abbreviations, minor misspellings, and alternate common names.
+        Reject: broader/narrower terms, partial answers, or different facts.
+
+        Examples:
+        - Correct: "1776", Student: "1776 AD" → {"correct": true}
+        - Correct: "Saturn", Student: "Jupiter" → {"correct": false}
+        - Correct: "Photosynthesis", Student: "photo synthesis" → {"correct": true}
+        - Correct: "Marie Curie", Student: "Curie" → {"correct": true}
+        - Correct: "France", Student: "Europe" → {"correct": false}
+        - Correct: "Mitochondria", Student: "The mitochondria" → {"correct": true}
+
+        Return ONLY: {"correct": true} or {"correct": false}
         """
 
-        let response = try await makeRequest(prompt: prompt, maxTokens: 64)
+        let response = try await makeRequest(prompt: prompt, maxTokens: 64, temperature: 0.0)
         let parsed = try decodeJSON(EvaluationResponse.self, from: response)
         return parsed.correct
     }
@@ -411,7 +443,7 @@ actor APIClient {
 
     // MARK: - Private Helpers
 
-    private func makeRequest(prompt: String, maxTokens: Int = 4096, retryCount: Int = 1) async throws -> String {
+    private func makeRequest(prompt: String, maxTokens: Int = 4096, temperature: Double = 0.3, retryCount: Int = 1) async throws -> String {
         guard let url = URL(string: baseURL) else {
             throw APIError.invalidResponse
         }
@@ -427,7 +459,8 @@ actor APIClient {
                 OpenAIMessage(role: "system", content: systemPrompt),
                 OpenAIMessage(role: "user", content: prompt)
             ],
-            response_format: OpenAIAPIRequest.ResponseFormat(type: "json_object")
+            response_format: OpenAIAPIRequest.ResponseFormat(type: "json_object"),
+            temperature: temperature
         )
 
         request.httpBody = try JSONEncoder().encode(body)
@@ -445,7 +478,7 @@ actor APIClient {
                 if isRetryable && retryCount > 0 {
                     let delay: UInt64 = httpResponse.statusCode == 429 ? 2_000_000_000 : 1_000_000_000
                     try await Task.sleep(nanoseconds: delay)
-                    return try await makeRequest(prompt: prompt, maxTokens: maxTokens, retryCount: retryCount - 1)
+                    return try await makeRequest(prompt: prompt, maxTokens: maxTokens, temperature: temperature, retryCount: retryCount - 1)
                 }
                 throw APIError.httpError(httpResponse.statusCode, errorBody)
             }
@@ -456,6 +489,11 @@ actor APIClient {
                 .data(using: .utf8) ?? data
 
             let apiResponse = try JSONDecoder().decode(OpenAIAPIResponse.self, from: trimmedData)
+
+            // Detect truncation and retry with higher token budget
+            if apiResponse.choices.first?.finish_reason == "length" && retryCount > 0 {
+                return try await makeRequest(prompt: prompt, maxTokens: maxTokens + 2048, temperature: temperature, retryCount: retryCount - 1)
+            }
 
             guard let text = apiResponse.choices.first?.message.content else {
                 throw APIError.invalidResponse
@@ -468,7 +506,7 @@ actor APIClient {
             let isRetryable = !(error is CancellationError)
             if isRetryable && retryCount > 0 {
                 try await Task.sleep(nanoseconds: 1_000_000_000)
-                return try await makeRequest(prompt: prompt, maxTokens: maxTokens, retryCount: retryCount - 1)
+                return try await makeRequest(prompt: prompt, maxTokens: maxTokens, temperature: temperature, retryCount: retryCount - 1)
             }
             throw APIError.networkError(error.localizedDescription)
         }

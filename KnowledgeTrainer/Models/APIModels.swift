@@ -7,6 +7,7 @@ struct OpenAIAPIRequest: Codable {
     let max_tokens: Int
     let messages: [OpenAIMessage]
     let response_format: ResponseFormat?
+    let temperature: Double?
 
     struct ResponseFormat: Codable {
         let type: String
@@ -24,6 +25,7 @@ struct OpenAIAPIResponse: Codable {
 
 struct OpenAIChoice: Codable {
     let message: OpenAIResponseMessage
+    let finish_reason: String?
 }
 
 struct OpenAIResponseMessage: Codable {
@@ -64,12 +66,30 @@ struct GeneratedQuestion: Codable, Identifiable {
 
     var isMultipleChoice: Bool { choices != nil && !(choices?.isEmpty ?? true) }
 
-    /// Validates MC questions have correctAnswer in choices. Returns nil for invalid MC questions.
+    /// Validates and repairs MC questions. Ensures correctAnswer matches a choice exactly,
+    /// there are exactly 4 distinct choices, and repairs case mismatches instead of discarding.
     var validated: GeneratedQuestion? {
         guard let choices = choices, !choices.isEmpty else { return self }
+        // Require exactly 4 distinct choices
+        let uniqueChoices = Set(choices.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+        guard choices.count == 4, uniqueChoices.count == 4 else { return nil }
+
         let normalizedCorrect = correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let hasMatch = choices.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedCorrect }
-        return hasMatch ? self : nil
+        guard let matchingChoice = choices.first(where: {
+            $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedCorrect
+        }) else { return nil }
+
+        // Repair: use the exact choice string as correctAnswer if it differs
+        if matchingChoice == correctAnswer { return self }
+        return GeneratedQuestion(
+            questionText: questionText,
+            correctAnswer: matchingChoice,
+            acceptableAnswers: acceptableAnswers,
+            explanation: explanation,
+            subtopic: subtopic,
+            difficulty: difficulty,
+            choices: choices
+        )
     }
 
     static func validateBatch(_ questions: [GeneratedQuestion]) -> [GeneratedQuestion] {

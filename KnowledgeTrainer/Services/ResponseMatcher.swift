@@ -11,8 +11,9 @@ struct ResponseMatcher {
         let cleaned = normalize(userAnswer)
 
         if cleaned.isEmpty || cleaned.count < 2 {
-            for acceptable in acceptableAnswers {
-                if normalize(acceptable) == cleaned {
+            let allShortCheck = ([correctAnswer] + acceptableAnswers).map { normalize($0) }
+            for acceptable in allShortCheck {
+                if acceptable == cleaned {
                     return .correct
                 }
             }
@@ -28,7 +29,7 @@ struct ResponseMatcher {
             }
         }
 
-        // Contains match — guarded by length ratio to prevent false positives (e.g. "iron" in "environment")
+        // Contains match — guarded by length ratio + word boundary to prevent false positives
         let isNumeric = cleaned.allSatisfy { $0.isNumber || $0 == " " }
         if !isNumeric {
             for acceptable in allAcceptable {
@@ -36,7 +37,7 @@ struct ResponseMatcher {
                 let longer = max(cleaned.count, acceptable.count)
                 guard shorter >= 4, longer > 0 else { continue }
                 let ratio = Double(shorter) / Double(longer)
-                if ratio >= 0.5 && (cleaned.contains(acceptable) || acceptable.contains(cleaned)) {
+                if ratio >= 0.5 && (containsAtWordBoundary(cleaned, acceptable) || containsAtWordBoundary(acceptable, cleaned)) {
                     return .correct
                 }
             }
@@ -64,6 +65,23 @@ struct ResponseMatcher {
         }
 
         return .incorrect
+    }
+
+    // MARK: - Word Boundary Check
+
+    /// Checks if needle appears in haystack at a word boundary (space or string edge on both sides).
+    /// Operates on normalized strings (lowercase, alphanumeric + spaces only).
+    private static func containsAtWordBoundary(_ haystack: String, _ needle: String) -> Bool {
+        var searchStart = haystack.startIndex
+        while let range = haystack.range(of: needle, range: searchStart..<haystack.endIndex) {
+            let beforeOk = range.lowerBound == haystack.startIndex ||
+                haystack[haystack.index(before: range.lowerBound)] == " "
+            let afterOk = range.upperBound == haystack.endIndex ||
+                haystack[range.upperBound] == " "
+            if beforeOk && afterOk { return true }
+            searchStart = haystack.index(after: range.lowerBound)
+        }
+        return false
     }
 
     // MARK: - Normalization

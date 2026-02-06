@@ -37,6 +37,14 @@ enum LearningDepth: String, CaseIterable {
         }
     }
 
+    var difficultyRange: String {
+        switch self {
+        case .casual: return "1-3, averaging 2"
+        case .standard: return "2-4, averaging 3"
+        case .deep: return "4-5, averaging 5"
+        }
+    }
+
     var overviewSentences: String {
         switch self {
         case .casual: return "2-3"
